@@ -24,6 +24,9 @@
 		652E7CD918BD31840079827F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652E7CB418BD31840079827F /* UIKit.framework */; };
 		652E7CE118BD31840079827F /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 652E7CDF18BD31840079827F /* InfoPlist.strings */; };
 		652E7CE318BD31840079827F /* catasstrophyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 652E7CE218BD31840079827F /* catasstrophyTests.m */; };
+		652E7CF118BD33F60079827F /* background-music-aac.caf in Resources */ = {isa = PBXBuildFile; fileRef = 652E7CEE18BD33F60079827F /* background-music-aac.caf */; };
+		652E7CF218BD33F60079827F /* pew-pew-lei.caf in Resources */ = {isa = PBXBuildFile; fileRef = 652E7CEF18BD33F60079827F /* pew-pew-lei.caf */; };
+		652E7CF318BD33F60079827F /* sprites.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 652E7CF018BD33F60079827F /* sprites.atlas */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +63,9 @@
 		652E7CDE18BD31840079827F /* catasstrophyTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "catasstrophyTests-Info.plist"; sourceTree = "<group>"; };
 		652E7CE018BD31840079827F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		652E7CE218BD31840079827F /* catasstrophyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = catasstrophyTests.m; sourceTree = "<group>"; };
+		652E7CEE18BD33F60079827F /* background-music-aac.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "background-music-aac.caf"; sourceTree = "<group>"; };
+		652E7CEF18BD33F60079827F /* pew-pew-lei.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "pew-pew-lei.caf"; sourceTree = "<group>"; };
+		652E7CF018BD33F60079827F /* sprites.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = sprites.atlas; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +136,7 @@
 				652E7CCB18BD31840079827F /* MyScene.m */,
 				652E7CCD18BD31840079827F /* Spaceship.png */,
 				652E7CCF18BD31840079827F /* Images.xcassets */,
+				652E7CEC18BD33F60079827F /* SpriteKitSimpleGameResources */,
 				652E7CB918BD31840079827F /* Supporting Files */,
 			);
 			path = catasstrophy;
@@ -162,6 +169,24 @@
 				652E7CDF18BD31840079827F /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		652E7CEC18BD33F60079827F /* SpriteKitSimpleGameResources */ = {
+			isa = PBXGroup;
+			children = (
+				652E7CED18BD33F60079827F /* Sounds */,
+				652E7CF018BD33F60079827F /* sprites.atlas */,
+			);
+			path = SpriteKitSimpleGameResources;
+			sourceTree = "<group>";
+		};
+		652E7CED18BD33F60079827F /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				652E7CEE18BD33F60079827F /* background-music-aac.caf */,
+				652E7CEF18BD33F60079827F /* pew-pew-lei.caf */,
+			);
+			path = Sounds;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -240,10 +265,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				652E7CF318BD33F60079827F /* sprites.atlas in Resources */,
+				652E7CF118BD33F60079827F /* background-music-aac.caf in Resources */,
 				652E7CBD18BD31840079827F /* InfoPlist.strings in Resources */,
 				652E7CD018BD31840079827F /* Images.xcassets in Resources */,
 				652E7CCE18BD31840079827F /* Spaceship.png in Resources */,
 				652E7CC618BD31840079827F /* Main.storyboard in Resources */,
+				652E7CF218BD33F60079827F /* pew-pew-lei.caf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -476,6 +504,7 @@
 				652E7CE818BD31840079827F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		652E7CE918BD31840079827F /* Build configuration list for PBXNativeTarget "catasstrophyTests" */ = {
 			isa = XCConfigurationList;
@@ -484,6 +513,7 @@
 				652E7CEB18BD31840079827F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

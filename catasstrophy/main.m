@@ -1,9 +1,9 @@
 //
 //  main.m
-//  catasstrophy
+//  tutorial
 //
-//  Created by CSB313CignaFL13 on 2/25/14.
-//  Copyright (c) 2014 nest. All rights reserved.
+//  Created by CSB313CignaFL13 on 2/11/14.
+//  Copyright (c) 2014 lamesauce. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

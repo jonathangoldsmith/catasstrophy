@@ -1,9 +1,9 @@
 //
 //  ViewController.m
-//  catasstrophy
+//  tutorial
 //
-//  Created by CSB313CignaFL13 on 2/25/14.
-//  Copyright (c) 2014 nest. All rights reserved.
+//  Created by CSB313CignaFL13 on 2/11/14.
+//  Copyright (c) 2014 lamesauce. All rights reserved.
 //
 
 #import "ViewController.h"
@@ -11,21 +11,20 @@
 
 @implementation ViewController
 
-- (void)viewDidLoad
+- (void)viewWillLayoutSubviews
 {
-    [super viewDidLoad];
-
-    // Configure the view.
+    [super viewWillLayoutSubviews];
+    
     SKView * skView = (SKView *)self.view;
-    skView.showsFPS = YES;
-    skView.showsNodeCount = YES;
-    
-    // Create and configure the scene.
-    SKScene * scene = [MyScene sceneWithSize:skView.bounds.size];
-    scene.scaleMode = SKSceneScaleModeAspectFill;
-    
-    // Present the scene.
-    [skView presentScene:scene];
+    if(!skView.scene){
+        skView.showsFPS=YES;
+        skView.showsNodeCount=YES;
+        
+        SKScene * scene = [MyScene sceneWithSize:skView.bounds.size];
+        scene.scaleMode = SKSceneScaleModeAspectFill;
+        
+        [skView presentScene:scene];
+    }
 }
 
 - (BOOL)shouldAutorotate

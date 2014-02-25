@@ -1,9 +1,9 @@
 //
 //  ViewController.h
-//  catasstrophy
+//  tutorial
 //
 
-//  Copyright (c) 2014 nest. All rights reserved.
+//  Copyright (c) 2014 lamesauce. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
