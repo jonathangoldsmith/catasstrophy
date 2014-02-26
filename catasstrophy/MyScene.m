@@ -10,7 +10,7 @@
 #import "math.h"
 
 
-@interface MyScene()
+@interface MyScene() <SKPhysicsContactDelegate>
 @property (nonatomic) SKSpriteNode * player;
 @property (nonatomic) SKSpriteNode * cat;
 @property (nonatomic) NSTimeInterval lastSpawnTimeInterval;
@@ -21,8 +21,11 @@
 
 @implementation MyScene
 
+
+//various physics functions
 static const uint32_t projectileCategory     =  0x1 << 0;
-static const uint32_t monsterCategory        =  0x1 << 1;
+static const uint32_t catCategory        =  0x1 << 1;
+static const uint32_t itemCategory        =  0x1 << 2;
 
 static inline CGPoint rwAdd(CGPoint a, CGPoint b) {
     return CGPointMake(a.x + b.x, a.y + b.y);
@@ -51,19 +54,39 @@ static inline CGPoint rwNormalize(CGPoint a) {
         NSLog(@"Size: %@", NSStringFromCGSize(size));
         
         self.backgroundColor=[SKColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:1.0];
+    
         
-        self.player=[SKSpriteNode spriteNodeWithImageNamed:@"player"];
-        self.player.position=CGPointMake(245,280);
-        self.cat=[SKSpriteNode spriteNodeWithImageNamed:@"player"];
-        self.cat.position=CGPointMake(245,140);
+        //Set up the physics
         self.physicsWorld.gravity = CGVectorMake(0,0);
         self.physicsWorld.contactDelegate = self;
-        self.currentWall = 0;
+        
+        //add player, cat, items, and start cat movement
+        self.player=[SKSpriteNode spriteNodeWithImageNamed:@"player"];
+        self.player.position=CGPointMake(245,280);
         [self addChild:self.player];
-        [self addChild:self.cat];
+        for (int i=0;i<5;i++){
+            [self addItem];}
+        [self initializeCat];
         [self updateCat];
     }
     return self;
+}
+
+- (void)initializeCat {
+    
+    self.cat=[SKSpriteNode spriteNodeWithImageNamed:@"player"];
+    self.cat.position=CGPointMake(245,140);
+    
+    //Current wall for the cat to head towards
+    self.currentWall = 0;
+
+    //cat phsysics
+    self.cat.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:self.cat.size];
+    self.cat.physicsBody.dynamic = YES;
+    self.cat.physicsBody.categoryBitMask = catCategory;
+    self.cat.physicsBody.contactTestBitMask = projectileCategory;
+    self.cat.physicsBody.collisionBitMask = 0;
+    [self addChild:self.cat];
 }
 
 - (void)updateCat {
@@ -120,22 +143,33 @@ static inline CGPoint rwNormalize(CGPoint a) {
 - (void)addItem {
     
     // Create sprite
-    SKSpriteNode * monster = [SKSpriteNode spriteNodeWithImageNamed:@"monster"];
+    SKSpriteNode * item = [SKSpriteNode spriteNodeWithImageNamed:@"monster"];
+    
+    
     
     // Determine where to spawn the monster along the Y axis
-    int minY = monster.size.height / 2;
-    int maxY = self.frame.size.height - monster.size.height / 2;
+    int minY = item.size.height / 2;
+    int maxY = self.frame.size.height - item.size.height / 2;
     int rangeY = maxY - minY;
     int actualY = (arc4random() % rangeY) + minY;
-    int minX = monster.size.width / 2;
-    int maxX = self.frame.size.width - monster.size.width / 2;
+    int minX = item.size.width / 2;
+    int maxX = self.frame.size.width - item.size.width / 2;
     int rangeX = maxX - minX;
     int actualX = (arc4random() % rangeX) + minX;
     
     // Create the monster slightly off-screen along the right edge,
-    // and along a random position along the Y axis as calculated above
-    monster.position = CGPointMake(actualX, actualY);
-    [self addChild:monster];
+    // and along a random position along the X/Y axis as calculated above
+    item.position = CGPointMake(actualX, actualY);
+    
+    
+    //set up physics of item
+    item.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:item.size];
+    item.physicsBody.dynamic = YES;
+    item.physicsBody.categoryBitMask = itemCategory;
+    item.physicsBody.contactTestBitMask = catCategory;
+    item.physicsBody.collisionBitMask = 0;
+    item.physicsBody.usesPreciseCollisionDetection = YES;
+    [self addChild:item];
     
     // Determine speed of the monster
     //int minDuration = 2.0;
@@ -160,6 +194,14 @@ static inline CGPoint rwNormalize(CGPoint a) {
     // Set up initial location of projectile
     SKSpriteNode * projectile = [SKSpriteNode spriteNodeWithImageNamed:@"projectile"];
     projectile.position = self.player.position;
+    
+    projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
+    projectile.physicsBody.dynamic = YES;
+    projectile.physicsBody.categoryBitMask = projectileCategory;
+    projectile.physicsBody.contactTestBitMask = catCategory;
+    projectile.physicsBody.collisionBitMask = 0;
+    projectile.physicsBody.usesPreciseCollisionDetection = YES;
+
     
     // Determine offset of location to projectile
     CGPoint offset = rwSub(location, projectile.position);
@@ -186,6 +228,67 @@ static inline CGPoint rwNormalize(CGPoint a) {
     SKAction * actionMoveDone = [SKAction removeFromParent];
     [projectile runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
     
+}
+
+- (void)projectile:(SKSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat {
+    NSLog(@"Hit");
+    [projectile removeFromParent];
+    
+    //on hit, cat turns transparent for a quarter second
+    //SKAction * transparentCat = [SKAction colorizeWithColor:[SKColor redColor] colorBlendFactor:1.0 duration:1];
+    SKAction * transparentCat = [SKAction colorizeWithColorBlendFactor:0.5 duration:0.25];
+    SKAction * normalCat = [SKAction colorizeWithColorBlendFactor:0.0 duration:0.25];
+    [cat runAction:[SKAction sequence:@[transparentCat, normalCat]]];
+    
+    //set cat to go new random direction
+    self.currentWall = 5;
+    [self updateCat];
+}
+
+- (void)item:(SKSpriteNode *)item didCollideWithCat:(SKSpriteNode *)cat {
+    NSLog(@"Hit");
+    
+    //cat throws the shit out of the object
+    if(cat.position.x>item.position.x && cat.position.y>item.position.y) {
+        //SKAction * actionMove = [SKAction moveTo:realDest duration:0.2];
+    }
+    [item removeFromParent];
+    
+    //on hit, cat turns transparent for a quarter second
+    //SKAction * transparentCat = [SKAction colorizeWithColor:[SKColor redColor] colorBlendFactor:1.0 duration:1];
+    SKAction * transparentCat = [SKAction colorizeWithColorBlendFactor:0.5 duration:0.25];
+    SKAction * normalCat = [SKAction colorizeWithColorBlendFactor:0.0 duration:0.25];
+    [cat runAction:[SKAction sequence:@[transparentCat, normalCat]]];
+    
+    //set cat to go new random direction
+    self.currentWall = 5;
+    [self updateCat];
+}
+
+- (void)didBeginContact:(SKPhysicsContact *)contact
+{
+    SKPhysicsBody *firstBody, *secondBody;
+    
+    if (contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask)
+    {
+        firstBody = contact.bodyA;
+        secondBody = contact.bodyB;
+    }
+    else
+    {
+        firstBody = contact.bodyB;
+        secondBody = contact.bodyA;
+    }
+    
+    
+    if ((firstBody.categoryBitMask & projectileCategory) != 0 &&
+        (secondBody.categoryBitMask & catCategory) != 0)
+    {
+        [self projectile:(SKSpriteNode *) firstBody.node didCollideWithCat:(SKSpriteNode *) secondBody.node];
+    } else if (((firstBody.categoryBitMask & itemCategory) != 0 &&
+                (secondBody.categoryBitMask & catCategory) != 0)) {
+        
+    }
 }
 
 
