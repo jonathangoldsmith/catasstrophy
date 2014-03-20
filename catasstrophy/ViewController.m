@@ -45,22 +45,11 @@
 
 - (BOOL)shouldAutorotate
 {
-    return NO;
+    // Return YES for supported orientations
+        return YES;
+
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-	return UIInterfaceOrientationIsLandscape(interfaceOrientation);
-}
-
-- (NSUInteger)supportedInterfaceOrientations
-{
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        return UIInterfaceOrientationMaskAllButUpsideDown;
-    } else {
-        return UIInterfaceOrientationMaskAll;
-    }
-}
 
 - (void)didReceiveMemoryWarning
 {

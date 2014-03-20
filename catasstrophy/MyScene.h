@@ -13,6 +13,6 @@
 
 @interface MyScene : SKScene
 
-
+@property (nonatomic) NSInteger updateSpeed;
 
 @end

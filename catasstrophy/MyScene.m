@@ -18,7 +18,6 @@
 @property (nonatomic) NSTimeInterval lastSpawnTimeInterval;
 @property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
 @property (nonatomic) NSTimeInterval totalTimeInterval;
-@property (nonatomic) NSInteger updateSpeed;
 @property (nonatomic) NSInteger currentWall;
 @property (nonatomic) int choasCount;
 @property (strong, nonatomic) CMMotionManager *motionManager;
@@ -26,6 +25,7 @@
 
 @implementation MyScene
 
+@synthesize updateSpeed;
 
 //various physics functions
 static const uint32_t projectileCategory     =  0x1 << 1;
@@ -93,28 +93,32 @@ static inline CGPoint rwNormalize(CGPoint a) {
     return self;
 }
 
+
+
 -(void)processUserMotionForUpdate:(NSTimeInterval)currentTime {
     
     CMAccelerometerData* data = self.motionManager.accelerometerData;
     //3
+    if (fabs(data.acceleration.y) > 0.2) {
+        [self.aim.physicsBody applyForce:CGVectorMake(20.0 * data.acceleration.y, 0)];
+    }
     if (fabs(data.acceleration.x) > 0.2) {
-        //4 How do you move the ship?
-        [self.aim.physicsBody applyForce:CGVectorMake(40.0 * data.acceleration.y, 0)];
+        [self.aim.physicsBody applyForce:CGVectorMake(0, -20.0 * data.acceleration.x)];
     }
 }
 
 - (void)initializeAimer {
     
     self.aim=[SKSpriteNode spriteNodeWithImageNamed:@"projectile.png"];
-    self.aim.position=CGPointMake(CGRectGetMidX(self.frame)- 30,CGRectGetHeight(self.frame)-40);
+    self.aim.position=CGPointMake(CGRectGetMidX(self.frame)- 30,CGRectGetMidY(self.frame)-40);
     [self scaleSpriteNode:self.aim];
     //[self addChild:self.aim];
     
     //aimer phsysics
     self.aim.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:self.aim.frame.size];
     self.aim.physicsBody.dynamic = YES;
-    self.cat.physicsBody.categoryBitMask = aimerCategory;
-    self.aim.physicsBody.affectedByGravity = YES;
+    self.aim.physicsBody.categoryBitMask = aimerCategory;
+    self.aim.physicsBody.affectedByGravity = NO;
     self.aim.physicsBody.mass = 1.0;
 
     [self addChild:self.aim];
@@ -311,11 +315,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
     NSLog(@"Item Hit by cat");
     self.choasCount = self.choasCount + 10;
     NSLog(@"%d",self.choasCount);
-    if (self.choasCount >= 100) {
-        SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
-        SKScene * gameOverScene = [[GameOverScreen alloc] initWithSize:self.size won:NO];
-        [self.view presentScene:gameOverScene transition: reveal];
-    }
+    [self checkIfGameOver];
     
     // Determine offset of item to the cat
     CGPoint offset = rwSub(item.position, cat.position);
@@ -341,12 +341,8 @@ static inline CGPoint rwNormalize(CGPoint a) {
     NSLog(@"Item Hit by projectile");
     self.choasCount = self.choasCount + 3;
     NSLog(@"%d",self.choasCount);
-    if (self.choasCount >= 100) {
-        SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
-        SKScene * gameOverScene = [[GameOverScreen alloc] initWithSize:self.size won:NO];
-        [self.view presentScene:gameOverScene transition: reveal];
-    }
     
+    [self checkIfGameOver];
     // Determine offset of item to the cat
     CGPoint offsetItem = rwSub(item.position, projectile.position);
     CGPoint offsetProjectile = rwSub(projectile.position, item.position);
@@ -370,6 +366,15 @@ static inline CGPoint rwNormalize(CGPoint a) {
     //set cat to go new random direction
     self.currentWall = 5;
     [self updateCat];
+}
+
+-(void)checkIfGameOver
+{
+    /*if (self.choasCount >= 100) {
+        SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
+        SKScene * gameOverScene = [[GameOverScreen alloc] initWithSize:self.size won:NO];
+        [self.view presentScene:gameOverScene transition: reveal];
+    }*/
 }
 
 - (CGPoint)shootAmount:(CGPoint *)initialDirection {
