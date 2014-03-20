@@ -9,6 +9,7 @@
 #import <SpriteKit/SpriteKit.h>
 #import <CoreMotion/CoreMotion.h>
 #import <UIKit/UIKit.h>
+#import "Constants.h"
 
 
 @interface MyScene : SKScene

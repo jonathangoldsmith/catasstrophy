@@ -146,6 +146,7 @@
 		652E7D3A18DA48670079827F /* bar_full.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bar_full.png; sourceTree = "<group>"; };
 		652E7D3B18DA48670079827F /* cat_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cat_0.png; sourceTree = "<group>"; };
 		652E7D3C18DA48670079827F /* play_area.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play_area.png; sourceTree = "<group>"; };
+		65C2F57E18DB163D006C5352 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Constants.h; path = ../Constants.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,7 +210,6 @@
 			children = (
 				652E7CF418BD7D070079827F /* GameOverScreen.h */,
 				652E7CF518BD7D070079827F /* GameOverScreen.m */,
-				652E7D3418DA475A0079827F /* art assets */,
 				652E7CC118BD31840079827F /* AppDelegate.h */,
 				652E7CC218BD31840079827F /* AppDelegate.m */,
 				652E7CC418BD31840079827F /* Main.storyboard */,
@@ -218,6 +218,7 @@
 				652E7CCA18BD31840079827F /* MyScene.h */,
 				652E7CCB18BD31840079827F /* MyScene.m */,
 				652E7CCF18BD31840079827F /* Images.xcassets */,
+				652E7D3418DA475A0079827F /* art assets */,
 				652E7CEC18BD33F60079827F /* SpriteKitSimpleGameResources */,
 				652E7CB918BD31840079827F /* Supporting Files */,
 			);
@@ -227,6 +228,7 @@
 		652E7CB918BD31840079827F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				65C2F57E18DB163D006C5352 /* Constants.h */,
 				652E7CBA18BD31840079827F /* catasstrophy-Info.plist */,
 				652E7CBB18BD31840079827F /* InfoPlist.strings */,
 				652E7CBE18BD31840079827F /* main.m */,

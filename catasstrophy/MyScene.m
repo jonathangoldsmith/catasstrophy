@@ -15,6 +15,7 @@
 @property (nonatomic) SKSpriteNode * cat;
 @property (nonatomic) SKSpriteNode * aim;
 @property (nonatomic) SKLabelNode* timerLabel;
+@property (nonatomic) CGRect table;
 @property (nonatomic) NSTimeInterval lastSpawnTimeInterval;
 @property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
 @property (nonatomic) NSTimeInterval totalTimeInterval;
@@ -27,11 +28,14 @@
 
 @synthesize updateSpeed;
 
+//constants
+#define CONSTANT 
+
 //various physics functions
+static const uint32_t itemCategory        =  0x1 << 0;
 static const uint32_t projectileCategory     =  0x1 << 1;
 static const uint32_t catCategory        =  0x1 << 2;
-static const uint32_t itemCategory        =  0x1 << 0;
-static const uint32_t aimerCategory        =  0x1 << 4;
+static const uint32_t aimCategory        =  0x1 << 3;
 
 static inline CGPoint rwAdd(CGPoint a, CGPoint b) {
     return CGPointMake(a.x + b.x, a.y + b.y);
@@ -62,7 +66,10 @@ static inline CGPoint rwNormalize(CGPoint a) {
         self.motionManager = [[CMMotionManager alloc] init];
         [self.motionManager startAccelerometerUpdates];
         
-        self.updateSpeed = 200;
+        //set table up with its dimensions
+        self.table = CGRectMake(tableCornerX, tableCornerY, tableWidth, tableHeight);
+        
+        self.updateSpeed = startSpeed;
         
         SKSpriteNode *background =[SKSpriteNode spriteNodeWithImageNamed:@"play_area.png"];
         background.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
@@ -74,11 +81,13 @@ static inline CGPoint rwNormalize(CGPoint a) {
         
         //Set up the physics
         self.physicsWorld.gravity = CGVectorMake(0,0);
+        self.physicsBody = [SKPhysicsBody bodyWithEdgeLoopFromRect:self.table];
+        self.physicsBody.collisionBitMask = aimCategory;
         self.physicsWorld.contactDelegate = self;
         
         //add player, cat, aimer, timer, items, and start cat movement
         self.player=[SKSpriteNode spriteNodeWithImageNamed:@"thing_lamp.png"];
-        self.player.position=CGPointMake(CGRectGetMidX(self.frame)- 55,CGRectGetHeight(self.frame)-40);
+        self.player.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetHeight(self.frame)-self.player.size.height/6);
         [self scaleSpriteNode:self.player];
         [self addChild:self.player];
         
@@ -98,26 +107,26 @@ static inline CGPoint rwNormalize(CGPoint a) {
 -(void)processUserMotionForUpdate:(NSTimeInterval)currentTime {
     
     CMAccelerometerData* data = self.motionManager.accelerometerData;
-    //3
     if (fabs(data.acceleration.y) > 0.2) {
-        [self.aim.physicsBody applyForce:CGVectorMake(20.0 * data.acceleration.y, 0)];
+        [self.aim.physicsBody applyForce:CGVectorMake(400.0 * data.acceleration.y, 0)];
     }
     if (fabs(data.acceleration.x) > 0.2) {
-        [self.aim.physicsBody applyForce:CGVectorMake(0, -20.0 * data.acceleration.x)];
+        [self.aim.physicsBody applyForce:CGVectorMake(0, -400.0 * data.acceleration.x)];
     }
 }
 
 - (void)initializeAimer {
     
     self.aim=[SKSpriteNode spriteNodeWithImageNamed:@"projectile.png"];
-    self.aim.position=CGPointMake(CGRectGetMidX(self.frame)- 30,CGRectGetMidY(self.frame)-40);
+    self.aim.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetHeight(self.table));
     [self scaleSpriteNode:self.aim];
     //[self addChild:self.aim];
     
     //aimer phsysics
     self.aim.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:self.aim.frame.size];
     self.aim.physicsBody.dynamic = YES;
-    self.aim.physicsBody.categoryBitMask = aimerCategory;
+    self.aim.physicsBody.categoryBitMask = aimCategory;
+    self.aim.physicsBody.collisionBitMask = aimCategory;
     self.aim.physicsBody.affectedByGravity = NO;
     self.aim.physicsBody.mass = 1.0;
 
@@ -137,7 +146,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
 - (void)initializeCat {
     
     self.cat=[SKSpriteNode spriteNodeWithImageNamed:@"thing_catbug.png"];
-    self.cat.position=CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
+    self.cat.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetMidY(self.table));
     [self scaleSpriteNode:self.cat];
     
     //Current wall for the cat to head towards
@@ -148,7 +157,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
     self.cat.physicsBody.dynamic = YES;
     self.cat.physicsBody.categoryBitMask = catCategory;
     self.cat.physicsBody.contactTestBitMask = projectileCategory;
-    self.cat.physicsBody.collisionBitMask = 0;
+    self.cat.physicsBody.collisionBitMask = !aimCategory;
     [self addChild:self.cat];
 }
 
@@ -188,15 +197,9 @@ static inline CGPoint rwNormalize(CGPoint a) {
                     actualY = self.cat.position.y;
                     break;
     }
-        // Determine speed of the cat
-    //int minDuration = 0.2;
-    //int maxDuration = log(self.totalTimeInterval);
-    //int rangeDuration = maxDuration - minDuration;
-    //int actualDuration = (arc4random() % rangeDuration) + minDuration;
     
     //Create the actions
     SKAction * actionMove = [SKAction moveTo:CGPointMake(actualX, actualY) duration:(self.updateSpeed/100)];
-    //SKAction * actionMoveDone = [SKAction actionMov];
     
     [self.cat runAction:[SKAction sequence:@[actionMove]]];
     
@@ -211,7 +214,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
     
     
     // Determine where to spawn the item on the table
-    int minY = item.size.height / 2;
+    int minY = tableCornerY;
     int maxY = self.frame.size.height - item.size.height / 2 - 55;
     int rangeY = maxY - minY;
     int actualY = (arc4random() % rangeY) + minY;
@@ -226,7 +229,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
     item.physicsBody.dynamic = YES;
     item.physicsBody.categoryBitMask = itemCategory;
     item.physicsBody.contactTestBitMask = catCategory;
-    item.physicsBody.collisionBitMask = 0;
+    item.physicsBody.collisionBitMask = !aimCategory;
     item.physicsBody.usesPreciseCollisionDetection = YES;
     [self addChild:item];
     
@@ -243,8 +246,10 @@ static inline CGPoint rwNormalize(CGPoint a) {
     //[self runAction:[SKAction playSoundFileNamed:@"pew-pew-lei.caf" waitForCompletion:NO]];
     
     // Choose one of the touches to work with
-    UITouch * touch = [touches anyObject];
-    CGPoint location = [touch locationInNode:self];
+    //UITouch * touch = [touches anyObject];
+    //CGPoint location = [touch locationInNode:self];
+    
+    CGPoint location = self.aim.position;
     
     // Set up initial location of projectile
     SKSpriteNode * projectile = [SKSpriteNode spriteNodeWithImageNamed:@"thing_mouse.png"];
@@ -258,7 +263,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
     projectile.physicsBody.dynamic = YES;
     projectile.physicsBody.categoryBitMask = projectileCategory;
     projectile.physicsBody.contactTestBitMask = itemCategory;
-    projectile.physicsBody.collisionBitMask = 0;
+    projectile.physicsBody.collisionBitMask = !aimCategory;;
     projectile.physicsBody.usesPreciseCollisionDetection = YES;
 
     
