@@ -13,13 +13,15 @@
 @interface MyScene() <SKPhysicsContactDelegate>
 @property (nonatomic) SKSpriteNode * player;
 @property (nonatomic) SKSpriteNode * cat;
-//@property (nonatomic) SKSpriteNode * aim;
+@property (nonatomic) SKSpriteNode * aim;
+@property (nonatomic) SKLabelNode* timerLabel;
 @property (nonatomic) NSTimeInterval lastSpawnTimeInterval;
 @property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
 @property (nonatomic) NSTimeInterval totalTimeInterval;
 @property (nonatomic) NSInteger updateSpeed;
 @property (nonatomic) NSInteger currentWall;
 @property (nonatomic) int choasCount;
+@property (strong, nonatomic) CMMotionManager *motionManager;
 @end
 
 @implementation MyScene
@@ -29,6 +31,7 @@
 static const uint32_t projectileCategory     =  0x1 << 1;
 static const uint32_t catCategory        =  0x1 << 2;
 static const uint32_t itemCategory        =  0x1 << 0;
+static const uint32_t aimerCategory        =  0x1 << 4;
 
 static inline CGPoint rwAdd(CGPoint a, CGPoint b) {
     return CGPointMake(a.x + b.x, a.y + b.y);
@@ -73,16 +76,14 @@ static inline CGPoint rwNormalize(CGPoint a) {
         self.physicsWorld.gravity = CGVectorMake(0,0);
         self.physicsWorld.contactDelegate = self;
         
-        //add player, cat, aimer, items, and start cat movement
+        //add player, cat, aimer, timer, items, and start cat movement
         self.player=[SKSpriteNode spriteNodeWithImageNamed:@"thing_lamp.png"];
         self.player.position=CGPointMake(CGRectGetMidX(self.frame)- 55,CGRectGetHeight(self.frame)-40);
         [self scaleSpriteNode:self.player];
         [self addChild:self.player];
         
-        /*self.aim=[SKSpriteNode spriteNodeWithImageNamed:@"projectile.png"];
-        self.aim.position=CGPointMake(CGRectGetMidX(self.frame)- 30,CGRectGetHeight(self.frame)-40);
-        [self scaleSpriteNode:self.aim];
-        [self addChild:self.aim];*/
+        [self initializeAimer];
+        [self initializeTimer];
         
         for (int i=0;i<5;i++){
             [self addItem];}
@@ -93,17 +94,41 @@ static inline CGPoint rwNormalize(CGPoint a) {
 }
 
 -(void)processUserMotionForUpdate:(NSTimeInterval)currentTime {
-    //1
-    SKSpriteNode* aim = [SKSpriteNode spriteNodeWithImageNamed:@"thing_candy.png"];
-    //2
+    
     CMAccelerometerData* data = self.motionManager.accelerometerData;
     //3
     if (fabs(data.acceleration.x) > 0.2) {
         //4 How do you move the ship?
-        NSLog(@"How do you move the ship: %@", aim);
+        [self.aim.physicsBody applyForce:CGVectorMake(40.0 * data.acceleration.y, 0)];
     }
 }
 
+- (void)initializeAimer {
+    
+    self.aim=[SKSpriteNode spriteNodeWithImageNamed:@"projectile.png"];
+    self.aim.position=CGPointMake(CGRectGetMidX(self.frame)- 30,CGRectGetHeight(self.frame)-40);
+    [self scaleSpriteNode:self.aim];
+    //[self addChild:self.aim];
+    
+    //aimer phsysics
+    self.aim.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:self.aim.frame.size];
+    self.aim.physicsBody.dynamic = YES;
+    self.cat.physicsBody.categoryBitMask = aimerCategory;
+    self.aim.physicsBody.affectedByGravity = YES;
+    self.aim.physicsBody.mass = 1.0;
+
+    [self addChild:self.aim];
+}
+
+-(void)initializeTimer
+{
+    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Courier"];
+    self.timerLabel.fontSize = 15;
+    self.timerLabel.fontColor = [SKColor redColor];
+    self.timerLabel.text = [NSString stringWithFormat:@"Time: %i", 0];
+    self.timerLabel.position = CGPointMake(self.size.width - self.timerLabel.frame.size.width/2 - 20, self.size.height - (20 + self.timerLabel.frame.size.height/2));
+    [self addChild:self.timerLabel];
+}
 
 - (void)initializeCat {
     
@@ -179,6 +204,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
     // Create item to place on table
     SKSpriteNode * item = [SKSpriteNode spriteNodeWithImageNamed:@"thing_eraser.png"];
     [self scaleSpriteNode:item];
+    
     
     // Determine where to spawn the item on the table
     int minY = item.size.height / 2;
@@ -374,14 +400,15 @@ static inline CGPoint rwNormalize(CGPoint a) {
     }
     
     
-    if ((firstBody.categoryBitMask & projectileCategory) != 0 &&
-        (secondBody.categoryBitMask & catCategory) != 0)
+    if ((firstBody.categoryBitMask == projectileCategory) &&
+        (secondBody.categoryBitMask == catCategory))
     {
         [self projectile:(SKSpriteNode *) firstBody.node didCollideWithCat:(SKSpriteNode *) secondBody.node];
-    } else if (((firstBody.categoryBitMask & itemCategory) != 0 &&
-                (secondBody.categoryBitMask & catCategory) != 0)) {
+    } else if (((firstBody.categoryBitMask == itemCategory) &&
+                (secondBody.categoryBitMask == catCategory))) {
         [self item:(SKSpriteNode *) firstBody.node didCollideWithCat:(SKSpriteNode *) secondBody.node];
-    } else  {
+    } else if (((firstBody.categoryBitMask == itemCategory) &&
+                (secondBody.categoryBitMask == projectileCategory))) {
         [self item:(SKSpriteNode *) firstBody.node didCollideWithProjectile:(SKSpriteNode *) secondBody.node];
     }
 }
@@ -401,17 +428,24 @@ static inline CGPoint rwNormalize(CGPoint a) {
 }
 
 - (void)update:(NSTimeInterval)currentTime {
+    
+    [self processUserMotionForUpdate:currentTime];
     // Handle time delta.
     // If we drop below 60fps, we still want everything to move the same distance.
     CFTimeInterval timeSinceLast = currentTime - self.lastUpdateTimeInterval;
     self.lastUpdateTimeInterval = currentTime;
     
-    // more than a second since last update, update faster
+    
+    
+    // more than a second since last update, update lastUpdateTimeInterval
     if (timeSinceLast > 1) {
         timeSinceLast = 1.0 / 60.0;
         self.lastUpdateTimeInterval = currentTime;
-        self.updateSpeed++;
     }
+    
+    //change updateSpeed and set the timer based on the speed
+    self.updateSpeed=200-self.totalTimeInterval;
+    self.timerLabel.text = [NSString stringWithFormat:@"Time: %ld", 200-self.updateSpeed];
     
     [self updateWithTimeSinceLastUpdate:timeSinceLast];
     
