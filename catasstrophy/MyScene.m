@@ -37,90 +37,102 @@ static const uint32_t projectileCategory     =  0x1 << 1;
 static const uint32_t catCategory        =  0x1 << 2;
 static const uint32_t aimCategory        =  0x1 << 3;
 
-static inline CGPoint rwAdd(CGPoint a, CGPoint b) {
+static inline CGPoint rwAdd(CGPoint a, CGPoint b)
+{
     return CGPointMake(a.x + b.x, a.y + b.y);
 }
 
-static inline CGPoint rwSub(CGPoint a, CGPoint b) {
+static inline CGPoint rwSub(CGPoint a, CGPoint b)
+{
     return CGPointMake(a.x - b.x, a.y - b.y);
 }
 
-static inline CGPoint rwMult(CGPoint a, float b) {
+static inline CGPoint rwMult(CGPoint a, float b)
+{
     return CGPointMake(a.x * b, a.y * b);
 }
 
-static inline float rwLength(CGPoint a) {
+static inline float rwLength(CGPoint a)
+{
     return sqrtf(a.x * a.x + a.y * a.y);
 }
 
 // Makes a vector have a length of 1
-static inline CGPoint rwNormalize(CGPoint a) {
+static inline CGPoint rwNormalize(CGPoint a)
+{
     float length = rwLength(a);
     return CGPointMake(a.x / length, a.y / length);
 }
 
--(id)initWithSize:(CGSize)size {
-    if (self = [super initWithSize:size]) {
+//for scaling sprites
+- (void)scaleSpriteNode:(SKSpriteNode *)sprite scaleRatio:(float)scale
+{
+    sprite.xScale = scale;
+    sprite.yScale = scale;
+}
+
+-(id)initWithSize:(CGSize)size
+{
+    if (self = [super initWithSize:size])
+    {
         NSLog(@"Size: %@", NSStringFromCGSize(size));
         
         self.motionManager = [[CMMotionManager alloc] init];
         [self.motionManager startAccelerometerUpdates];
-        
-        //set table up with its dimensions
         self.table = CGRectMake(tableCornerX, tableCornerY, tableWidth, tableHeight);
-        
         self.updateSpeed = startSpeed;
+        self.choasCount = 0; //Set choas to 0, when it hits 100, game over
         
-        SKSpriteNode *background =[SKSpriteNode spriteNodeWithImageNamed:@"play_area.png"];
-        background.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
-        [self scaleSpriteNode:background];
-        [self addChild:background];
-        
-        //Set choas to 0, when it hits 100, game over
-        self.choasCount = 0;
-        
-        //Set up the physics
+        //Set up the world physics
         self.physicsWorld.gravity = CGVectorMake(0,0);
         self.physicsBody = [SKPhysicsBody bodyWithEdgeLoopFromRect:self.table];
         self.physicsBody.collisionBitMask = aimCategory;
         self.physicsWorld.contactDelegate = self;
         
-        //add player, cat, aimer, timer, items, and start cat movement
+        //background
+        SKSpriteNode *background =[SKSpriteNode spriteNodeWithImageNamed:@"play_area.png"];
+        background.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
+        [self scaleSpriteNode:background scaleRatio:0.5];
+        [self addChild:background];
+        
+        //player
         self.player=[SKSpriteNode spriteNodeWithImageNamed:@"thing_lamp.png"];
         self.player.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetHeight(self.frame)-self.player.size.height/6);
-        [self scaleSpriteNode:self.player];
+        [self scaleSpriteNode:self.player scaleRatio:0.4];
         [self addChild:self.player];
         
         [self initializeAimer];
         [self initializeTimer];
-        
-        for (int i=0;i<5;i++){
-            [self addItem];}
         [self initializeCat];
         [self updateCat];
+        for (int i=0;i<5;i++)
+        {
+            [self addItem];
+        }
+        
     }
     return self;
 }
 
-
-
--(void)processUserMotionForUpdate:(NSTimeInterval)currentTime {
-    
+//updater to the accelerometer to chage the aimer
+-(void)processUserMotionForUpdate:(NSTimeInterval)currentTime
+{
     CMAccelerometerData* data = self.motionManager.accelerometerData;
-    if (fabs(data.acceleration.y) > 0.2) {
+    if (fabs(data.acceleration.y) > 0.2)
+    {
         [self.aim.physicsBody applyForce:CGVectorMake(400.0 * data.acceleration.y, 0)];
     }
-    if (fabs(data.acceleration.x) > 0.2) {
+    if (fabs(data.acceleration.x) > 0.2)
+    {
         [self.aim.physicsBody applyForce:CGVectorMake(0, -400.0 * data.acceleration.x)];
     }
 }
 
-- (void)initializeAimer {
-    
+- (void)initializeAimer
+{
     self.aim=[SKSpriteNode spriteNodeWithImageNamed:@"projectile.png"];
     self.aim.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetHeight(self.table));
-    [self scaleSpriteNode:self.aim];
-    //[self addChild:self.aim];
+    [self scaleSpriteNode:self.aim scaleRatio:0.5];
     
     //aimer phsysics
     self.aim.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:self.aim.frame.size];
@@ -140,6 +152,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
     self.timerLabel.fontColor = [SKColor redColor];
     self.timerLabel.text = [NSString stringWithFormat:@"Time: %i", 0];
     self.timerLabel.position = CGPointMake(self.size.width - self.timerLabel.frame.size.width/2 - 20, self.size.height - (20 + self.timerLabel.frame.size.height/2));
+    
     [self addChild:self.timerLabel];
 }
 
@@ -147,7 +160,7 @@ static inline CGPoint rwNormalize(CGPoint a) {
     
     self.cat=[SKSpriteNode spriteNodeWithImageNamed:@"thing_catbug.png"];
     self.cat.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetMidY(self.table));
-    [self scaleSpriteNode:self.cat];
+    [self scaleSpriteNode:self.cat scaleRatio:0.5];
     
     //Current wall for the cat to head towards
     self.currentWall = 0;
@@ -158,71 +171,57 @@ static inline CGPoint rwNormalize(CGPoint a) {
     self.cat.physicsBody.categoryBitMask = catCategory;
     self.cat.physicsBody.contactTestBitMask = projectileCategory;
     self.cat.physicsBody.collisionBitMask = !aimCategory;
+    
     [self addChild:self.cat];
 }
 
-- (void)updateCat {
+- (void)updateCat
+{
     //determine wall to send cat towards that isnt current wall
     NSInteger r = self.currentWall;
-    while(self.currentWall == r) {
+    while(self.currentWall == r)
+    {
         r = arc4random_uniform(4);
     }
     self.currentWall = r;
     
-    
-    // Determine range to send the cat
-    int minY = self.cat.size.height / 2;
-    int maxY = self.frame.size.height - self.cat.size.height / 2 - 55;
-    int rangeY = maxY - minY;
-    int minX = self.cat.size.width / 2;
-    int maxX = self.frame.size.width - self.cat.size.width / 2 - 95;
-    int rangeX = maxX - minX;
-    int actualX, actualY;
-    
+    int catXDestination, catYDestination;
     //Determine the new location to send cat based on new wall
     switch(self.currentWall) {
-            case 0: actualY = maxY;
-                    actualX = (arc4random() % rangeX) + minX;
+            case 0: catYDestination = tableHeight-tableCornerY;
+                    catXDestination = (arc4random() % tableWidth) + tableCornerX;
                     break;
-            case 1: actualX = minX;
-                    actualY = (arc4random() % rangeY) + minY;
+            case 1: catXDestination = tableCornerX;
+                    catYDestination = (arc4random() % tableHeight) + tableCornerY;
                     break;
-            case 2: actualY = minY;
-                    actualX = (arc4random() % rangeX) + minX;
+            case 2: catYDestination = tableCornerY;
+                    catXDestination = (arc4random() % tableWidth) + tableCornerX;
                     break;
-            case 3: actualX = maxX;
-                    actualY = (arc4random() % rangeY) + minY;
+            case 3: catXDestination = tableWidth-tableCornerX;
+                    catYDestination = (arc4random() % tableHeight) + tableCornerY;
                     break;
-            default: actualX = self.cat.position.x;
-                    actualY = self.cat.position.y;
+            default: catXDestination = self.cat.position.x;
+                    catYDestination = self.cat.position.y;
                     break;
     }
     
-    //Create the actions
-    SKAction * actionMove = [SKAction moveTo:CGPointMake(actualX, actualY) duration:(self.updateSpeed/100)];
+    SKAction * actionMove = [SKAction moveTo:CGPointMake(catXDestination, catYDestination) duration:(self.updateSpeed/100)];
     
     [self.cat runAction:[SKAction sequence:@[actionMove]]];
     
 }
 
 
-- (void)addItem {
-    
+- (void)addItem
+{
     // Create item to place on table
     SKSpriteNode * item = [SKSpriteNode spriteNodeWithImageNamed:@"thing_eraser.png"];
-    [self scaleSpriteNode:item];
-    
+    [self scaleSpriteNode:item scaleRatio:0.5];
     
     // Determine where to spawn the item on the table
-    int minY = tableCornerY;
-    int maxY = self.frame.size.height - item.size.height / 2 - 55;
-    int rangeY = maxY - minY;
-    int actualY = (arc4random() % rangeY) + minY;
-    int minX = item.size.width / 2;
-    int maxX = self.frame.size.width - item.size.width / 2 - 95;
-    int rangeX = maxX - minX;
-    int actualX = (arc4random() % rangeX) + minX;
-    item.position = CGPointMake(actualX, actualY);
+    int itemYPostion = (arc4random() %(tableHeight - 4*tableCornerY)) + tableCornerY + item.size.height/2;
+    int itemXPosition = (arc4random() %(tableWidth - 3*tableCornerX)) + tableCornerX + item.size.width/2;
+    item.position = CGPointMake(itemXPosition,itemYPostion);
     
     //set up physics of item
     item.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:item.size];
@@ -231,16 +230,13 @@ static inline CGPoint rwNormalize(CGPoint a) {
     item.physicsBody.contactTestBitMask = catCategory;
     item.physicsBody.collisionBitMask = !aimCategory;
     item.physicsBody.usesPreciseCollisionDetection = YES;
+    
     [self addChild:item];
     
 }
 
-- (void)scaleSpriteNode:(SKSpriteNode *)sprite {
-    sprite.xScale = 0.5;
-    sprite.yScale = 0.5;
-}
-
--(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
     
     //music for on hit
     //[self runAction:[SKAction playSoundFileNamed:@"pew-pew-lei.caf" waitForCompletion:NO]];
@@ -253,12 +249,10 @@ static inline CGPoint rwNormalize(CGPoint a) {
     
     // Set up initial location of projectile
     SKSpriteNode * projectile = [SKSpriteNode spriteNodeWithImageNamed:@"thing_mouse.png"];
-    projectile.xScale = 0.2;
-    projectile.yScale = 0.2;
+    [self scaleSpriteNode:projectile scaleRatio:0.1];
     
-    
+    //projectile physics
     projectile.position = self.player.position;
-    
     projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
     projectile.physicsBody.dynamic = YES;
     projectile.physicsBody.categoryBitMask = projectileCategory;
@@ -270,28 +264,35 @@ static inline CGPoint rwNormalize(CGPoint a) {
     // Determine offset of location to projectile
     CGPoint offset = rwSub(location, projectile.position);
     
-    // Bail out if you are shooting up
+    // Bail out if shooting up
     if (offset.y >= 0) return;
-    
-    // OK to add now - we've double checked position
+
     [self addChild:projectile];
     
-    // Get the direction of where to shoot
-    CGPoint direction = rwNormalize(offset);
-    
-    // Make it shoot far enough to be guaranteed off screen
-    CGPoint shootAmount = rwMult(direction, 1000);
-    
-    // Add the shoot amount to the current position
-    CGPoint realDest = rwAdd(shootAmount, projectile.position);
+    //get the destination and duration for the animation
+    CGPoint projectileDestination = [self assetDestionation:&offset assetPosition:projectile.position];
+    float animationDuration = [self getAnimationDuration];
     
     // Create the actions
-    float velocity = 480.0/1.0;
-    float realMoveDuration = self.size.width / velocity;
-    SKAction * actionMove = [SKAction moveTo:realDest duration:realMoveDuration];
+    SKAction * actionMove = [SKAction moveTo:projectileDestination duration:animationDuration];
     SKAction * actionMoveDone = [SKAction removeFromParent];
     [projectile runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
     
+}
+
+- (CGPoint)assetDestionation:(CGPoint *)initialDirection assetPosition:(CGPoint)assetPossition
+{
+    // Get the direction of where to shoot the item
+    CGPoint direction = rwNormalize(*initialDirection);
+    // Make it shoot far enough to be guaranteed off screen
+    CGPoint shootAmount = rwMult(direction, self.frame.size.width*2);
+    return rwAdd(shootAmount, assetPossition);
+}
+
+-(float)getAnimationDuration
+{
+    float velocity = 480.0/1.0;
+    return self.size.width / velocity;
 }
 
 - (void)projectile:(SKSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat {
@@ -325,15 +326,9 @@ static inline CGPoint rwNormalize(CGPoint a) {
     // Determine offset of item to the cat
     CGPoint offset = rwSub(item.position, cat.position);
     
-   CGPoint shootAmount = [self shootAmount:&offset];
-    
-    // Add the shoot amount to the current position
-    CGPoint realDest = rwAdd(shootAmount, item.position);
-    
-    // Create the actions
-    float velocity = 480.0/1.0;
-    float realMoveDuration = self.size.width / velocity;
-    SKAction * actionMove = [SKAction moveTo:realDest duration:realMoveDuration];
+    CGPoint itemDestination = [self assetDestionation:&offset assetPosition:item.position];
+    float animationDuration = [self getAnimationDuration];
+    SKAction * actionMove = [SKAction moveTo:itemDestination duration:animationDuration];
     SKAction * actionMoveDone = [SKAction removeFromParent];
     [item runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
     
@@ -352,18 +347,13 @@ static inline CGPoint rwNormalize(CGPoint a) {
     CGPoint offsetItem = rwSub(item.position, projectile.position);
     CGPoint offsetProjectile = rwSub(projectile.position, item.position);
     
-    CGPoint itemShootAmount = [self shootAmount:&offsetItem];
-    CGPoint projectileShootAmount = [self shootAmount:&offsetProjectile];
     
-    // Add the shoot amount to the current position
-    CGPoint realDestItem = rwAdd(itemShootAmount, item.position);
-    CGPoint realDestProjectile = rwAdd(projectileShootAmount, projectile.position);
-    
-    // Create the actions
-    float velocity = 480.0/1.0;
-    float realMoveDuration = self.size.width / velocity;
-    SKAction * actionMoveItem = [SKAction moveTo:realDestItem duration:realMoveDuration];
-    SKAction * actionMoveProjectile = [SKAction moveTo:realDestProjectile duration:realMoveDuration];
+    CGPoint itemDestination = [self assetDestionation:&offsetItem assetPosition:item.position];
+    CGPoint projectileDestination = [self assetDestionation:&offsetProjectile assetPosition:projectile.position];
+    float animationDuration = [self getAnimationDuration];
+
+    SKAction * actionMoveItem = [SKAction moveTo:itemDestination duration:animationDuration];
+    SKAction * actionMoveProjectile = [SKAction moveTo:projectileDestination duration:animationDuration];
     SKAction * actionMoveDone = [SKAction removeFromParent];
     [item runAction:[SKAction sequence:@[actionMoveItem, actionMoveDone]]];
     [projectile runAction:[SKAction sequence:@[actionMoveProjectile, actionMoveDone]]];
@@ -382,17 +372,6 @@ static inline CGPoint rwNormalize(CGPoint a) {
     }*/
 }
 
-- (CGPoint)shootAmount:(CGPoint *)initialDirection {
-    // Get the direction of where to shoot the item
-    CGPoint direction = rwNormalize(*initialDirection);
-    
-    
-    // Make it shoot far enough to be guaranteed off screen
-    CGPoint shootAmount = rwMult(direction, 1000);
-    
-    return shootAmount;
-    
-}
 
 - (void)didBeginContact:(SKPhysicsContact *)contact
 {
@@ -454,8 +433,8 @@ static inline CGPoint rwNormalize(CGPoint a) {
     }
     
     //change updateSpeed and set the timer based on the speed
-    self.updateSpeed=200-self.totalTimeInterval;
-    self.timerLabel.text = [NSString stringWithFormat:@"Time: %ld", 200-self.updateSpeed];
+    self.updateSpeed=startSpeed-self.totalTimeInterval;
+    self.timerLabel.text = [NSString stringWithFormat:@"Time: %d", startSpeed-self.updateSpeed];
     
     [self updateWithTimeSinceLastUpdate:timeSinceLast];
     
