@@ -14,22 +14,29 @@
 @property (nonatomic) SKSpriteNode * player;
 @property (nonatomic) SKSpriteNode * cat;
 @property (nonatomic) SKSpriteNode * aim;
+@property (nonatomic) SKSpriteNode * chaosBarBackground;
+@property (nonatomic) SKSpriteNode * chaosBarCharger;
+@property (nonatomic) SKSpriteNode * shootingBarBackground;
+@property (nonatomic) SKSpriteNode * shootingBarBackgroundWhenClicked;
+@property (nonatomic) SKSpriteNode * shootingBarCharger;
 @property (nonatomic) SKLabelNode* timerLabel;
+@property (nonatomic) SKLabelNode* countdownLabel;
 @property (nonatomic) CGRect table;
 @property (nonatomic) NSTimeInterval lastSpawnTimeInterval;
 @property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
 @property (nonatomic) NSTimeInterval totalTimeInterval;
+@property (nonatomic) BOOL shootingBool;
 @property (nonatomic) NSInteger currentWall;
-@property (nonatomic) int choasCount;
+@property (nonatomic) double chaosCount;
+@property (nonatomic) double chaosBarWidth;
+@property (nonatomic) double dogBarHeight;
+@property (nonatomic) double beginningShotTime;
 @property (strong, nonatomic) CMMotionManager *motionManager;
 @end
 
 @implementation MyScene
 
 @synthesize updateSpeed;
-
-//constants
-#define CONSTANT 
 
 //various physics functions
 static const uint32_t itemCategory        =  0x1 << 0;
@@ -81,7 +88,7 @@ static inline CGPoint rwNormalize(CGPoint a)
         [self.motionManager startAccelerometerUpdates];
         self.table = CGRectMake(tableCornerX, tableCornerY, tableWidth, tableHeight);
         self.updateSpeed = startSpeed;
-        self.choasCount = 0; //Set choas to 0, when it hits 100, game over
+        self.chaosCount = 0; //Set choas to 0, when it hits 100, game over
         
         //Set up the world physics
         self.physicsWorld.gravity = CGVectorMake(0,0);
@@ -96,14 +103,19 @@ static inline CGPoint rwNormalize(CGPoint a)
         [self addChild:background];
         
         //player
-        self.player=[SKSpriteNode spriteNodeWithImageNamed:@"thing_lamp.png"];
-        self.player.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetHeight(self.frame)-self.player.size.height/6);
+        self.player=[SKSpriteNode spriteNodeWithImageNamed:@"onion.png"];
+        self.player.position=CGPointMake(CGRectGetMidX(self.table)-self.player.size.width/6,CGRectGetHeight(self.frame)-self.player.size.height/4);
         [self scaleSpriteNode:self.player scaleRatio:0.4];
         [self addChild:self.player];
+        
+        //chaos bar
+        [self initializeBars];
         
         [self initializeAimer];
         [self initializeTimer];
         [self initializeCat];
+        [self countdown];
+        
         [self updateCat];
         for (int i=0;i<5;i++)
         {
@@ -120,17 +132,52 @@ static inline CGPoint rwNormalize(CGPoint a)
     CMAccelerometerData* data = self.motionManager.accelerometerData;
     if (fabs(data.acceleration.y) > 0.2)
     {
-        [self.aim.physicsBody applyForce:CGVectorMake(400.0 * data.acceleration.y, 0)];
+        [self.aim.physicsBody applyForce:CGVectorMake(1000.0 * data.acceleration.y, 0)];
     }
     if (fabs(data.acceleration.x) > 0.2)
     {
-        [self.aim.physicsBody applyForce:CGVectorMake(0, -400.0 * data.acceleration.x)];
+        [self.aim.physicsBody applyForce:CGVectorMake(0, -1000.0 * data.acceleration.x)];
     }
+}
+
+- (void)initializeBars
+{
+    self.chaosBarBackground=[SKSpriteNode spriteNodeWithImageNamed:@"chaos_filled.png"];
+    [self scaleSpriteNode:self.chaosBarBackground scaleRatio:0.5];
+    self.chaosBarBackground.position=CGPointMake(tableWidth - 40, tableHeight + self.chaosBarBackground.size.height/2);
+    [self addChild:self.chaosBarBackground];
+    
+    self.chaosBarCharger=[SKSpriteNode spriteNodeWithImageNamed:@"chaos_inner.png"];
+    [self scaleSpriteNode:self.chaosBarCharger scaleRatio:0.5];
+    self.chaosBarCharger.anchorPoint = CGPointMake(1,0.5);
+    self.chaosBarCharger.position=CGPointMake(546,284);
+    self.chaosBarWidth = self.chaosBarCharger.size.width;
+    [self addChild:self.chaosBarCharger];
+    
+    self.shootingBarBackgroundWhenClicked=[SKSpriteNode spriteNodeWithImageNamed:@"dogbar_clicked.png"];
+    [self scaleSpriteNode:self.shootingBarBackgroundWhenClicked scaleRatio:0.5];
+    self.shootingBarBackgroundWhenClicked.position=CGPointMake(tableWidth + self.shootingBarBackgroundWhenClicked.size.width/1.5, tableHeight/2 + 5);
+    [self addChild:self.shootingBarBackgroundWhenClicked];
+    SKAction * fadeOutBarInitially = [SKAction fadeOutWithDuration:0];
+    [self.shootingBarBackgroundWhenClicked runAction:[SKAction sequence:@[fadeOutBarInitially]]];
+    
+    self.shootingBarBackground=[SKSpriteNode spriteNodeWithImageNamed:@"dogbar.png"];
+    [self scaleSpriteNode:self.shootingBarBackground scaleRatio:0.5];
+    self.shootingBarBackground.position=CGPointMake(tableWidth + self.shootingBarBackground.size.width/1.5, tableHeight/2 + 5);
+    [self addChild:self.shootingBarBackground];
+    
+    self.shootingBarCharger=[SKSpriteNode spriteNodeWithImageNamed:@"dogbar_inner.png"];
+    [self scaleSpriteNode:self.shootingBarCharger scaleRatio:0.5];
+    self.shootingBarCharger.anchorPoint = CGPointMake(0.5,1);
+    self.shootingBarCharger.position=CGPointMake(512.4,259);
+    self.dogBarHeight = self.shootingBarCharger.size.height;
+    [self addChild:self.shootingBarCharger];
+    
 }
 
 - (void)initializeAimer
 {
-    self.aim=[SKSpriteNode spriteNodeWithImageNamed:@"projectile.png"];
+    self.aim=[SKSpriteNode spriteNodeWithImageNamed:@"target.png"];
     self.aim.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetHeight(self.table));
     [self scaleSpriteNode:self.aim scaleRatio:0.5];
     
@@ -151,12 +198,13 @@ static inline CGPoint rwNormalize(CGPoint a)
     self.timerLabel.fontSize = 15;
     self.timerLabel.fontColor = [SKColor redColor];
     self.timerLabel.text = [NSString stringWithFormat:@"Time: %i", 0];
-    self.timerLabel.position = CGPointMake(self.size.width - self.timerLabel.frame.size.width/2 - 20, self.size.height - (20 + self.timerLabel.frame.size.height/2));
+    self.timerLabel.position = CGPointMake(self.timerLabel.frame.size.width, self.table.size.height + self.timerLabel.frame.size.height*2);
     
     [self addChild:self.timerLabel];
 }
 
-- (void)initializeCat {
+- (void)initializeCat
+{
     
     self.cat=[SKSpriteNode spriteNodeWithImageNamed:@"thing_catbug.png"];
     self.cat.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetMidY(self.table));
@@ -173,6 +221,31 @@ static inline CGPoint rwNormalize(CGPoint a)
     self.cat.physicsBody.collisionBitMask = !aimCategory;
     
     [self addChild:self.cat];
+}
+
+-(void)countdown
+{
+    self.countdownLabel = [SKLabelNode labelNodeWithFontNamed:@"Courier"];
+    self.countdownLabel.fontSize = 50;
+    self.countdownLabel.fontColor = [SKColor blueColor];
+    self.countdownLabel.text = [NSString stringWithFormat:@"%i", 3];
+    self.countdownLabel.position = CGPointMake(CGRectGetMidX(self.table), CGRectGetMidY(self.table));
+    [self addChild:self.countdownLabel];
+    SKAction * fadeCountdown = [SKAction fadeOutWithDuration:1];
+    SKAction * unfadeCountdown = [SKAction fadeInWithDuration:0];
+    SKAction * removeCountdown = [SKAction removeFromParent];
+    SKAction * wait = [SKAction waitForDuration:1];
+    
+    [self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown, wait]]];
+    self.countdownLabel.text = [NSString stringWithFormat:@"%i", 2];
+
+    [self.countdownLabel runAction:[SKAction sequence:@[unfadeCountdown, fadeCountdown, wait]]];
+    self.countdownLabel.text = [NSString stringWithFormat:@"%i", 1];
+
+    [self.countdownLabel runAction:[SKAction sequence:@[unfadeCountdown, fadeCountdown, wait]]];
+    self.countdownLabel.text = [NSString stringWithFormat:@"GO!"];
+
+    [self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown, removeCountdown, wait]]];
 }
 
 - (void)updateCat
@@ -215,8 +288,10 @@ static inline CGPoint rwNormalize(CGPoint a)
 - (void)addItem
 {
     // Create item to place on table
-    SKSpriteNode * item = [SKSpriteNode spriteNodeWithImageNamed:@"thing_eraser.png"];
-    [self scaleSpriteNode:item scaleRatio:0.5];
+    
+    NSString *itemImageURL = [self randomItem];
+    SKSpriteNode * item = [SKSpriteNode spriteNodeWithImageNamed:itemImageURL];
+    [self scaleSpriteNode:item scaleRatio:0.3];
     
     // Determine where to spawn the item on the table
     int itemYPostion = (arc4random() %(tableHeight - 4*tableCornerY)) + tableCornerY + item.size.height/2;
@@ -235,34 +310,76 @@ static inline CGPoint rwNormalize(CGPoint a)
     
 }
 
+-(NSString *)randomItem
+{
+    NSInteger random = arc4random_uniform(itemAssets);
+    switch(random) {
+        case 0: return @"thing_book.png";
+            break;
+        case 1: return @"thing_bread.png";
+            break;
+        case 2: return @"thing_candy.png";
+            break;
+        case 3: return @"thing_cup.png";
+            break;
+        case 4: return @"thing_dagger.png";
+            break;
+        case 5: return @"thing_eraser.png";
+            break;
+        case 6: return @"thing_lamp.png";
+            break;
+        case 7: return @"thing_laptop.png";
+            break;
+        case 8: return @"thing_mug.png";
+            break;
+        case 9: return @"thing_pen.png";
+            break;
+        case 10: return @"thing_pencil.png";
+            break;
+        case 11: return @"thing_ramen.png";
+            break;
+        case 12: return @"thing_snowglobe.png";
+            break;
+        case 13: return @"thing_thermos.png";
+            break;
+        case 14: return @"thing_vase.png";
+            break;
+        default: return @"onion.png";
+            break;
+    }
+}
+
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    
+    self.shootingBool = NO;
+    SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight) duration:0];
+    [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
     //music for on hit
     //[self runAction:[SKAction playSoundFileNamed:@"pew-pew-lei.caf" waitForCompletion:NO]];
     
     // Choose one of the touches to work with
-    //UITouch * touch = [touches anyObject];
-    //CGPoint location = [touch locationInNode:self];
-    
-    CGPoint location = self.aim.position;
+    UITouch * touch = [touches anyObject];
+    CGPoint locationCheck = [touch locationInNode:self];
+    NSLog(@"%f  %f",locationCheck.x, locationCheck.y);
     
     // Set up initial location of projectile
-    SKSpriteNode * projectile = [SKSpriteNode spriteNodeWithImageNamed:@"thing_mouse.png"];
-    [self scaleSpriteNode:projectile scaleRatio:0.1];
+    SKSpriteNode * projectile = [SKSpriteNode spriteNodeWithImageNamed:@"puppy.png"];
+    [self scaleSpriteNode:projectile scaleRatio:0.2];
     
     //projectile physics
-    projectile.position = self.player.position;
+    projectile.position = CGPointMake(tableCornerX+tableWidth/2, tableCornerY+tableHeight);
     projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
     projectile.physicsBody.dynamic = YES;
     projectile.physicsBody.categoryBitMask = projectileCategory;
     projectile.physicsBody.contactTestBitMask = itemCategory;
-    projectile.physicsBody.collisionBitMask = !aimCategory;;
+    projectile.physicsBody.collisionBitMask = !aimCategory;
     projectile.physicsBody.usesPreciseCollisionDetection = YES;
+    CGPoint normal = rwSub(self.aim.position, projectile.position);
+    CGFloat rotationRadians = atan2f(normal.y, normal.x) + 3.14/2;
 
     
     // Determine offset of location to projectile
-    CGPoint offset = rwSub(location, projectile.position);
+    CGPoint offset = rwSub(self.aim.position, projectile.position);
     
     // Bail out if shooting up
     if (offset.y >= 0) return;
@@ -271,13 +388,28 @@ static inline CGPoint rwNormalize(CGPoint a)
     
     //get the destination and duration for the animation
     CGPoint projectileDestination = [self assetDestionation:&offset assetPosition:projectile.position];
-    float animationDuration = [self getAnimationDuration];
+    float animationDuration = [self getAnimationDuration:@"projectile"];
     
     // Create the actions
+    SKAction * rotateProjectile = [SKAction rotateToAngle:rotationRadians duration:0];
     SKAction * actionMove = [SKAction moveTo:projectileDestination duration:animationDuration];
     SKAction * actionMoveDone = [SKAction removeFromParent];
-    [projectile runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
+    [projectile runAction:[SKAction sequence:@[rotateProjectile, actionMove, actionMoveDone]]];
+    SKAction * fadeClickedBarAway = [SKAction fadeOutWithDuration:0];
+    [self.shootingBarBackgroundWhenClicked runAction:fadeClickedBarAway];
+    SKAction * showUnclickedBar = [SKAction fadeInWithDuration:0];
+    [self.shootingBarBackground runAction:showUnclickedBar];
     
+}
+
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    self.shootingBool = YES;
+    self.beginningShotTime=self.totalTimeInterval;
+    SKAction * fadeUnclickedBarAway = [SKAction fadeOutWithDuration:0];
+    [self.shootingBarBackground runAction:fadeUnclickedBarAway];
+    SKAction * showClickedBar = [SKAction fadeInWithDuration:0];
+    [self.shootingBarBackgroundWhenClicked runAction:showClickedBar];
 }
 
 - (CGPoint)assetDestionation:(CGPoint *)initialDirection assetPosition:(CGPoint)assetPossition
@@ -289,19 +421,27 @@ static inline CGPoint rwNormalize(CGPoint a)
     return rwAdd(shootAmount, assetPossition);
 }
 
--(float)getAnimationDuration
+-(float)getAnimationDuration:(NSString*)asset
 {
-    float velocity = 480.0/1.0;
-    return self.size.width / velocity;
+    if ([asset isEqual:@"projectile"]) {
+        return self.size.width / 180;
+    } else if ([asset isEqualToString:@"item"]) {
+        return self.size.width / 480;
+    } else {
+        NSLog(@"invalid asset!");
+        exit(0);
+    }
 }
 
-- (void)projectile:(SKSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat {
+- (void)projectile:(SKSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat
+{
     NSLog(@"Hit");
     [projectile removeFromParent];
     
-    if(self.choasCount > 0)
-    self.choasCount--;
-    NSLog(@"%d",self.choasCount);
+    if(self.chaosCount > 0)
+    self.chaosCount--;
+    [self updateChaosBar];
+    NSLog(@"%f",self.chaosCount);
     
     //on hit, cat turns red for a short period second
     SKAction *pulseRed = [SKAction sequence:@[
@@ -317,17 +457,19 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self updateCat];
 }
 
-- (void)item:(SKSpriteNode *)item didCollideWithCat:(SKSpriteNode *)cat {
+- (void)item:(SKSpriteNode *)item didCollideWithCat:(SKSpriteNode *)cat
+{
     NSLog(@"Item Hit by cat");
-    self.choasCount = self.choasCount + 10;
-    NSLog(@"%d",self.choasCount);
+    self.chaosCount = self.chaosCount + 10;
+    [self updateChaosBar];
+    NSLog(@"%f",self.chaosCount);
     [self checkIfGameOver];
     
     // Determine offset of item to the cat
     CGPoint offset = rwSub(item.position, cat.position);
     
     CGPoint itemDestination = [self assetDestionation:&offset assetPosition:item.position];
-    float animationDuration = [self getAnimationDuration];
+    float animationDuration = [self getAnimationDuration:@"item"];
     SKAction * actionMove = [SKAction moveTo:itemDestination duration:animationDuration];
     SKAction * actionMoveDone = [SKAction removeFromParent];
     [item runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
@@ -337,10 +479,12 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self updateCat];
 }
 
-- (void)item:(SKSpriteNode *)item didCollideWithProjectile:(SKSpriteNode *)projectile {
+- (void)item:(SKSpriteNode *)item didCollideWithProjectile:(SKSpriteNode *)projectile
+{
     NSLog(@"Item Hit by projectile");
-    self.choasCount = self.choasCount + 3;
-    NSLog(@"%d",self.choasCount);
+    self.chaosCount = self.chaosCount + 3;
+    [self updateChaosBar];
+    NSLog(@"%f",self.chaosCount);
     
     [self checkIfGameOver];
     // Determine offset of item to the cat
@@ -350,7 +494,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     
     CGPoint itemDestination = [self assetDestionation:&offsetItem assetPosition:item.position];
     CGPoint projectileDestination = [self assetDestionation:&offsetProjectile assetPosition:projectile.position];
-    float animationDuration = [self getAnimationDuration];
+    float animationDuration = [self getAnimationDuration:@"item"];
 
     SKAction * actionMoveItem = [SKAction moveTo:itemDestination duration:animationDuration];
     SKAction * actionMoveProjectile = [SKAction moveTo:projectileDestination duration:animationDuration];
@@ -358,18 +502,29 @@ static inline CGPoint rwNormalize(CGPoint a)
     [item runAction:[SKAction sequence:@[actionMoveItem, actionMoveDone]]];
     [projectile runAction:[SKAction sequence:@[actionMoveProjectile, actionMoveDone]]];
     
-    //set cat to go new random direction
-    self.currentWall = 5;
-    [self updateCat];
+    //add another item
+    [self addItem];
+}
+
+-(void)updateChaosBar
+{
+    SKAction * scaleEmptyChaosBar = [SKAction resizeToWidth:(self.chaosBarWidth*(101-self.chaosCount)/100) duration:0];
+    [self.chaosBarCharger runAction:[SKAction sequence:@[scaleEmptyChaosBar]]];
+}
+
+-(void)updateDogBar
+{
+    SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight*(maxShotTime-(self.totalTimeInterval- self.beginningShotTime))/maxShotTime) duration:0];
+    [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
 }
 
 -(void)checkIfGameOver
 {
-    /*if (self.choasCount >= 100) {
+    if (self.chaosCount >= 100) {
         SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
         SKScene * gameOverScene = [[GameOverScreen alloc] initWithSize:self.size won:NO];
         [self.view presentScene:gameOverScene transition: reveal];
-    }*/
+    }
 }
 
 
@@ -403,7 +558,8 @@ static inline CGPoint rwNormalize(CGPoint a)
 }
 
 
-- (void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast {
+- (void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast
+{
     
     self.lastSpawnTimeInterval += timeSinceLast;
     self.totalTimeInterval += timeSinceLast;
@@ -416,15 +572,14 @@ static inline CGPoint rwNormalize(CGPoint a)
     }
 }
 
-- (void)update:(NSTimeInterval)currentTime {
+- (void)update:(NSTimeInterval)currentTime
+{
     
     [self processUserMotionForUpdate:currentTime];
     // Handle time delta.
     // If we drop below 60fps, we still want everything to move the same distance.
     CFTimeInterval timeSinceLast = currentTime - self.lastUpdateTimeInterval;
     self.lastUpdateTimeInterval = currentTime;
-    
-    
     
     // more than a second since last update, update lastUpdateTimeInterval
     if (timeSinceLast > 1) {
@@ -434,9 +589,13 @@ static inline CGPoint rwNormalize(CGPoint a)
     
     //change updateSpeed and set the timer based on the speed
     self.updateSpeed=startSpeed-self.totalTimeInterval;
-    self.timerLabel.text = [NSString stringWithFormat:@"Time: %d", startSpeed-self.updateSpeed];
+    self.timerLabel.text = [NSString stringWithFormat:@"Time: %ld", startSpeed-self.updateSpeed];
     
     [self updateWithTimeSinceLastUpdate:timeSinceLast];
+    
+    if (((self.totalTimeInterval-self.beginningShotTime) < maxShotTime) && self.shootingBool) {
+        [self updateDogBar];
+    }
     
 }
 

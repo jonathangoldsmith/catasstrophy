@@ -8,11 +8,15 @@
 
 #import "ViewController.h"
 #import "MyScene.h"
+#import "MovieViewController.h"
+
 @import AVFoundation;
 
 
 @interface ViewController ()
+
 @property (nonatomic) AVAudioPlayer * backgroundMusicPlayer;
+
 @end
 
 
@@ -31,10 +35,20 @@
     [self.backgroundMusicPlayer play];
     */
     
+    //SKScene * myScene = [[MyScene alloc] initWithSize:self.size];
+    //[self.view presentScene:myScene transition: reveal];
+
+    /*[helloNode runAction: moveSequence completion:^{
+        SKScene *spaceshipScene  = [[MovieViewController alloc] initWithSize:self.size];
+        SKTransition *doors = [SKTransition doorsOpenVerticalWithDuration:0.5];
+        [self.view presentScene: transition:doors];
+    }];*/
+    
+    
     SKView * skView = (SKView *)self.view;
     if(!skView.scene){
-        skView.showsFPS=YES;
-        skView.showsNodeCount=YES;
+        //skView.showsFPS=YES;
+        //skView.showsNodeCount=YES;
         
         SKScene * scene = [MyScene sceneWithSize:skView.bounds.size];
         scene.scaleMode = SKSceneScaleModeAspectFill;
