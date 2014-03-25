@@ -9,10 +9,17 @@
 #import "MyScene.h"
 #import "math.h"
 #import "GameOverScreen.h"
+#import "DogSpriteNode.h"
 
 @interface MyScene() <SKPhysicsContactDelegate>
 @property (nonatomic) SKSpriteNode * player;
 @property (nonatomic) SKSpriteNode * cat;
+@property NSArray * catWalkingFramesLeft;
+@property NSArray * catWalkingFramesRight;
+@property NSArray * catFlippingFramesLeft;
+@property NSArray * catFlippingFramesRight;
+@property NSArray * catHitFramesLeft;
+@property NSArray * catHitFramesRight;
 @property (nonatomic) SKSpriteNode * aim;
 @property (nonatomic) SKSpriteNode * chaosBarBackground;
 @property (nonatomic) SKSpriteNode * chaosBarCharger;
@@ -140,7 +147,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     }
 }
 
-- (void)initializeBars
+-(void)initializeBars
 {
     self.chaosBarBackground=[SKSpriteNode spriteNodeWithImageNamed:@"chaos_filled.png"];
     [self scaleSpriteNode:self.chaosBarBackground scaleRatio:0.5];
@@ -175,11 +182,11 @@ static inline CGPoint rwNormalize(CGPoint a)
     
 }
 
-- (void)initializeAimer
+-(void)initializeAimer
 {
     self.aim=[SKSpriteNode spriteNodeWithImageNamed:@"target.png"];
     self.aim.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetHeight(self.table));
-    [self scaleSpriteNode:self.aim scaleRatio:0.5];
+    [self scaleSpriteNode:self.aim scaleRatio:0.8];
     
     //aimer phsysics
     self.aim.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:self.aim.frame.size];
@@ -194,7 +201,7 @@ static inline CGPoint rwNormalize(CGPoint a)
 
 -(void)initializeTimer
 {
-    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Courier"];
+    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"GillSans-Bold"];
     self.timerLabel.fontSize = 15;
     self.timerLabel.fontColor = [SKColor redColor];
     self.timerLabel.text = [NSString stringWithFormat:@"Time: %i", 0];
@@ -205,10 +212,56 @@ static inline CGPoint rwNormalize(CGPoint a)
 
 - (void)initializeCat
 {
+    NSMutableArray *walkFramesLeft = [NSMutableArray array];
+    SKTextureAtlas *catAnimatedAtlasLeft = [SKTextureAtlas atlasNamed:@"catImagesLeft"];
+    for (int i=1; i <= catAnimatedAtlasLeft.textureNames.count; i++) {
+        NSString *textureName = [NSString stringWithFormat:@"cat_left%d", i];
+        SKTexture *temp = [catAnimatedAtlasLeft textureNamed:textureName];
+        [walkFramesLeft addObject:temp];
+    }
+    self.catWalkingFramesLeft = walkFramesLeft;
     
-    self.cat=[SKSpriteNode spriteNodeWithImageNamed:@"thing_catbug.png"];
+    NSMutableArray *walkFramesRight = [NSMutableArray array];
+    SKTextureAtlas *catAnimatedAtlasRight = [SKTextureAtlas atlasNamed:@"catImagesRight"];
+    for (int i=1; i <= catAnimatedAtlasRight.textureNames.count; i++) {
+        NSString *textureName = [NSString stringWithFormat:@"cat_right%d", i];
+        SKTexture *temp = [catAnimatedAtlasRight textureNamed:textureName];
+        [walkFramesRight addObject:temp];
+    }
+    self.catWalkingFramesRight = walkFramesRight;
+    
+    NSMutableArray *catFramesFlipLeft = [NSMutableArray array];
+    SKTextureAtlas *catAnimatedAtlasFlipLeft = [SKTextureAtlas atlasNamed:@"catImagesFlipLeft"];
+    NSString *textureName = [NSString stringWithFormat:@"cat_left_flip"];
+    SKTexture *temp = [catAnimatedAtlasFlipLeft textureNamed:textureName];
+    [catFramesFlipLeft addObject:temp];
+    self.catFlippingFramesLeft = catFramesFlipLeft;
+    
+    NSMutableArray *catFramesFlipRight = [NSMutableArray array];
+    SKTextureAtlas *catAnimatedAtlasFlipRight = [SKTextureAtlas atlasNamed:@"catImagesFlipRight"];
+    textureName = [NSString stringWithFormat:@"cat_right_flip"];
+    temp = [catAnimatedAtlasFlipRight textureNamed:textureName];
+    [catFramesFlipRight addObject:temp];
+    self.catFlippingFramesRight = catFramesFlipRight;
+    
+    NSMutableArray *walkFramesHitLeft = [NSMutableArray array];
+    SKTextureAtlas *catAnimatedAtlasHitLeft = [SKTextureAtlas atlasNamed:@"catImagesHitLeft"];
+    textureName = [NSString stringWithFormat:@"cat_left_hit"];
+    temp = [catAnimatedAtlasHitLeft textureNamed:textureName];
+    [walkFramesHitLeft addObject:temp];
+    self.catHitFramesLeft = walkFramesHitLeft;
+    
+    NSMutableArray *walkFramesHitRight = [NSMutableArray array];
+    SKTextureAtlas *catAnimatedAtlasHitRight = [SKTextureAtlas atlasNamed:@"catImagesHitRight"];
+    textureName = [NSString stringWithFormat:@"cat_right_hit"];
+    temp = [catAnimatedAtlasHitRight textureNamed:textureName];
+    [walkFramesHitRight addObject:temp];
+    self.catHitFramesRight = walkFramesHitRight;
+    
+    self.cat = [SKSpriteNode spriteNodeWithImageNamed:@"cat_0.png"];
+    
     self.cat.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetMidY(self.table));
-    [self scaleSpriteNode:self.cat scaleRatio:0.5];
+    [self scaleSpriteNode:self.cat scaleRatio:0.25];
     
     //Current wall for the cat to head towards
     self.currentWall = 0;
@@ -248,7 +301,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown, removeCountdown, wait]]];
 }
 
-- (void)updateCat
+-(void)updateCat
 {
     //determine wall to send cat towards that isnt current wall
     NSInteger r = self.currentWall;
@@ -279,13 +332,24 @@ static inline CGPoint rwNormalize(CGPoint a)
     }
     
     SKAction * actionMove = [SKAction moveTo:CGPointMake(catXDestination, catYDestination) duration:(self.updateSpeed/100)];
+    SKAction * animate;
+    CGPoint location = self.cat.position;
+    if (location.x <= catXDestination) {
+        //walk right
+        animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesRight
+                                                           timePerFrame:0.2] count:5];
+    } else {
+        //walk left
+        animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesLeft
+                                                                    timePerFrame:0.2] count:5];;
+    }
     
-    [self.cat runAction:[SKAction sequence:@[actionMove]]];
+    [self.cat runAction:[SKAction group:@[animate, actionMove]]];
+    
     
 }
 
-
-- (void)addItem
+-(void)addItem
 {
     // Create item to place on table
     
@@ -363,7 +427,10 @@ static inline CGPoint rwNormalize(CGPoint a)
     NSLog(@"%f  %f",locationCheck.x, locationCheck.y);
     
     // Set up initial location of projectile
-    SKSpriteNode * projectile = [SKSpriteNode spriteNodeWithImageNamed:@"puppy.png"];
+    DogSpriteNode * projectile;
+    [projectile setShotPower:7];
+    
+    [SKSpriteNode spriteNodeWithImageNamed:@"puppy.png"];
     [self scaleSpriteNode:projectile scaleRatio:0.2];
     
     //projectile physics
@@ -387,7 +454,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self addChild:projectile];
     
     //get the destination and duration for the animation
-    CGPoint projectileDestination = [self assetDestionation:&offset assetPosition:projectile.position];
+    CGPoint projectileDestination = [self assetDestination:&offset assetPosition:projectile.position];
     float animationDuration = [self getAnimationDuration:@"projectile"];
     
     // Create the actions
@@ -412,7 +479,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self.shootingBarBackgroundWhenClicked runAction:showClickedBar];
 }
 
-- (CGPoint)assetDestionation:(CGPoint *)initialDirection assetPosition:(CGPoint)assetPossition
+-(CGPoint)assetDestination:(CGPoint *)initialDirection assetPosition:(CGPoint)assetPossition
 {
     // Get the direction of where to shoot the item
     CGPoint direction = rwNormalize(*initialDirection);
@@ -433,7 +500,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     }
 }
 
-- (void)projectile:(SKSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat
+-(void)projectile:(SKSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat
 {
     NSLog(@"Hit");
     [projectile removeFromParent];
@@ -449,15 +516,22 @@ static inline CGPoint rwNormalize(CGPoint a)
                                               [SKAction waitForDuration:0.05],
                                               [SKAction colorizeWithColorBlendFactor:0.0 duration:0.05]]];
 
-    SKAction * normalCat = [SKAction colorizeWithColorBlendFactor:0.0 duration:0.25];
-    [cat runAction:[SKAction sequence:@[pulseRed, normalCat]]];
     
-    //set cat to go new random direction
-    self.currentWall = 5;
-    [self updateCat];
+    SKAction * hitAnimation;
+    if(projectile.position.x >= cat.position.x) {
+        hitAnimation = [SKAction animateWithTextures:self.catHitFramesRight timePerFrame:0.8];
+    } else {
+        hitAnimation = [SKAction animateWithTextures:self.catHitFramesLeft timePerFrame:0.8];
+    }
+    SKAction * normalCat = [SKAction colorizeWithColorBlendFactor:0.0 duration:0.25];
+    [self.cat runAction:[SKAction group:@[pulseRed, hitAnimation]]];
+    [self.cat runAction:[SKAction sequence:@[normalCat]] completion:^{
+        //set cat to go new random direction
+        [self updateCat];
+    }];
 }
 
-- (void)item:(SKSpriteNode *)item didCollideWithCat:(SKSpriteNode *)cat
+-(void)item:(SKSpriteNode *)item didCollideWithCat:(SKSpriteNode *)cat
 {
     NSLog(@"Item Hit by cat");
     self.chaosCount = self.chaosCount + 10;
@@ -468,18 +542,28 @@ static inline CGPoint rwNormalize(CGPoint a)
     // Determine offset of item to the cat
     CGPoint offset = rwSub(item.position, cat.position);
     
-    CGPoint itemDestination = [self assetDestionation:&offset assetPosition:item.position];
+    CGPoint itemDestination = [self assetDestination:&offset assetPosition:item.position];
     float animationDuration = [self getAnimationDuration:@"item"];
     SKAction * actionMove = [SKAction moveTo:itemDestination duration:animationDuration];
     SKAction * actionMoveDone = [SKAction removeFromParent];
     [item runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
     
-    //set cat to go new random direction
-    self.currentWall = 5;
-    [self updateCat];
+    
+    SKAction * flipAnimation;
+    if(item.position.x >= cat.position.x) {
+        flipAnimation = [SKAction animateWithTextures:self.catFlippingFramesRight timePerFrame:0.3];
+    } else {
+      flipAnimation = [SKAction animateWithTextures:self.catFlippingFramesLeft timePerFrame:0.3];
+    }
+    //SKAction * actionMoveCat = [SKAction waitForDuration:0.5];
+
+    [self.cat runAction:[SKAction group:@[flipAnimation]] completion:^{
+        //set cat to go new random direction
+        [self updateCat];
+    }];
 }
 
-- (void)item:(SKSpriteNode *)item didCollideWithProjectile:(SKSpriteNode *)projectile
+-(void)item:(SKSpriteNode *)item didCollideWithProjectile:(SKSpriteNode *)projectile
 {
     NSLog(@"Item Hit by projectile");
     self.chaosCount = self.chaosCount + 3;
@@ -492,8 +576,8 @@ static inline CGPoint rwNormalize(CGPoint a)
     CGPoint offsetProjectile = rwSub(projectile.position, item.position);
     
     
-    CGPoint itemDestination = [self assetDestionation:&offsetItem assetPosition:item.position];
-    CGPoint projectileDestination = [self assetDestionation:&offsetProjectile assetPosition:projectile.position];
+    CGPoint itemDestination = [self assetDestination:&offsetItem assetPosition:item.position];
+    CGPoint projectileDestination = [self assetDestination:&offsetProjectile assetPosition:projectile.position];
     float animationDuration = [self getAnimationDuration:@"item"];
 
     SKAction * actionMoveItem = [SKAction moveTo:itemDestination duration:animationDuration];
@@ -527,8 +611,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     }
 }
 
-
-- (void)didBeginContact:(SKPhysicsContact *)contact
+-(void)didBeginContact:(SKPhysicsContact *)contact
 {
     SKPhysicsBody *firstBody, *secondBody;
     
@@ -557,8 +640,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     }
 }
 
-
-- (void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast
+-(void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast
 {
     
     self.lastSpawnTimeInterval += timeSinceLast;
@@ -572,7 +654,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     }
 }
 
-- (void)update:(NSTimeInterval)currentTime
+-(void)update:(NSTimeInterval)currentTime
 {
     
     [self processUserMotionForUpdate:currentTime];
@@ -589,7 +671,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     
     //change updateSpeed and set the timer based on the speed
     self.updateSpeed=startSpeed-self.totalTimeInterval;
-    self.timerLabel.text = [NSString stringWithFormat:@"Time: %ld", startSpeed-self.updateSpeed];
+    self.timerLabel.text = [NSString stringWithFormat:@"Time: %d", startSpeed-self.updateSpeed];
     
     [self updateWithTimeSinceLastUpdate:timeSinceLast];
     

@@ -9,6 +9,6 @@
 #import "ViewController.h"
 #import <MediaPlayer/MediaPlayer.h>
 
-@interface MovieViewController : ViewController
+@interface MovieViewController : UIViewController
 
 @end
