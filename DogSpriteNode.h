@@ -10,7 +10,7 @@
 
 @interface DogSpriteNode : SKSpriteNode
 
-@property SKSpriteNode *dogSprite;
-@property int *shotPower;
+@property (strong) SKSpriteNode* dogSprite;
+@property double shotPower;
 
 @end

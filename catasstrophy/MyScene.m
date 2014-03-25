@@ -34,6 +34,7 @@
 @property (nonatomic) NSTimeInterval totalTimeInterval;
 @property (nonatomic) BOOL shootingBool;
 @property (nonatomic) NSInteger currentWall;
+@property (nonatomic) NSInteger score;
 @property (nonatomic) double chaosCount;
 @property (nonatomic) double chaosBarWidth;
 @property (nonatomic) double dogBarHeight;
@@ -416,6 +417,7 @@ static inline CGPoint rwNormalize(CGPoint a)
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     self.shootingBool = NO;
+    double shotPower = self.shootingBarCharger.size.height/self.dogBarHeight;
     SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight) duration:0];
     [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
     //music for on hit
@@ -427,41 +429,44 @@ static inline CGPoint rwNormalize(CGPoint a)
     NSLog(@"%f  %f",locationCheck.x, locationCheck.y);
     
     // Set up initial location of projectile
-    DogSpriteNode * projectile;
-    [projectile setShotPower:7];
+    DogSpriteNode * projectile = [[DogSpriteNode alloc] init];
+    [projectile setShotPower:shotPower];
     
-    [SKSpriteNode spriteNodeWithImageNamed:@"puppy.png"];
-    [self scaleSpriteNode:projectile scaleRatio:0.2];
+    SKSpriteNode * projectileNode = [SKSpriteNode spriteNodeWithImageNamed:@"puppy.png"];
+    [self scaleSpriteNode:projectileNode scaleRatio:0.2];
     
     //projectile physics
-    projectile.position = CGPointMake(tableCornerX+tableWidth/2, tableCornerY+tableHeight);
-    projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
-    projectile.physicsBody.dynamic = YES;
-    projectile.physicsBody.categoryBitMask = projectileCategory;
-    projectile.physicsBody.contactTestBitMask = itemCategory;
-    projectile.physicsBody.collisionBitMask = !aimCategory;
-    projectile.physicsBody.usesPreciseCollisionDetection = YES;
-    CGPoint normal = rwSub(self.aim.position, projectile.position);
+    projectileNode.position = CGPointMake(tableCornerX+tableWidth/2, tableCornerY+tableHeight);
+    projectileNode.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectileNode.size.width/2];
+    projectileNode.physicsBody.dynamic = YES;
+    projectileNode.physicsBody.categoryBitMask = projectileCategory;
+    projectileNode.physicsBody.contactTestBitMask = itemCategory;
+    projectileNode.physicsBody.collisionBitMask = !aimCategory;
+    projectileNode.physicsBody.usesPreciseCollisionDetection = YES;
+    CGPoint normal = rwSub(self.aim.position, projectileNode.position);
     CGFloat rotationRadians = atan2f(normal.y, normal.x) + 3.14/2;
 
     
     // Determine offset of location to projectile
-    CGPoint offset = rwSub(self.aim.position, projectile.position);
+    CGPoint offset = rwSub(self.aim.position, projectileNode.position);
     
     // Bail out if shooting up
     if (offset.y >= 0) return;
 
-    [self addChild:projectile];
+    [projectile setDogSprite:projectileNode];
+    NSLog(@"%f", projectile.dogSprite.size.height);
+    
+    [self addChild:projectile.dogSprite];
     
     //get the destination and duration for the animation
-    CGPoint projectileDestination = [self assetDestination:&offset assetPosition:projectile.position];
+    CGPoint projectileDestination = [self assetDestination:&offset assetPosition:projectile.dogSprite.position];
     float animationDuration = [self getAnimationDuration:@"projectile"];
     
     // Create the actions
     SKAction * rotateProjectile = [SKAction rotateToAngle:rotationRadians duration:0];
     SKAction * actionMove = [SKAction moveTo:projectileDestination duration:animationDuration];
     SKAction * actionMoveDone = [SKAction removeFromParent];
-    [projectile runAction:[SKAction sequence:@[rotateProjectile, actionMove, actionMoveDone]]];
+    [projectile.dogSprite runAction:[SKAction sequence:@[rotateProjectile, actionMove, actionMoveDone]]];
     SKAction * fadeClickedBarAway = [SKAction fadeOutWithDuration:0];
     [self.shootingBarBackgroundWhenClicked runAction:fadeClickedBarAway];
     SKAction * showUnclickedBar = [SKAction fadeInWithDuration:0];
@@ -500,7 +505,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     }
 }
 
--(void)projectile:(SKSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat
+-(void)projectile:(DogSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat
 {
     NSLog(@"Hit");
     [projectile removeFromParent];
@@ -598,7 +603,7 @@ static inline CGPoint rwNormalize(CGPoint a)
 
 -(void)updateDogBar
 {
-    SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight*(maxShotTime-(self.totalTimeInterval- self.beginningShotTime))/maxShotTime) duration:0];
+    SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight*(maxShotTime-(self.totalTimeInterval- self.beginningShotTime))) duration:0];
     [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
 }
 
@@ -606,7 +611,7 @@ static inline CGPoint rwNormalize(CGPoint a)
 {
     if (self.chaosCount >= 100) {
         SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
-        SKScene * gameOverScene = [[GameOverScreen alloc] initWithSize:self.size won:NO];
+        SKScene * gameOverScene = [[GameOverScreen alloc] initWithSize:self.size score:self.score];
         [self.view presentScene:gameOverScene transition: reveal];
     }
 }
@@ -630,7 +635,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     if ((firstBody.categoryBitMask == projectileCategory) &&
         (secondBody.categoryBitMask == catCategory))
     {
-        [self projectile:(SKSpriteNode *) firstBody.node didCollideWithCat:(SKSpriteNode *) secondBody.node];
+        [self projectile:(DogSpriteNode *) firstBody.node didCollideWithCat:(SKSpriteNode *) secondBody.node];
     } else if (((firstBody.categoryBitMask == itemCategory) &&
                 (secondBody.categoryBitMask == catCategory))) {
         [self item:(SKSpriteNode *) firstBody.node didCollideWithCat:(SKSpriteNode *) secondBody.node];
@@ -671,7 +676,8 @@ static inline CGPoint rwNormalize(CGPoint a)
     
     //change updateSpeed and set the timer based on the speed
     self.updateSpeed=startSpeed-self.totalTimeInterval;
-    self.timerLabel.text = [NSString stringWithFormat:@"Time: %d", startSpeed-self.updateSpeed];
+    self.score = startSpeed-self.updateSpeed;
+    self.timerLabel.text = [NSString stringWithFormat:@"Time: %d", self.score];
     
     [self updateWithTimeSinceLastUpdate:timeSinceLast];
     
