@@ -9,7 +9,6 @@
 #import "MyScene.h"
 #import "math.h"
 #import "GameOverScreen.h"
-#import "DogSpriteNode.h"
 
 @interface MyScene() <SKPhysicsContactDelegate>
 @property (nonatomic) SKSpriteNode * player;
@@ -33,12 +32,14 @@
 @property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
 @property (nonatomic) NSTimeInterval totalTimeInterval;
 @property (nonatomic) BOOL shootingBool;
+@property (nonatomic) BOOL shotsFired;
 @property (nonatomic) NSInteger currentWall;
 @property (nonatomic) NSInteger score;
-@property (nonatomic) double chaosCount;
-@property (nonatomic) double chaosBarWidth;
-@property (nonatomic) double dogBarHeight;
-@property (nonatomic) double beginningShotTime;
+@property (nonatomic) float chaosCount;
+@property (nonatomic) float chaosBarWidth;
+@property (nonatomic) float dogBarHeight;
+@property (nonatomic) float beginningShotTime;
+@property (nonatomic) float shotPower;
 @property (strong, nonatomic) CMMotionManager *motionManager;
 @end
 
@@ -116,12 +117,12 @@ static inline CGPoint rwNormalize(CGPoint a)
         [self scaleSpriteNode:self.player scaleRatio:0.4];
         [self addChild:self.player];
         
-        //chaos bar
+        //chaos bar/aimer/timer/cat/
         [self initializeBars];
-        
         [self initializeAimer];
         [self initializeTimer];
         [self initializeCat];
+        self.shotsFired = NO;
         [self countdown];
         
         [self updateCat];
@@ -315,16 +316,16 @@ static inline CGPoint rwNormalize(CGPoint a)
     int catXDestination, catYDestination;
     //Determine the new location to send cat based on new wall
     switch(self.currentWall) {
-            case 0: catYDestination = tableHeight-tableCornerY;
+            case 0: catYDestination = tableHeight-tableCornerY; //top wall
                     catXDestination = (arc4random() % tableWidth) + tableCornerX;
                     break;
-            case 1: catXDestination = tableCornerX;
+            case 1: catXDestination = tableCornerX*2; //left wall
                     catYDestination = (arc4random() % tableHeight) + tableCornerY;
                     break;
-            case 2: catYDestination = tableCornerY;
+            case 2: catYDestination = tableCornerY*4; //bottom wall
                     catXDestination = (arc4random() % tableWidth) + tableCornerX;
                     break;
-            case 3: catXDestination = tableWidth-tableCornerX;
+            case 3: catXDestination = tableWidth-tableCornerX; //right wall
                     catYDestination = (arc4random() % tableHeight) + tableCornerY;
                     break;
             default: catXDestination = self.cat.position.x;
@@ -338,11 +339,11 @@ static inline CGPoint rwNormalize(CGPoint a)
     if (location.x <= catXDestination) {
         //walk right
         animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesRight
-                                                           timePerFrame:0.2] count:5];
+                                                           timePerFrame:0.2] count:updateSpeed/10];
     } else {
         //walk left
         animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesLeft
-                                                                    timePerFrame:0.2] count:5];;
+                                                                    timePerFrame:0.2] count:updateSpeed/10];;
     }
     
     [self.cat runAction:[SKAction group:@[animate, actionMove]]];
@@ -416,10 +417,7 @@ static inline CGPoint rwNormalize(CGPoint a)
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    self.shootingBool = NO;
-    double shotPower = self.shootingBarCharger.size.height/self.dogBarHeight;
-    SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight) duration:0];
-    [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
+    
     //music for on hit
     //[self runAction:[SKAction playSoundFileNamed:@"pew-pew-lei.caf" waitForCompletion:NO]];
     
@@ -428,49 +426,68 @@ static inline CGPoint rwNormalize(CGPoint a)
     CGPoint locationCheck = [touch locationInNode:self];
     NSLog(@"%f  %f",locationCheck.x, locationCheck.y);
     
-    // Set up initial location of projectile
-    DogSpriteNode * projectile = [[DogSpriteNode alloc] init];
-    [projectile setShotPower:shotPower];
-    
-    SKSpriteNode * projectileNode = [SKSpriteNode spriteNodeWithImageNamed:@"puppy.png"];
-    [self scaleSpriteNode:projectileNode scaleRatio:0.2];
-    
-    //projectile physics
-    projectileNode.position = CGPointMake(tableCornerX+tableWidth/2, tableCornerY+tableHeight);
-    projectileNode.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectileNode.size.width/2];
-    projectileNode.physicsBody.dynamic = YES;
-    projectileNode.physicsBody.categoryBitMask = projectileCategory;
-    projectileNode.physicsBody.contactTestBitMask = itemCategory;
-    projectileNode.physicsBody.collisionBitMask = !aimCategory;
-    projectileNode.physicsBody.usesPreciseCollisionDetection = YES;
-    CGPoint normal = rwSub(self.aim.position, projectileNode.position);
-    CGFloat rotationRadians = atan2f(normal.y, normal.x) + 3.14/2;
-
-    
-    // Determine offset of location to projectile
-    CGPoint offset = rwSub(self.aim.position, projectileNode.position);
-    
-    // Bail out if shooting up
-    if (offset.y >= 0) return;
-
-    [projectile setDogSprite:projectileNode];
-    NSLog(@"%f", projectile.dogSprite.size.height);
-    
-    [self addChild:projectile.dogSprite];
-    
-    //get the destination and duration for the animation
-    CGPoint projectileDestination = [self assetDestination:&offset assetPosition:projectile.dogSprite.position];
-    float animationDuration = [self getAnimationDuration:@"projectile"];
-    
-    // Create the actions
-    SKAction * rotateProjectile = [SKAction rotateToAngle:rotationRadians duration:0];
-    SKAction * actionMove = [SKAction moveTo:projectileDestination duration:animationDuration];
-    SKAction * actionMoveDone = [SKAction removeFromParent];
-    [projectile.dogSprite runAction:[SKAction sequence:@[rotateProjectile, actionMove, actionMoveDone]]];
+    self.shootingBool = NO;
+    self.shotPower = 10*(1-(self.shootingBarCharger.size.height/self.dogBarHeight));
+    SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight) duration:0];
+    [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
     SKAction * fadeClickedBarAway = [SKAction fadeOutWithDuration:0];
     [self.shootingBarBackgroundWhenClicked runAction:fadeClickedBarAway];
     SKAction * showUnclickedBar = [SKAction fadeInWithDuration:0];
     [self.shootingBarBackground runAction:showUnclickedBar];
+    
+    if(!self.shotsFired) {
+        self.shotsFired = YES;
+        SKSpriteNode * projectile = [SKSpriteNode spriteNodeWithImageNamed:@"puppy.png"];
+        [self scaleSpriteNode:projectile scaleRatio:0.2];
+        
+        //projectile physics
+        projectile.position = CGPointMake(tableCornerX+tableWidth/2, tableCornerY+tableHeight);
+        projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
+        projectile.physicsBody.dynamic = YES;
+        projectile.physicsBody.categoryBitMask = projectileCategory;
+        projectile.physicsBody.contactTestBitMask = itemCategory;
+        projectile.physicsBody.collisionBitMask = !aimCategory;
+        projectile.physicsBody.usesPreciseCollisionDetection = YES;
+        CGPoint normal = rwSub(self.aim.position, projectile.position);
+        float slope = normal.y/normal.x;
+        float possibleX = (-10-projectile.position.y)/slope + projectile.position.x;
+        float possibleY = slope*(-10-projectile.position.x) + projectile.position.y;
+        float possibleY2 = slope*(575-projectile.position.x) + projectile.position.y;
+        
+        
+        CGPoint projectileDestinationMaybe;
+        if(0 < possibleX && possibleX < 568) {
+            projectileDestinationMaybe=CGPointMake(possibleX, -10);
+        } else if (possibleY > possibleY2) {
+            projectileDestinationMaybe=CGPointMake(575, possibleY2);
+        } else {
+            projectileDestinationMaybe=CGPointMake(-10, possibleY);
+        }
+        CGFloat rotationRadians = atan2f(normal.y, normal.x) + 3.14/2;
+        
+        
+        // Determine offset of location to projectile
+        CGPoint offset = rwSub(self.aim.position, projectile.position);
+        
+        // Bail out if shooting up
+        if (offset.y >= 0) return;
+        
+        [self addChild:projectile];
+        
+        //get the destination and duration for the animation
+        //CGPoint projectileDestination = [self assetDestination:&offset assetPosition:projectile.position];
+        //float animationDuration = [self getAnimationDuration:@"projectile"];
+        
+        // Create the actions
+        SKAction * rotateProjectile = [SKAction rotateToAngle:rotationRadians duration:0];
+        SKAction * actionMove = [SKAction moveTo:projectileDestinationMaybe duration:0.5];
+        SKAction * actionMoveDone = [SKAction removeFromParent];
+        [projectile runAction:[SKAction sequence:@[rotateProjectile, actionMove, actionMoveDone]] completion:^{
+            //set cat to go new random direction
+            self.shotsFired = NO;
+        }];
+
+    }
     
 }
 
@@ -484,13 +501,13 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self.shootingBarBackgroundWhenClicked runAction:showClickedBar];
 }
 
--(CGPoint)assetDestination:(CGPoint *)initialDirection assetPosition:(CGPoint)assetPossition
+-(CGPoint)assetDestination:(CGPoint *)initialDirection assetPosition:(CGPoint)assetPosition
 {
     // Get the direction of where to shoot the item
     CGPoint direction = rwNormalize(*initialDirection);
     // Make it shoot far enough to be guaranteed off screen
     CGPoint shootAmount = rwMult(direction, self.frame.size.width*2);
-    return rwAdd(shootAmount, assetPossition);
+    return rwAdd(shootAmount, assetPosition);
 }
 
 -(float)getAnimationDuration:(NSString*)asset
@@ -505,13 +522,15 @@ static inline CGPoint rwNormalize(CGPoint a)
     }
 }
 
--(void)projectile:(DogSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat
+-(void)projectile:(SKSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat
 {
     NSLog(@"Hit");
     [projectile removeFromParent];
+    self.shotsFired = NO;
     
     if(self.chaosCount > 0)
-    self.chaosCount--;
+        self.chaosCount=MAX(0,self.chaosCount - self.shotPower);
+    
     [self updateChaosBar];
     NSLog(@"%f",self.chaosCount);
     
@@ -524,15 +543,15 @@ static inline CGPoint rwNormalize(CGPoint a)
     
     SKAction * hitAnimation;
     if(projectile.position.x >= cat.position.x) {
-        hitAnimation = [SKAction animateWithTextures:self.catHitFramesRight timePerFrame:0.8];
+        hitAnimation = [SKAction animateWithTextures:self.catHitFramesRight timePerFrame:0.5];
     } else {
-        hitAnimation = [SKAction animateWithTextures:self.catHitFramesLeft timePerFrame:0.8];
+        hitAnimation = [SKAction animateWithTextures:self.catHitFramesLeft timePerFrame:0.5];
     }
     SKAction * normalCat = [SKAction colorizeWithColorBlendFactor:0.0 duration:0.25];
     [self.cat runAction:[SKAction group:@[pulseRed, hitAnimation]]];
     [self.cat runAction:[SKAction sequence:@[normalCat]] completion:^{
         //set cat to go new random direction
-        [self updateCat];
+        //[self updateCat];
     }];
 }
 
@@ -574,6 +593,8 @@ static inline CGPoint rwNormalize(CGPoint a)
     self.chaosCount = self.chaosCount + 3;
     [self updateChaosBar];
     NSLog(@"%f",self.chaosCount);
+    [projectile removeFromParent];
+    self.shotsFired = NO;
     
     [self checkIfGameOver];
     // Determine offset of item to the cat
@@ -603,7 +624,7 @@ static inline CGPoint rwNormalize(CGPoint a)
 
 -(void)updateDogBar
 {
-    SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight*(maxShotTime-(self.totalTimeInterval- self.beginningShotTime))) duration:0];
+    SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight*(maxShotTime-MIN(self.totalTimeInterval- self.beginningShotTime, 1))) duration:0];
     [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
 }
 
@@ -635,7 +656,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     if ((firstBody.categoryBitMask == projectileCategory) &&
         (secondBody.categoryBitMask == catCategory))
     {
-        [self projectile:(DogSpriteNode *) firstBody.node didCollideWithCat:(SKSpriteNode *) secondBody.node];
+        [self projectile:(SKSpriteNode *) firstBody.node didCollideWithCat:(SKSpriteNode *) secondBody.node];
     } else if (((firstBody.categoryBitMask == itemCategory) &&
                 (secondBody.categoryBitMask == catCategory))) {
         [self item:(SKSpriteNode *) firstBody.node didCollideWithCat:(SKSpriteNode *) secondBody.node];
@@ -677,11 +698,11 @@ static inline CGPoint rwNormalize(CGPoint a)
     //change updateSpeed and set the timer based on the speed
     self.updateSpeed=startSpeed-self.totalTimeInterval;
     self.score = startSpeed-self.updateSpeed;
-    self.timerLabel.text = [NSString stringWithFormat:@"Time: %d", self.score];
+    self.timerLabel.text = [NSString stringWithFormat:@"Time: %ld", (long)self.score];
     
     [self updateWithTimeSinceLastUpdate:timeSinceLast];
     
-    if (((self.totalTimeInterval-self.beginningShotTime) < maxShotTime) && self.shootingBool) {
+    if (self.shootingBool) {
         [self updateDogBar];
     }
     
