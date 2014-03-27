@@ -169,13 +169,13 @@ static inline CGPoint rwNormalize(CGPoint a)
 -(void)processUserMotionForUpdate:(NSTimeInterval)currentTime
 {
     CMAccelerometerData* data = self.motionManager.accelerometerData;
-    if (fabs(data.acceleration.y) > 0.2)
+    if (fabs(data.acceleration.y) > 0.1)
     {
-        [self.aim.physicsBody applyForce:CGVectorMake(1000.0 * data.acceleration.y, 0)];
+        [self.aim.physicsBody applyForce:CGVectorMake(1500.0 * data.acceleration.y, 0)];
     }
-    if (fabs(data.acceleration.x) > 0.2)
+    if (fabs(data.acceleration.x) > 0.1)
     {
-        [self.aim.physicsBody applyForce:CGVectorMake(0, -1000.0 * data.acceleration.x)];
+        [self.aim.physicsBody applyForce:CGVectorMake(0, -1500.0 * data.acceleration.x)];
     }
 }
 
@@ -308,17 +308,6 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self addChild:self.cat];
 }
 
-/*-(void)increment:(NSTimer*)thing{
-    SKAction * fadeCountdown = [SKAction fadeOutWithDuration:1];
-    SKAction * unfadeCountdown = [SKAction fadeInWithDuration:0];
-    
-    if(self.count<1) self.countdownLabel.text = [NSString stringWithFormat:@"GO!"];
-    else self.countdownLabel.text = [NSString stringWithFormat:@"%i", self.count];
-    
-    [self.countdownLabel runAction:[SKAction sequence:@[unfadeCountdown, fadeCountdown]]];
-    self.count--;
-}*/
-
 -(void)countdown
 {
     self.countdownLabel = [SKLabelNode labelNodeWithFontNamed:@"GillSans-Bold"];
@@ -328,21 +317,9 @@ static inline CGPoint rwNormalize(CGPoint a)
     self.countdownLabel.position = CGPointMake(CGRectGetMidX(self.table), CGRectGetMidY(self.table));
     [self addChild:self.countdownLabel];
     
-    /*[NSTimer scheduledTimerWithTimeInterval:.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];
-    [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];
-    [NSTimer scheduledTimerWithTimeInterval:2.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];
-    [NSTimer scheduledTimerWithTimeInterval:3.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];*/
-    
-    //[self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown, wait]]];
-   // self.countdownLabel.text = [NSString stringWithFormat:@"%i", 2];
-
-    //[self.countdownLabel runAction:[SKAction sequence:@[unfadeCountdown, fadeCountdown, wait]]];
-    //self.countdownLabel.text = [NSString stringWithFormat:@"%i", 1];
     SKAction * fadeCountdown = [SKAction fadeOutWithDuration:1];
     [self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown]]];
     self.countdownLabel.text = [NSString stringWithFormat:@"Go!"];
-
-    //[self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown, removeCountdown, wait]]];
      
 }
 
@@ -753,7 +730,9 @@ static inline CGPoint rwNormalize(CGPoint a)
         [self updateDogBar];
     }
     
-    if(self.chaosCount < 40) {
+    self.backgroundMusicPlayerFast.rate = 0.5 + self.chaosCount/1000;
+    
+    /*if(self.chaosCount < 40) {
         //self.backgroundMusicPlayerSlow.rate = 1.0;
         [self.backgroundMusicPlayerMedium stop];
         [self.backgroundMusicPlayerFast stop];
@@ -773,6 +752,19 @@ static inline CGPoint rwNormalize(CGPoint a)
         [self.backgroundMusicPlayerMedium stop];
         [self.backgroundMusicPlayerFast stop];
     }
+    
+    if(self.chaosCount < 50) {
+        //self.backgroundMusicPlayerSlow.rate = 1.0;
+        [self.backgroundMusicPlayerFast stop];
+        [self.backgroundMusicPlayerSlow play];
+    } else if(self.chaosCount <100) {
+        //self.backgroundMusicPlayerSlow.rate = 2.0;
+        [self.backgroundMusicPlayerSlow stop];
+        [self.backgroundMusicPlayerFast play];
+    } else {
+        [self.backgroundMusicPlayerSlow stop];
+        [self.backgroundMusicPlayerFast stop];
+    }*/
 }
 
 @end

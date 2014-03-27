@@ -141,7 +141,7 @@
         SKScene * game = [[MyScene alloc] initWithSize:self.size];
         [self.view presentScene:game transition:[SKTransition fadeWithDuration:0]];
     }else {
-        self.countdownLabel.text = [NSString stringWithFormat:@"%i", self.count];
+        self.countdownLabel.text = [NSString stringWithFormat:@"%li", (long)self.count];
     }
     
     [self.countdownLabel runAction:[SKAction sequence:@[unfadeCountdown, fadeCountdown]]];
