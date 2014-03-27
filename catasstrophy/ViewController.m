@@ -52,7 +52,7 @@
         //skView.showsFPS=YES;
         //skView.showsNodeCount=YES;
         
-        SKScene * scene = [Menu sceneWithSize:skView.bounds.size];
+        SKScene * scene = [Logo sceneWithSize:skView.bounds.size];
         scene.scaleMode = SKSceneScaleModeAspectFill;
         
         [skView presentScene:scene];

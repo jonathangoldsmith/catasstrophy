@@ -10,6 +10,7 @@
 #import "MyScene.h"
 #import "Tutorial.h"
 #import "MovieViewController.h"
+#import "Movie.h"
 
 @interface Menu()
 @property (nonatomic) SKSpriteNode * background;
@@ -68,18 +69,23 @@
     //pressed play button
     if ([node.name isEqualToString:@"playButton"]) {
         SKScene * game = [[MyScene alloc] initWithSize:self.size];
-        [self.view presentScene:game];
+        [self.view presentScene:game transition:[SKTransition fadeWithDuration:.5]];
     }
     
     //pressed movie button
     else if ([node.name isEqualToString:@"movieButton"]) {
-        //SKScene * movieScene = [[MovieViewController alloc] initWithSize:self.size];
-        //[self.view presentScene:game];
+        SKScene * movie = [[Movie alloc] initWithSize:self.size];
+        [self.view presentScene:movie transition:[SKTransition fadeWithDuration:.5]];
+        
+       /* SKVideoNode *vid1 = [SKVideoNode videoNodeWithVideoFileNamed:@"game_intro.mov"];
+        vid1.position = CGPointMake(160, 180);
+        [self addChild:vid1];
+        [vid1 play];*/
     }
     
     else if ([node.name isEqualToString:@"howButton"]) {
         SKScene * tutorial = [[Tutorial alloc] initWithSize:self.size];
-        [self.view presentScene:tutorial];
+        [self.view presentScene:tutorial transition:[SKTransition fadeWithDuration:.5]];
     }
 }
 

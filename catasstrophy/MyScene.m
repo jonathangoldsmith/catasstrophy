@@ -41,6 +41,8 @@
 @property (nonatomic) float beginningShotTime;
 @property (nonatomic) float shotPower;
 @property (strong, nonatomic) CMMotionManager *motionManager;
+
+@property (nonatomic) NSInteger count;
 @end
 
 @implementation MyScene
@@ -123,6 +125,8 @@ static inline CGPoint rwNormalize(CGPoint a)
         [self initializeTimer];
         [self initializeCat];
         self.shotsFired = NO;
+        
+        self.count=3;
         [self countdown];
         
         [self updateCat];
@@ -130,7 +134,6 @@ static inline CGPoint rwNormalize(CGPoint a)
         {
             [self addItem];
         }
-        
     }
     return self;
 }
@@ -278,19 +281,31 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self addChild:self.cat];
 }
 
--(void)countdown
-{
-    self.countdownLabel = [SKLabelNode labelNodeWithFontNamed:@"Courier"];
-    self.countdownLabel.fontSize = 50;
-    self.countdownLabel.fontColor = [SKColor blueColor];
-    self.countdownLabel.text = [NSString stringWithFormat:@"%i", 3];
-    self.countdownLabel.position = CGPointMake(CGRectGetMidX(self.table), CGRectGetMidY(self.table));
-    [self addChild:self.countdownLabel];
+-(void)increment:(NSTimer*)thing{
     SKAction * fadeCountdown = [SKAction fadeOutWithDuration:1];
     SKAction * unfadeCountdown = [SKAction fadeInWithDuration:0];
-    SKAction * removeCountdown = [SKAction removeFromParent];
-    SKAction * wait = [SKAction waitForDuration:1];
     
+    if(self.count<1) self.countdownLabel.text = [NSString stringWithFormat:@"GO!"];
+    else self.countdownLabel.text = [NSString stringWithFormat:@"%i", self.count];
+    
+    [self.countdownLabel runAction:[SKAction sequence:@[unfadeCountdown, fadeCountdown]]];
+    self.count--;
+}
+
+-(void)countdown
+{
+    self.countdownLabel = [SKLabelNode labelNodeWithFontNamed:@"GillSans-Bold"];
+    self.countdownLabel.fontSize = 50;
+    self.countdownLabel.fontColor = [SKColor blueColor];
+    self.countdownLabel.text = [NSString stringWithFormat:@""];
+    self.countdownLabel.position = CGPointMake(CGRectGetMidX(self.table), CGRectGetMidY(self.table));
+    [self addChild:self.countdownLabel];
+    
+    [NSTimer scheduledTimerWithTimeInterval:.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:2.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];
+    [NSTimer scheduledTimerWithTimeInterval:3.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];
+    /*
     [self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown, wait]]];
     self.countdownLabel.text = [NSString stringWithFormat:@"%i", 2];
 
@@ -298,9 +313,10 @@ static inline CGPoint rwNormalize(CGPoint a)
     self.countdownLabel.text = [NSString stringWithFormat:@"%i", 1];
 
     [self.countdownLabel runAction:[SKAction sequence:@[unfadeCountdown, fadeCountdown, wait]]];
-    self.countdownLabel.text = [NSString stringWithFormat:@"GO!"];
+    self.countdownLabel.text = [NSString stringWithFormat:@"Bluh!"];
 
     [self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown, removeCountdown, wait]]];
+     */
 }
 
 -(void)updateCat
@@ -630,6 +646,7 @@ static inline CGPoint rwNormalize(CGPoint a)
 
 -(void)checkIfGameOver
 {
+    
     if (self.chaosCount >= 100) {
         SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
         SKScene * gameOverScene = [[GameOverScreen alloc] initWithSize:self.size score:self.score];
@@ -699,7 +716,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     self.updateSpeed=startSpeed-self.totalTimeInterval;
     self.score = startSpeed-self.updateSpeed;
     self.timerLabel.text = [NSString stringWithFormat:@"Time: %ld", (long)self.score];
-    
+
     [self updateWithTimeSinceLastUpdate:timeSinceLast];
     
     if (self.shootingBool) {

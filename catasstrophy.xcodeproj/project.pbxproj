@@ -74,7 +74,6 @@
 		65C2F59718DB36A2006C5352 /* play_area.png in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F59618DB36A2006C5352 /* play_area.png */; };
 		65C2F59A18DCA4FE006C5352 /* icon_80.png in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F59818DCA4FE006C5352 /* icon_80.png */; };
 		65C2F59B18DCA4FE006C5352 /* icon_58.png in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F59918DCA4FE006C5352 /* icon_58.png */; };
-		65C2F5AB18DCC6C5006C5352 /* introScene.mov in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F5AA18DCC6C5006C5352 /* introScene.mov */; };
 		65C2F5AD18DCC7EC006C5352 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65C2F5AC18DCC7EC006C5352 /* MediaPlayer.framework */; };
 		65C2F5AF18DCC808006C5352 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65C2F5AE18DCC808006C5352 /* CoreMotion.framework */; };
 		65C2F5B218DCC8DA006C5352 /* MovieViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 65C2F5B118DCC8DA006C5352 /* MovieViewController.m */; };
@@ -103,6 +102,9 @@
 		65C2F64718E261A0006C5352 /* return_menu.png in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F64618E261A0006C5352 /* return_menu.png */; };
 		65C2F64A18E26B23006C5352 /* Tutorial.m in Sources */ = {isa = PBXBuildFile; fileRef = 65C2F64918E26B23006C5352 /* Tutorial.m */; };
 		65C2F64C18E26B90006C5352 /* tutorial.png in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F64B18E26B90006C5352 /* tutorial.png */; };
+		65C2F6D518E34C50006C5352 /* Movie.m in Sources */ = {isa = PBXBuildFile; fileRef = 65C2F6D418E34C50006C5352 /* Movie.m */; };
+		65C2F6D718E376AC006C5352 /* game_intro.mov in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F6D618E376AC006C5352 /* game_intro.mov */; };
+		65C2F6D918E3824D006C5352 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65C2F6D818E3824D006C5352 /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -171,7 +173,6 @@
 		65C2F59618DB36A2006C5352 /* play_area.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play_area.png; sourceTree = "<group>"; };
 		65C2F59818DCA4FE006C5352 /* icon_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_80.png; sourceTree = "<group>"; };
 		65C2F59918DCA4FE006C5352 /* icon_58.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_58.png; sourceTree = "<group>"; };
-		65C2F5AA18DCC6C5006C5352 /* introScene.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = introScene.mov; sourceTree = "<group>"; };
 		65C2F5AC18DCC7EC006C5352 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		65C2F5AE18DCC808006C5352 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		65C2F5B018DCC8DA006C5352 /* MovieViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MovieViewController.h; sourceTree = "<group>"; };
@@ -204,6 +205,10 @@
 		65C2F64818E26B23006C5352 /* Tutorial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tutorial.h; sourceTree = "<group>"; };
 		65C2F64918E26B23006C5352 /* Tutorial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tutorial.m; sourceTree = "<group>"; };
 		65C2F64B18E26B90006C5352 /* tutorial.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = tutorial.png; path = ../../../Downloads/tutorial.png; sourceTree = "<group>"; };
+		65C2F6D318E34C50006C5352 /* Movie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Movie.h; sourceTree = "<group>"; };
+		65C2F6D418E34C50006C5352 /* Movie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Movie.m; sourceTree = "<group>"; };
+		65C2F6D618E376AC006C5352 /* game_intro.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = game_intro.mov; sourceTree = "<group>"; };
+		65C2F6D818E3824D006C5352 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -211,6 +216,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65C2F6D918E3824D006C5352 /* AVFoundation.framework in Frameworks */,
 				65C2F5AF18DCC808006C5352 /* CoreMotion.framework in Frameworks */,
 				652E7CB718BD31840079827F /* SpriteKit.framework in Frameworks */,
 				65C2F5AD18DCC7EC006C5352 /* MediaPlayer.framework in Frameworks */,
@@ -255,6 +261,7 @@
 		652E7CAF18BD31840079827F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				65C2F6D818E3824D006C5352 /* AVFoundation.framework */,
 				65C2F5AE18DCC808006C5352 /* CoreMotion.framework */,
 				65C2F5AC18DCC7EC006C5352 /* MediaPlayer.framework */,
 				652E7CB018BD31840079827F /* Foundation.framework */,
@@ -284,6 +291,8 @@
 				652E7CC818BD31840079827F /* ViewController.m */,
 				65C2F5B018DCC8DA006C5352 /* MovieViewController.h */,
 				65C2F5B118DCC8DA006C5352 /* MovieViewController.m */,
+				65C2F6D318E34C50006C5352 /* Movie.h */,
+				65C2F6D418E34C50006C5352 /* Movie.m */,
 				652E7CCA18BD31840079827F /* MyScene.h */,
 				652E7CCB18BD31840079827F /* MyScene.m */,
 				652E7CCF18BD31840079827F /* Images.xcassets */,
@@ -345,12 +354,12 @@
 		652E7D3418DA475A0079827F /* art assets */ = {
 			isa = PBXGroup;
 			children = (
+				65C2F6D618E376AC006C5352 /* game_intro.mov */,
 				65C2F64B18E26B90006C5352 /* tutorial.png */,
 				65C2F64218E258B0006C5352 /* nest_640x960.png */,
 				65C2F64318E258B0006C5352 /* nest_640x1136.png */,
 				65C2F62B18E242D2006C5352 /* menu */,
 				65C2F62418E219D2006C5352 /* game_over */,
-				65C2F5AA18DCC6C5006C5352 /* introScene.mov */,
 				65C2F58F18DB3622006C5352 /* target.png */,
 				65C2F61418E11686006C5352 /* catImages */,
 				65C2F59518DB3631006C5352 /* icon */,
@@ -550,6 +559,7 @@
 				652E7D1818DA473D0079827F /* thing_dagger.png in Resources */,
 				65C2F62818E219D2006C5352 /* game_over.png in Resources */,
 				652E7CF318BD33F60079827F /* sprites.atlas in Resources */,
+				65C2F6D718E376AC006C5352 /* game_intro.mov in Resources */,
 				652E7CF118BD33F60079827F /* background-music-aac.caf in Resources */,
 				65C2F59B18DCA4FE006C5352 /* icon_58.png in Resources */,
 				652E7D3218DA473D0079827F /* thing_vase.png in Resources */,
@@ -572,7 +582,6 @@
 				65C2F62918E219D2006C5352 /* gg_cat.png in Resources */,
 				65C2F63018E242D2006C5352 /* how_to_play.png in Resources */,
 				65C2F63118E242D2006C5352 /* menu_bg.png in Resources */,
-				65C2F5AB18DCC6C5006C5352 /* introScene.mov in Resources */,
 				65C2F61D18E11686006C5352 /* catImagesHitLeft.atlas in Resources */,
 				652E7D1C18DA473D0079827F /* thing_fish.png in Resources */,
 				652E7D2A18DA473D0079827F /* thing_pencil.png in Resources */,
@@ -642,6 +651,7 @@
 			files = (
 				652E7CF618BD7D070079827F /* GameOverScreen.m in Sources */,
 				65C2F5B218DCC8DA006C5352 /* MovieViewController.m in Sources */,
+				65C2F6D518E34C50006C5352 /* Movie.m in Sources */,
 				652E7CCC18BD31840079827F /* MyScene.m in Sources */,
 				652E7CC918BD31840079827F /* ViewController.m in Sources */,
 				65C2F64A18E26B23006C5352 /* Tutorial.m in Sources */,

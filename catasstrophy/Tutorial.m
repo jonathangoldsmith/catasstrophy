@@ -51,7 +51,7 @@
     //pressed menu button
     if ([node.name isEqualToString:@"menuButton"]) {
         SKScene * menu = [[Menu alloc] initWithSize:self.size];
-        [self.view presentScene:menu];
+        [self.view presentScene:menu transition:[SKTransition fadeWithDuration:.5]];
     }
 }
 
