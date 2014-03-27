@@ -105,6 +105,12 @@
 		65C2F6D518E34C50006C5352 /* Movie.m in Sources */ = {isa = PBXBuildFile; fileRef = 65C2F6D418E34C50006C5352 /* Movie.m */; };
 		65C2F6D718E376AC006C5352 /* game_intro.mov in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F6D618E376AC006C5352 /* game_intro.mov */; };
 		65C2F6D918E3824D006C5352 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65C2F6D818E3824D006C5352 /* AVFoundation.framework */; };
+		65C2F6E018E3DCB9006C5352 /* Menu.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F6DA18E3DCB9006C5352 /* Menu.mp3 */; };
+		65C2F6E118E3DCB9006C5352 /* Gameplay slow.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F6DB18E3DCB9006C5352 /* Gameplay slow.mp3 */; };
+		65C2F6E218E3DCB9006C5352 /* Gameplay medium.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F6DC18E3DCB9006C5352 /* Gameplay medium.mp3 */; };
+		65C2F6E318E3DCB9006C5352 /* Gameplay Fast.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F6DD18E3DCB9006C5352 /* Gameplay Fast.mp3 */; };
+		65C2F6E418E3DCB9006C5352 /* Game Over Symphony.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F6DE18E3DCB9006C5352 /* Game Over Symphony.mp3 */; };
+		65C2F6EA18E3E586006C5352 /* Countdown.m in Sources */ = {isa = PBXBuildFile; fileRef = 65C2F6E918E3E586006C5352 /* Countdown.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -209,6 +215,13 @@
 		65C2F6D418E34C50006C5352 /* Movie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Movie.m; sourceTree = "<group>"; };
 		65C2F6D618E376AC006C5352 /* game_intro.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = game_intro.mov; sourceTree = "<group>"; };
 		65C2F6D818E3824D006C5352 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		65C2F6DA18E3DCB9006C5352 /* Menu.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = Menu.mp3; path = ../../../Downloads/Menu.mp3; sourceTree = "<group>"; };
+		65C2F6DB18E3DCB9006C5352 /* Gameplay slow.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "Gameplay slow.mp3"; path = "../../../Downloads/Gameplay slow.mp3"; sourceTree = "<group>"; };
+		65C2F6DC18E3DCB9006C5352 /* Gameplay medium.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "Gameplay medium.mp3"; path = "../../../Downloads/Gameplay medium.mp3"; sourceTree = "<group>"; };
+		65C2F6DD18E3DCB9006C5352 /* Gameplay Fast.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "Gameplay Fast.mp3"; path = "../../../Downloads/Gameplay Fast.mp3"; sourceTree = "<group>"; };
+		65C2F6DE18E3DCB9006C5352 /* Game Over Symphony.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "Game Over Symphony.mp3"; path = "../../../Downloads/Game Over Symphony.mp3"; sourceTree = "<group>"; };
+		65C2F6E818E3E586006C5352 /* Countdown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Countdown.h; sourceTree = "<group>"; };
+		65C2F6E918E3E586006C5352 /* Countdown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Countdown.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -295,7 +308,10 @@
 				65C2F6D418E34C50006C5352 /* Movie.m */,
 				652E7CCA18BD31840079827F /* MyScene.h */,
 				652E7CCB18BD31840079827F /* MyScene.m */,
+				65C2F6E818E3E586006C5352 /* Countdown.h */,
+				65C2F6E918E3E586006C5352 /* Countdown.m */,
 				652E7CCF18BD31840079827F /* Images.xcassets */,
+				65C2F6E618E3DD35006C5352 /* music */,
 				652E7D3418DA475A0079827F /* art assets */,
 				652E7CEC18BD33F60079827F /* SpriteKitSimpleGameResources */,
 				652E7CB918BD31840079827F /* Supporting Files */,
@@ -354,13 +370,11 @@
 		652E7D3418DA475A0079827F /* art assets */ = {
 			isa = PBXGroup;
 			children = (
-				65C2F6D618E376AC006C5352 /* game_intro.mov */,
 				65C2F64B18E26B90006C5352 /* tutorial.png */,
-				65C2F64218E258B0006C5352 /* nest_640x960.png */,
-				65C2F64318E258B0006C5352 /* nest_640x1136.png */,
+				65C2F58F18DB3622006C5352 /* target.png */,
+				65C2F6E718E3DD4A006C5352 /* logos */,
 				65C2F62B18E242D2006C5352 /* menu */,
 				65C2F62418E219D2006C5352 /* game_over */,
-				65C2F58F18DB3622006C5352 /* target.png */,
 				65C2F61418E11686006C5352 /* catImages */,
 				65C2F59518DB3631006C5352 /* icon */,
 				652E7D4A18DA489F0079827F /* background stuff */,
@@ -480,6 +494,28 @@
 			path = menu;
 			sourceTree = "<group>";
 		};
+		65C2F6E618E3DD35006C5352 /* music */ = {
+			isa = PBXGroup;
+			children = (
+				65C2F6D618E376AC006C5352 /* game_intro.mov */,
+				65C2F6DA18E3DCB9006C5352 /* Menu.mp3 */,
+				65C2F6DB18E3DCB9006C5352 /* Gameplay slow.mp3 */,
+				65C2F6DC18E3DCB9006C5352 /* Gameplay medium.mp3 */,
+				65C2F6DD18E3DCB9006C5352 /* Gameplay Fast.mp3 */,
+				65C2F6DE18E3DCB9006C5352 /* Game Over Symphony.mp3 */,
+			);
+			name = music;
+			sourceTree = "<group>";
+		};
+		65C2F6E718E3DD4A006C5352 /* logos */ = {
+			isa = PBXGroup;
+			children = (
+				65C2F64218E258B0006C5352 /* nest_640x960.png */,
+				65C2F64318E258B0006C5352 /* nest_640x1136.png */,
+			);
+			name = logos;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -587,7 +623,10 @@
 				652E7D2A18DA473D0079827F /* thing_pencil.png in Resources */,
 				652E7CBD18BD31840079827F /* InfoPlist.strings in Resources */,
 				652E7D1A18DA473D0079827F /* thing_eraser.png in Resources */,
+				65C2F6E018E3DCB9006C5352 /* Menu.mp3 in Resources */,
+				65C2F6E118E3DCB9006C5352 /* Gameplay slow.mp3 in Resources */,
 				652E7D2018DA473D0079827F /* thing_lamp.png in Resources */,
+				65C2F6E418E3DCB9006C5352 /* Game Over Symphony.mp3 in Resources */,
 				65C2F61C18E11686006C5352 /* catImagesFlipRight.atlas in Resources */,
 				65C2F64518E258B0006C5352 /* nest_640x1136.png in Resources */,
 				65C2F63318E242D2006C5352 /* playvid_button.png in Resources */,
@@ -599,6 +638,7 @@
 				652E7D2618DA473D0079827F /* thing_mug.png in Resources */,
 				65C2F61B18E11686006C5352 /* catImagesFlipLeft.atlas in Resources */,
 				65C2F62A18E219D2006C5352 /* gg_cat2.png in Resources */,
+				65C2F6E318E3DCB9006C5352 /* Gameplay Fast.mp3 in Resources */,
 				65C2F64C18E26B90006C5352 /* tutorial.png in Resources */,
 				65C2F64418E258B0006C5352 /* nest_640x960.png in Resources */,
 				652E7CC618BD31840079827F /* Main.storyboard in Resources */,
@@ -611,6 +651,7 @@
 				65C2F5B818DCD1BA006C5352 /* dogbar_clicked.png in Resources */,
 				65C2F61E18E11686006C5352 /* catImagesHitRight.atlas in Resources */,
 				65C2F59118DB3622006C5352 /* icon_small.png in Resources */,
+				65C2F6E218E3DCB9006C5352 /* Gameplay medium.mp3 in Resources */,
 				652E7D1218DA473D0079827F /* thing_candy.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -650,6 +691,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				652E7CF618BD7D070079827F /* GameOverScreen.m in Sources */,
+				65C2F6EA18E3E586006C5352 /* Countdown.m in Sources */,
 				65C2F5B218DCC8DA006C5352 /* MovieViewController.m in Sources */,
 				65C2F6D518E34C50006C5352 /* Movie.m in Sources */,
 				652E7CCC18BD31840079827F /* MyScene.m in Sources */,

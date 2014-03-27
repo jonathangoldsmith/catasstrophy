@@ -10,6 +10,7 @@
 #import "MyScene.h"
 #import "Menu.h"
 #import "ViewController.h"
+#import "Countdown.h"
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 @interface GameOverScreen()
@@ -20,6 +21,7 @@
 @property (nonatomic) SKSpriteNode * replay;
 @property (nonatomic) SKSpriteNode * menu;
 @property (nonatomic) SKSpriteNode * replayClicked;
+@property (nonatomic) AVAudioPlayer * backgroundMusicPlayer;
 @end
 @implementation GameOverScreen
 
@@ -39,6 +41,15 @@
         self.background.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
         [self scaleSpriteNode:self.background scaleRatio:0.5];
         [self addChild:self.background];
+        
+        
+        //for the background music
+        NSError *error;
+        NSURL * backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"Game Over Symphony" withExtension:@"mp3"];
+        self.backgroundMusicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURL error:&error];
+        self.backgroundMusicPlayer.numberOfLoops = -1;
+        [self.backgroundMusicPlayer prepareToPlay];
+        [self.backgroundMusicPlayer play];
         
         //score
         self.scoreText = [SKLabelNode labelNodeWithFontNamed:@"GillSans-Bold"];
@@ -101,10 +112,12 @@
     //the only button on the screen is clicked
     if ([node.name isEqualToString:@"replayButton"]) {
         //[NSThread sleepForTimeInterval:1];
-        SKScene * game = [[MyScene alloc] initWithSize:self.size];
+        [self.backgroundMusicPlayer stop];
+        SKScene * game = [[Countdown alloc] initWithSize:self.size];
         [self.view presentScene:game];
     }
     else if ([node.name isEqualToString:@"menuButton"]) {
+        [self.backgroundMusicPlayer stop];
         SKScene * menu = [[Menu alloc] initWithSize:self.size];
         [self.view presentScene:menu];
     }

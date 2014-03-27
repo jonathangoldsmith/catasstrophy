@@ -11,12 +11,14 @@
 #import "Tutorial.h"
 #import "MovieViewController.h"
 #import "Movie.h"
+#import "Countdown.h"
 
 @interface Menu()
 @property (nonatomic) SKSpriteNode * background;
 @property (nonatomic) SKSpriteNode * play;
 @property (nonatomic) SKSpriteNode * movie;
 @property (nonatomic) SKSpriteNode * how;
+@property (nonatomic) AVAudioPlayer * backgroundMusicPlayer;
 @end
 
 @implementation Menu
@@ -56,6 +58,15 @@
         self.how.position = CGPointMake(self.background.size.width-90, self.background.size.height-290);
         self.how.name = @"howButton";//how the node is identified later
         [self addChild:self.how];
+        
+        //for the background music
+         NSError *error;
+         NSURL * backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"Menu" withExtension:@"mp3"];
+         self.backgroundMusicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURL error:&error];
+         self.backgroundMusicPlayer.numberOfLoops = -1;
+         [self.backgroundMusicPlayer prepareToPlay];
+         [self.backgroundMusicPlayer play];
+        
     }
     return self;
 }
@@ -68,12 +79,14 @@
     
     //pressed play button
     if ([node.name isEqualToString:@"playButton"]) {
-        SKScene * game = [[MyScene alloc] initWithSize:self.size];
+        [self.backgroundMusicPlayer stop];
+        SKScene * game = [[Countdown alloc] initWithSize:self.size];
         [self.view presentScene:game transition:[SKTransition fadeWithDuration:.5]];
     }
     
     //pressed movie button
     else if ([node.name isEqualToString:@"movieButton"]) {
+        [self.backgroundMusicPlayer stop];
         SKScene * movie = [[Movie alloc] initWithSize:self.size];
         [self.view presentScene:movie transition:[SKTransition fadeWithDuration:.5]];
         
@@ -84,6 +97,7 @@
     }
     
     else if ([node.name isEqualToString:@"howButton"]) {
+        [self.backgroundMusicPlayer stop];
         SKScene * tutorial = [[Tutorial alloc] initWithSize:self.size];
         [self.view presentScene:tutorial transition:[SKTransition fadeWithDuration:.5]];
     }

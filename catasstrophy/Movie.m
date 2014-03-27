@@ -77,6 +77,8 @@
     [self.moviePlayer stop];
     [self.moviePlayer.view removeFromSuperview];
     self.moviePlayer = nil;
+    SKScene * menu = [[Menu alloc] initWithSize:self.size];
+    [self.view presentScene:menu transition:[SKTransition fadeWithDuration:.5]];
     
 }
 

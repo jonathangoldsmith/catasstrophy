@@ -9,9 +9,12 @@
 #import "Tutorial.h"
 #import "Menu.h"
 
+
 @interface Tutorial()
 @property (nonatomic) SKSpriteNode * background;
 @property (nonatomic) SKSpriteNode * menu;
+@property (nonatomic) AVAudioPlayer * backgroundMusicPlayer;
+
 @end
 
 @implementation Tutorial
@@ -38,6 +41,14 @@
         self.menu.name = @"menuButton";//how the node is identified later
         [self addChild:self.menu];
         
+        //for the background music
+        NSError *error;
+        NSURL * backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"Menu" withExtension:@"mp3"];
+        self.backgroundMusicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURL error:&error];
+        self.backgroundMusicPlayer.numberOfLoops = -1;
+        [self.backgroundMusicPlayer prepareToPlay];
+        [self.backgroundMusicPlayer play];
+        
     }
     return self;
 }
@@ -50,6 +61,7 @@
     
     //pressed menu button
     if ([node.name isEqualToString:@"menuButton"]) {
+        [self.backgroundMusicPlayer stop];
         SKScene * menu = [[Menu alloc] initWithSize:self.size];
         [self.view presentScene:menu transition:[SKTransition fadeWithDuration:.5]];
     }

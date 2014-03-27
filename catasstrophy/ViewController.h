@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import <SpriteKit/SpriteKit.h>
-#import "MyScene.h"
-#import "MovieViewController.h"
 
 @interface ViewController : UIViewController
 

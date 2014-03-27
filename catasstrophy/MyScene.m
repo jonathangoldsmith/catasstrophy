@@ -41,6 +41,10 @@
 @property (nonatomic) float beginningShotTime;
 @property (nonatomic) float shotPower;
 @property (strong, nonatomic) CMMotionManager *motionManager;
+@property (nonatomic) AVAudioPlayer * backgroundMusicPlayerSlow;
+@property (nonatomic) AVAudioPlayer * backgroundMusicPlayerMedium;
+@property (nonatomic) AVAudioPlayer * backgroundMusicPlayerFast;
+@property (nonatomic) AVAudioPlayer * soundEffectMusicPlayer;
 
 @property (nonatomic) NSInteger count;
 @end
@@ -134,6 +138,29 @@ static inline CGPoint rwNormalize(CGPoint a)
         {
             [self addItem];
         }
+        
+        //music!
+        NSError *error;
+        NSURL * backgroundMusicURLSlow = [[NSBundle mainBundle] URLForResource:@"Gameplay slow" withExtension:@"mp3"];
+        self.backgroundMusicPlayerSlow = [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURLSlow error:&error];
+        self.backgroundMusicPlayerSlow.numberOfLoops = -1;
+        self.backgroundMusicPlayerSlow.enableRate = YES;
+        [self.backgroundMusicPlayerSlow prepareToPlay];
+        [self.backgroundMusicPlayerSlow play];
+        
+        NSURL * backgroundMusicURLMedium = [[NSBundle mainBundle] URLForResource:@"Gameplay medium" withExtension:@"mp3"];
+        self.backgroundMusicPlayerMedium = [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURLMedium error:&error];
+        self.backgroundMusicPlayerMedium.numberOfLoops = -1;
+        self.backgroundMusicPlayerMedium.enableRate = YES;
+        [self.backgroundMusicPlayerMedium prepareToPlay];
+        //[self.backgroundMusicPlayerMedium play];
+        
+        NSURL * backgroundMusicURLFast = [[NSBundle mainBundle] URLForResource:@"Gameplay Fast" withExtension:@"mp3"];
+        self.backgroundMusicPlayerFast = [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURLFast error:&error];
+        self.backgroundMusicPlayerFast.numberOfLoops = -1;
+        self.backgroundMusicPlayerFast.enableRate = YES;
+        [self.backgroundMusicPlayerFast prepareToPlay];
+        //[self.backgroundMusicPlayerFast play];
     }
     return self;
 }
@@ -281,7 +308,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self addChild:self.cat];
 }
 
--(void)increment:(NSTimer*)thing{
+/*-(void)increment:(NSTimer*)thing{
     SKAction * fadeCountdown = [SKAction fadeOutWithDuration:1];
     SKAction * unfadeCountdown = [SKAction fadeInWithDuration:0];
     
@@ -290,7 +317,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     
     [self.countdownLabel runAction:[SKAction sequence:@[unfadeCountdown, fadeCountdown]]];
     self.count--;
-}
+}*/
 
 -(void)countdown
 {
@@ -301,22 +328,22 @@ static inline CGPoint rwNormalize(CGPoint a)
     self.countdownLabel.position = CGPointMake(CGRectGetMidX(self.table), CGRectGetMidY(self.table));
     [self addChild:self.countdownLabel];
     
-    [NSTimer scheduledTimerWithTimeInterval:.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];
+    /*[NSTimer scheduledTimerWithTimeInterval:.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];
     [NSTimer scheduledTimerWithTimeInterval:1.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];
     [NSTimer scheduledTimerWithTimeInterval:2.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];
-    [NSTimer scheduledTimerWithTimeInterval:3.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];
-    /*
-    [self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown, wait]]];
-    self.countdownLabel.text = [NSString stringWithFormat:@"%i", 2];
+    [NSTimer scheduledTimerWithTimeInterval:3.5 target:self selector:@selector(increment:) userInfo:nil repeats:NO];*/
+    
+    //[self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown, wait]]];
+   // self.countdownLabel.text = [NSString stringWithFormat:@"%i", 2];
 
-    [self.countdownLabel runAction:[SKAction sequence:@[unfadeCountdown, fadeCountdown, wait]]];
-    self.countdownLabel.text = [NSString stringWithFormat:@"%i", 1];
+    //[self.countdownLabel runAction:[SKAction sequence:@[unfadeCountdown, fadeCountdown, wait]]];
+    //self.countdownLabel.text = [NSString stringWithFormat:@"%i", 1];
+    SKAction * fadeCountdown = [SKAction fadeOutWithDuration:1];
+    [self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown]]];
+    self.countdownLabel.text = [NSString stringWithFormat:@"Go!"];
 
-    [self.countdownLabel runAction:[SKAction sequence:@[unfadeCountdown, fadeCountdown, wait]]];
-    self.countdownLabel.text = [NSString stringWithFormat:@"Bluh!"];
-
-    [self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown, removeCountdown, wait]]];
-     */
+    //[self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown, removeCountdown, wait]]];
+     
 }
 
 -(void)updateCat
@@ -648,7 +675,10 @@ static inline CGPoint rwNormalize(CGPoint a)
 {
     
     if (self.chaosCount >= 100) {
-        SKTransition *reveal = [SKTransition flipHorizontalWithDuration:0.5];
+        [self.backgroundMusicPlayerSlow stop];
+        [self.backgroundMusicPlayerMedium stop];
+        [self.backgroundMusicPlayerFast stop];
+        SKTransition *reveal = [SKTransition fadeWithDuration:1];
         SKScene * gameOverScene = [[GameOverScreen alloc] initWithSize:self.size score:self.score];
         [self.view presentScene:gameOverScene transition: reveal];
     }
@@ -723,6 +753,26 @@ static inline CGPoint rwNormalize(CGPoint a)
         [self updateDogBar];
     }
     
+    if(self.chaosCount < 40) {
+        //self.backgroundMusicPlayerSlow.rate = 1.0;
+        [self.backgroundMusicPlayerMedium stop];
+        [self.backgroundMusicPlayerFast stop];
+        [self.backgroundMusicPlayerSlow play];
+    } else if(self.chaosCount < 75) {
+        //self.backgroundMusicPlayerSlow.rate = 1.5;
+        [self.backgroundMusicPlayerSlow stop];
+        [self.backgroundMusicPlayerFast stop];
+        [self.backgroundMusicPlayerMedium play];
+    } else if(self.chaosCount <100) {
+        //self.backgroundMusicPlayerSlow.rate = 2.0;
+        [self.backgroundMusicPlayerSlow stop];
+        [self.backgroundMusicPlayerMedium stop];
+        [self.backgroundMusicPlayerFast play];
+    } else {
+        [self.backgroundMusicPlayerSlow stop];
+        [self.backgroundMusicPlayerMedium stop];
+        [self.backgroundMusicPlayerFast stop];
+    }
 }
 
 @end
