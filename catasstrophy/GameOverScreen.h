@@ -8,8 +8,15 @@
 
 #import <SpriteKit/SpriteKit.h>
 
-@interface GameOverScreen : SKScene
+@interface GameOverScreen : SKScene{
+@public
+    int highScore;
+    BOOL played;
+}
 
 -(id)initWithSize:(CGSize)size score:(NSInteger)score;
+
+-(IBAction)SaveData;
+-(IBAction)LoadData;
 
 @end

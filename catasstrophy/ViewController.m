@@ -28,6 +28,7 @@
 {
     [super viewWillLayoutSubviews];
     
+    
     /* for the background music
     NSError *error;
     NSURL * backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"background-music-aac" withExtension:@"caf"];
