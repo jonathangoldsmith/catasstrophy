@@ -430,6 +430,14 @@ static inline CGPoint rwNormalize(CGPoint a)
             break;
         case 14: return @"thing_vase.png";
             break;
+        case 15: return @"thing_bird.png";
+            break;
+        case 16: return @"thing_fish.png";
+            break;
+        case 17: return @"thing_frog.png";
+            break;
+        case 18: return @"thing_mouse.png";
+            break;
         default: return @"onion.png";
             break;
     }
@@ -650,7 +658,6 @@ static inline CGPoint rwNormalize(CGPoint a)
 
 -(void)checkIfGameOver
 {
-    
     if (self.chaosCount >= 100) {
         [self.backgroundMusicPlayerSlow stop];
         [self.backgroundMusicPlayerMedium stop];
@@ -720,8 +727,9 @@ static inline CGPoint rwNormalize(CGPoint a)
     }
     
     //change updateSpeed and set the timer based on the speed
-    self.updateSpeed=startSpeed-self.totalTimeInterval;
-    self.score = startSpeed-self.updateSpeed;
+    self.updateSpeed=startSpeed-2*self.totalTimeInterval;
+    self.score = self.totalTimeInterval;
+    //startSpeed-self.updateSpeed;
     self.timerLabel.text = [NSString stringWithFormat:@"Time: %ld", (long)self.score];
 
     [self updateWithTimeSinceLastUpdate:timeSinceLast];

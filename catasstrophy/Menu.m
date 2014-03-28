@@ -12,12 +12,14 @@
 #import "MovieViewController.h"
 #import "Movie.h"
 #import "Countdown.h"
+#import "Credits.h"
 
 @interface Menu()
 @property (nonatomic) SKSpriteNode * background;
 @property (nonatomic) SKSpriteNode * play;
 @property (nonatomic) SKSpriteNode * movie;
 @property (nonatomic) SKSpriteNode * how;
+@property (nonatomic) SKSpriteNode * credits;
 @property (nonatomic) AVAudioPlayer * backgroundMusicPlayer;
 @end
 
@@ -59,6 +61,13 @@
         self.how.name = @"howButton";//how the node is identified later
         [self addChild:self.how];
         
+        //credits
+        self.credits = [SKSpriteNode spriteNodeWithImageNamed:@"credits_button.png"];
+        [self scaleSpriteNode:self.credits scaleRatio:0.5];
+        self.credits.position = CGPointMake(self.background.size.width-70, self.background.size.height-35);
+        self.credits.name = @"creditsButton";//how the node is identified later
+        [self addChild:self.credits];
+        
         //for the background music
          NSError *error;
          NSURL * backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"Menu" withExtension:@"mp3"];
@@ -89,17 +98,18 @@
         [self.backgroundMusicPlayer stop];
         SKScene * movie = [[Movie alloc] initWithSize:self.size];
         [self.view presentScene:movie transition:[SKTransition fadeWithDuration:.5]];
-        
-       /* SKVideoNode *vid1 = [SKVideoNode videoNodeWithVideoFileNamed:@"game_intro.mov"];
-        vid1.position = CGPointMake(160, 180);
-        [self addChild:vid1];
-        [vid1 play];*/
     }
     
     else if ([node.name isEqualToString:@"howButton"]) {
         [self.backgroundMusicPlayer stop];
         SKScene * tutorial = [[Tutorial alloc] initWithSize:self.size];
         [self.view presentScene:tutorial transition:[SKTransition fadeWithDuration:.5]];
+    }
+    
+    else if ([node.name isEqualToString:@"creditsButton"]) {
+        [self.backgroundMusicPlayer stop];
+        SKScene * credits = [[Credits alloc] initWithSize:self.size];
+        [self.view presentScene:credits transition:[SKTransition fadeWithDuration:.5]];
     }
 }
 

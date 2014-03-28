@@ -13,8 +13,8 @@
 #define tableCornerY 7
 #define tableWidth 450
 #define tableHeight 250
-#define startSpeed 300
-#define itemAssets 15 //current number of desk items available
+#define startSpeed 350
+#define itemAssets 19 //current number of desk items available
 #define maxShotTime 1
 
 #endif
