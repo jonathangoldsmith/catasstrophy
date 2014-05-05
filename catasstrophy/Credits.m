@@ -33,12 +33,12 @@
         [self scaleSpriteNode:self.background scaleRatio:0.5];
         [self addChild:self.background];
         
-        //return to menu button
+       /* //return to menu button
         self.menu = [SKSpriteNode spriteNodeWithImageNamed:@"return_menu.png"];
         [self scaleSpriteNode:self.menu scaleRatio:0.5];
         self.menu.position = CGPointMake(70, 280);
         self.menu.name = @"menuButton";//how the node is identified later
-        [self addChild:self.menu];
+        [self addChild:self.menu];*/
         
         //for the background music
         NSError *error;
@@ -54,16 +54,16 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    UITouch *touch = [touches anyObject];
-    CGPoint location = [touch locationInNode:self];
-    SKNode *node = [self nodeAtPoint:location];
+    //UITouch *touch = [touches anyObject];
+    //CGPoint location = [touch locationInNode:self];
+    //SKNode *node = [self nodeAtPoint:location];
     
     //pressed menu button
-    if ([node.name isEqualToString:@"menuButton"]) {
+   // if ([node.name isEqualToString:@"menuButton"]) {
         [self.backgroundMusicPlayer stop];
         SKScene * menu = [[Menu alloc] initWithSize:self.size];
         [self.view presentScene:menu transition:[SKTransition fadeWithDuration:.5]];
-    }
+    //}
 }
 
 

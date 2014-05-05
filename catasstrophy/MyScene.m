@@ -446,9 +446,6 @@ static inline CGPoint rwNormalize(CGPoint a)
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     
-    //music for on hit
-    //[self runAction:[SKAction playSoundFileNamed:@"pew-pew-lei.caf" waitForCompletion:NO]];
-    
     // Choose one of the touches to work with
     UITouch * touch = [touches anyObject];
     CGPoint locationCheck = [touch locationInNode:self];
@@ -467,6 +464,15 @@ static inline CGPoint rwNormalize(CGPoint a)
         self.shotsFired = YES;
         SKSpriteNode * projectile = [SKSpriteNode spriteNodeWithImageNamed:@"puppy.png"];
         [self scaleSpriteNode:projectile scaleRatio:0.2];
+        
+        //music for shot
+        NSInteger random = arc4random_uniform(2);
+        switch(random) {
+            case 0:[self runAction:[SKAction playSoundFileNamed:@"woof2.mp3" waitForCompletion:NO]];
+                break;
+            default:[self runAction:[SKAction playSoundFileNamed:@"bark2.mp3" waitForCompletion:NO]];
+                break;
+        }
         
         //projectile physics
         projectile.position = CGPointMake(tableCornerX+tableWidth/2, tableCornerY+tableHeight);
@@ -555,6 +561,8 @@ static inline CGPoint rwNormalize(CGPoint a)
     NSLog(@"Hit");
     [projectile removeFromParent];
     self.shotsFired = NO;
+    
+    [self runAction:[SKAction playSoundFileNamed:@"meow2.mp3" waitForCompletion:NO]];
     
     if(self.chaosCount > 0)
         self.chaosCount=MAX(0,self.chaosCount - self.shotPower);
