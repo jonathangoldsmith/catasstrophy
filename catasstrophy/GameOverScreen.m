@@ -45,7 +45,7 @@
         
         //for the background music
         NSError *error;
-        NSURL * backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"Game over full" withExtension:@"mp3"];
+        NSURL * backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"Game Over Symphony" withExtension:@"mp3"];
         self.backgroundMusicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURL error:&error];
         self.backgroundMusicPlayer.numberOfLoops = -1;
         [self.backgroundMusicPlayer prepareToPlay];
