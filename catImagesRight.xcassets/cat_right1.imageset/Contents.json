@@ -3,15 +3,11 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "arrow.png"
+      "filename" : "cat_right1.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x"
-    },
-    {
-      "idiom" : "universal",
-      "unassigned" : true
     }
   ],
   "info" : {
