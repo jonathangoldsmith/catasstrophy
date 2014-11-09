@@ -11,7 +11,7 @@
 
 @interface GameOverScreen : SKScene{
 @public
-    int highScore;
+    NSUInteger highScore;
     BOOL played;
 }
 
