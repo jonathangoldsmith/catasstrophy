@@ -64,7 +64,7 @@
         //credits
         self.credits = [SKSpriteNode spriteNodeWithImageNamed:@"credits_button.png"];
         [self scaleSpriteNode:self.credits scaleRatio:0.5];
-        self.credits.position = CGPointMake(self.background.size.width-70, self.background.size.height-35);
+        self.credits.position = CGPointMake(self.background.size.width-70, self.background.size.height-37);
         self.credits.name = @"creditsButton";//how the node is identified later
         [self addChild:self.credits];
         

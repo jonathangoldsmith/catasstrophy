@@ -25,7 +25,7 @@
     if (self = [super initWithSize:size]) {
         
         //background
-        self.background =[SKSpriteNode spriteNodeWithImageNamed:@"nest_640x1136.png"];
+        self.background =[SKSpriteNode spriteNodeWithImageNamed:@"nest_logo_flipped.png"];
         self.background.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
         SKAction * rotate = [SKAction rotateByAngle:3*3.14/2 duration:0];
         //self.background = SKSceneScaleModeResizeFill;

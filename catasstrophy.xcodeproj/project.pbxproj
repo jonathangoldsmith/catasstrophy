@@ -9,12 +9,6 @@
 /* Begin PBXBuildFile section */
 		6151EB171A0190A1009EC821 /* ArtAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6151EB161A0190A1009EC821 /* ArtAssets.xcassets */; };
 		6151EB191A07FCF6009EC821 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6151EB181A07FCF6009EC821 /* GameKit.framework */; };
-		61BFAE7A1A1009AB00AEEB79 /* catImagesLeft.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE791A1009AB00AEEB79 /* catImagesLeft.xcassets */; };
-		61BFAE7C1A1009C800AEEB79 /* catImagesRight.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE7B1A1009C800AEEB79 /* catImagesRight.xcassets */; };
-		61BFAE7E1A1009E900AEEB79 /* catImagesFlipLeft.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE7D1A1009E900AEEB79 /* catImagesFlipLeft.xcassets */; };
-		61BFAE801A1009FD00AEEB79 /* catImagesFlipRight.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE7F1A1009FD00AEEB79 /* catImagesFlipRight.xcassets */; };
-		61BFAE821A100A1300AEEB79 /* catImagesHitLeft.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE811A100A1300AEEB79 /* catImagesHitLeft.xcassets */; };
-		61BFAE841A100A3A00AEEB79 /* catImagesHitRight.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE831A100A3A00AEEB79 /* catImagesHitRight.xcassets */; };
 		61BFAE9D1A10151000AEEB79 /* catImagesHitLeft.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE971A10151000AEEB79 /* catImagesHitLeft.atlas */; };
 		61BFAE9E1A10151000AEEB79 /* catImagesHitRight.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE981A10151000AEEB79 /* catImagesHitRight.atlas */; };
 		61BFAE9F1A10151000AEEB79 /* catImagesRight.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE991A10151000AEEB79 /* catImagesRight.atlas */; };
@@ -73,12 +67,6 @@
 /* Begin PBXFileReference section */
 		6151EB161A0190A1009EC821 /* ArtAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ArtAssets.xcassets; sourceTree = "<group>"; };
 		6151EB181A07FCF6009EC821 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
-		61BFAE791A1009AB00AEEB79 /* catImagesLeft.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = catImagesLeft.xcassets; path = ../catImagesLeft.xcassets; sourceTree = "<group>"; };
-		61BFAE7B1A1009C800AEEB79 /* catImagesRight.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = catImagesRight.xcassets; path = ../catImagesRight.xcassets; sourceTree = "<group>"; };
-		61BFAE7D1A1009E900AEEB79 /* catImagesFlipLeft.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = catImagesFlipLeft.xcassets; path = ../catImagesFlipLeft.xcassets; sourceTree = "<group>"; };
-		61BFAE7F1A1009FD00AEEB79 /* catImagesFlipRight.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = catImagesFlipRight.xcassets; path = ../catImagesFlipRight.xcassets; sourceTree = "<group>"; };
-		61BFAE811A100A1300AEEB79 /* catImagesHitLeft.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = catImagesHitLeft.xcassets; path = ../catImagesHitLeft.xcassets; sourceTree = "<group>"; };
-		61BFAE831A100A3A00AEEB79 /* catImagesHitRight.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = catImagesHitRight.xcassets; path = ../catImagesHitRight.xcassets; sourceTree = "<group>"; };
 		61BFAE971A10151000AEEB79 /* catImagesHitLeft.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesHitLeft.atlas; path = "../../Downloads/game 3/art/cat/catImagesHitLeft.atlas"; sourceTree = "<group>"; };
 		61BFAE981A10151000AEEB79 /* catImagesHitRight.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesHitRight.atlas; path = "../../Downloads/game 3/art/cat/catImagesHitRight.atlas"; sourceTree = "<group>"; };
 		61BFAE991A10151000AEEB79 /* catImagesRight.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesRight.atlas; path = "../../Downloads/game 3/art/cat/catImagesRight.atlas"; sourceTree = "<group>"; };
@@ -205,12 +193,6 @@
 		652E7CB818BD31840079827F /* catasstrophy */ = {
 			isa = PBXGroup;
 			children = (
-				61BFAE831A100A3A00AEEB79 /* catImagesHitRight.xcassets */,
-				61BFAE811A100A1300AEEB79 /* catImagesHitLeft.xcassets */,
-				61BFAE7F1A1009FD00AEEB79 /* catImagesFlipRight.xcassets */,
-				61BFAE7D1A1009E900AEEB79 /* catImagesFlipLeft.xcassets */,
-				61BFAE7B1A1009C800AEEB79 /* catImagesRight.xcassets */,
-				61BFAE791A1009AB00AEEB79 /* catImagesLeft.xcassets */,
 				652E7CC118BD31840079827F /* AppDelegate.h */,
 				652E7CC218BD31840079827F /* AppDelegate.m */,
 				65C2F6E818E3E586006C5352 /* Countdown.h */,
@@ -375,26 +357,20 @@
 				61BFAEA21A10151000AEEB79 /* catImagesLeft.atlas in Resources */,
 				61BFAEA11A10151000AEEB79 /* catImagesFlipRight.atlas in Resources */,
 				652E7CBD18BD31840079827F /* InfoPlist.strings in Resources */,
-				61BFAE801A1009FD00AEEB79 /* catImagesFlipRight.xcassets in Resources */,
 				657E7E3D18E603DC00D1AD3F /* bark2.mp3 in Resources */,
 				657E7E3C18E603DC00D1AD3F /* woof2.mp3 in Resources */,
-				61BFAE7A1A1009AB00AEEB79 /* catImagesLeft.xcassets in Resources */,
 				61BFAE9D1A10151000AEEB79 /* catImagesHitLeft.atlas in Resources */,
 				6151EB171A0190A1009EC821 /* ArtAssets.xcassets in Resources */,
 				65C2F6E018E3DCB9006C5352 /* Menu aud file 1.mp3 in Resources */,
 				65C2F6E118E3DCB9006C5352 /* Gameplay slow.mp3 in Resources */,
-				61BFAE7C1A1009C800AEEB79 /* catImagesRight.xcassets in Resources */,
-				61BFAE7E1A1009E900AEEB79 /* catImagesFlipLeft.xcassets in Resources */,
 				65C2F6E418E3DCB9006C5352 /* Game Over Symphony.mp3 in Resources */,
 				652E7CD018BD31840079827F /* Images.xcassets in Resources */,
 				61BFAE9E1A10151000AEEB79 /* catImagesHitRight.atlas in Resources */,
 				65C2F6E318E3DCB9006C5352 /* Gameplay Fast.mp3 in Resources */,
 				61BFAEA01A10151000AEEB79 /* catImagesFlipLeft.atlas in Resources */,
 				61BFAE9F1A10151000AEEB79 /* catImagesRight.atlas in Resources */,
-				61BFAE841A100A3A00AEEB79 /* catImagesHitRight.xcassets in Resources */,
 				652E7CC618BD31840079827F /* Main.storyboard in Resources */,
 				65C2F6E218E3DCB9006C5352 /* Gameplay medium.mp3 in Resources */,
-				61BFAE821A100A1300AEEB79 /* catImagesHitLeft.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
