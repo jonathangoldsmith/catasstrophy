@@ -8,6 +8,9 @@
 
 #import <SpriteKit/SpriteKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import <CoreMotion/CoreMotion.h>
+#import <UIKit/UIKit.h>
+#import "Constants.h"
 
 @interface Tutorial : SKScene
 

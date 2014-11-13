@@ -130,8 +130,8 @@ static inline CGPoint rwNormalize(CGPoint a)
         [self initializeCat];
         self.shotsFired = NO;
         
-        self.count=3;
-        [self countdown];
+        //self.count=3;
+        //[self countdown];
         
         [self updateCat];
         for (int i=0;i<5;i++)
@@ -308,7 +308,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self addChild:self.cat];
 }
 
--(void)countdown
+/*-(void)countdown
 {
     self.countdownLabel = [SKLabelNode labelNodeWithFontNamed:@"GillSans-Bold"];
     self.countdownLabel.fontSize = 50;
@@ -321,7 +321,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown]]];
     self.countdownLabel.text = [NSString stringWithFormat:@"Go!"];
      
-}
+}*/
 
 -(void)updateCat
 {
