@@ -44,6 +44,9 @@
 @property (nonatomic) BOOL sendCatToMiddle;
 @property (nonatomic) BOOL shootingBool;
 @property (nonatomic) BOOL shotsFired;
+@property (nonatomic) NSTimeInterval totalTimeInterval;
+@property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
+
 @end
 @implementation Tutorial
 
@@ -316,14 +319,15 @@ static inline CGPoint rwNormalize(CGPoint a)
     }else if(self.frameNumber==2) {
         self.tutorialLabel.text = [NSString stringWithFormat:@"He likes to knock stuff off of your desk (what a jerk!)"];
         self.item.hidden = NO;
-        self.sendCatToMiddle = NO;
-        [self moveCat];
-        //cat move to and flip item
+        
     }else if(self.frameNumber==3) {
         self.tutorialLabel.text = [NSString stringWithFormat:@"Every time he knocks something off of your desk,"];
         self.tutorialLabel2.text = [NSString stringWithFormat:@"your life slowly devolves into chaos,"];
         self.tutorialLabel3.text = [NSString stringWithFormat:@"convieniently tracked by this bar"];
-        self.cat = [SKSpriteNode spriteNodeWithImageNamed:@"cat_0.png"];
+       // self.cat = [SKSpriteNode spriteNodeWithImageNamed:@"cat_0.png"];
+        self.sendCatToMiddle = NO;
+        [self moveCat];
+        //cat move to and flip item
         self.chaosBarBackground.hidden = NO;
         self.chaosBarCharger.hidden = NO;
     }else if(self.frameNumber==4) {
@@ -469,11 +473,19 @@ static inline CGPoint rwNormalize(CGPoint a)
     //if ([node.name isEqualToString:@"menuButton"]) {
     //    SKScene * menu = [[Menu alloc] initWithSize:self.size];
     //    [self.view presentScene:menu transition:[SKTransition fadeWithDuration:.5]];
-    if(self.frameNumber < 5)
+    //}
+
+    if(self.frameNumber < 4)
     {
         [self increment:self.frameNumber];
+    } else if (self.frameNumber > 5) {
+        self.shootingBool = YES;
+        self.beginningShotTime=self.totalTimeInterval;
+        SKAction * fadeUnclickedBarAway = [SKAction fadeOutWithDuration:0];
+        [self.shootingBarBackground runAction:fadeUnclickedBarAway];
+        SKAction * showClickedBar = [SKAction fadeInWithDuration:0];
+        [self.shootingBarBackgroundWhenClicked runAction:showClickedBar];
     }
-    //}
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
@@ -591,6 +603,8 @@ static inline CGPoint rwNormalize(CGPoint a)
         self.cat.hidden = YES;
         self.cat.physicsBody = nil;
         self.cat2.hidden = NO;
+        [self increment:self.frameNumber];
+
     }];
 }
 
@@ -609,17 +623,26 @@ static inline CGPoint rwNormalize(CGPoint a)
 
 -(void)projectile:(SKSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat
 {
+    if(self.frameNumber == 6) {
+    [self increment:self.frameNumber];
+    }
+
     NSLog(@"Hit");
     [projectile removeFromParent];
-//    self.shotsFired = NO;
-//    
-//    [self runAction:[SKAction playSoundFileNamed:@"meow2.mp3" waitForCompletion:NO]];
-//    
-//    if(self.chaosCount > 0)
-//        self.chaosCount=MAX(0,self.chaosCount - self.shotPower);
-//    
-//    [self updateChaosBar];
-//    NSLog(@"%f",self.chaosCount);
+    self.shotsFired = NO;
+    
+    [self runAction:[SKAction playSoundFileNamed:@"meow2.mp3" waitForCompletion:NO]];
+    
+    if(self.chaosCount > 0)
+    {
+        self.chaosCount=MAX(0,self.chaosCount - self.shotPower);
+    } else {
+        if(self.frameNumber > 6)
+            [self increment:self.frameNumber];
+
+    }
+    [self updateChaosBar];
+    NSLog(@"%f",self.chaosCount);
     
     //on hit, cat turns red for a short period second
     SKAction *pulseRed = [SKAction sequence:@[
@@ -635,8 +658,8 @@ static inline CGPoint rwNormalize(CGPoint a)
         hitAnimation = [SKAction animateWithTextures:self.catHitFramesLeft timePerFrame:0.5];
     }
     SKAction * normalCat = [SKAction colorizeWithColorBlendFactor:0.0 duration:0.25];
-    [self.cat runAction:[SKAction group:@[pulseRed, hitAnimation]]];
-    [self.cat runAction:[SKAction sequence:@[normalCat]] completion:^{
+    [self.cat2 runAction:[SKAction group:@[pulseRed, hitAnimation]]];
+    [self.cat2 runAction:[SKAction sequence:@[normalCat]] completion:^{
         //set cat to go new random direction
         //[self updateCat];
     }];
@@ -751,6 +774,47 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self.chaosBarCharger runAction:[SKAction sequence:@[scaleEmptyChaosBar]]];
 }
 
+-(void)updateDogBar
+{
+    SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight*(maxShotTime-MIN(self.totalTimeInterval- self.beginningShotTime, 1))) duration:0];
+    [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
+}
+
+-(void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast
+{
+    
+    //self.lastSpawnTimeInterval += timeSinceLast;
+    self.totalTimeInterval += timeSinceLast;
+}
+
+-(void)update:(NSTimeInterval)currentTime
+{
+    
+    [self processUserMotionForUpdate:currentTime];
+    // Handle time delta.
+    // If we drop below 60fps, we still want everything to move the same distance.
+    CFTimeInterval timeSinceLast = currentTime - self.lastUpdateTimeInterval;
+    self.lastUpdateTimeInterval = currentTime;
+    
+    // more than a second since last update, update lastUpdateTimeInterval
+    if (timeSinceLast > 1) {
+        timeSinceLast = 1.0 / 60.0;
+        self.lastUpdateTimeInterval = currentTime;
+    }
+    
+    //change updateSpeed and set the timer based on the speed
+    //self.updateSpeed=startSpeed;
+    //startSpeed-self.updateSpeed;
+    
+    [self updateWithTimeSinceLastUpdate:timeSinceLast];
+    
+    if (self.shootingBool) {
+        [self updateDogBar];
+    }
+    
+    //self.backgroundMusicPlayerFast.rate = 0.5 + self.chaosCount/1000;
+    
+}
 
 @end
 
