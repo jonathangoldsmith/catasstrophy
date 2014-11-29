@@ -8,11 +8,21 @@
 
 #import "Tutorial.h"
 #import "Menu.h"
+#import "math.h"
 #import "Countdown.h"
 
 @interface Tutorial() <SKPhysicsContactDelegate>
 @property (nonatomic) SKSpriteNode * player;
 @property (nonatomic) SKSpriteNode * cat;
+@property (nonatomic) SKSpriteNode * cat2;
+@property (nonatomic) SKSpriteNode * item;
+@property NSArray * catWalkingFramesLeft;
+@property NSArray * catWalkingFramesRight;
+@property NSArray * catFlippingFramesLeft;
+@property NSArray * catFlippingFramesRight;
+@property NSArray * catHitFramesLeft;
+@property NSArray * catHitFramesRight;
+@property NSArray * catSitFrame;
 @property (nonatomic) SKSpriteNode * aim;
 @property (nonatomic) SKSpriteNode * chaosBarBackground;
 @property (nonatomic) SKSpriteNode * chaosBarCharger;
@@ -25,11 +35,15 @@
 @property (nonatomic) SKLabelNode* tutorialLabel3;
 @property (nonatomic) float beginningShotTime;
 @property (nonatomic) float shotPower;
+@property (nonatomic) float chaosCount;
 @property (strong, nonatomic) CMMotionManager *motionManager;
 @property (nonatomic) CGRect table;
 @property (nonatomic) float chaosBarWidth;
 @property (nonatomic) float dogBarHeight;
 @property (nonatomic) NSInteger frameNumber;
+@property (nonatomic) BOOL sendCatToMiddle;
+@property (nonatomic) BOOL shootingBool;
+@property (nonatomic) BOOL shotsFired;
 @end
 @implementation Tutorial
 
@@ -40,12 +54,55 @@ static const uint32_t projectileCategory     =  0x1 << 1;
 static const uint32_t catCategory        =  0x1 << 2;
 static const uint32_t aimCategory        =  0x1 << 3;
 
+
+static inline CGPoint rwAdd(CGPoint a, CGPoint b)
+{
+    return CGPointMake(a.x + b.x, a.y + b.y);
+}
+
+static inline CGPoint rwSub(CGPoint a, CGPoint b)
+{
+    return CGPointMake(a.x - b.x, a.y - b.y);
+}
+
+static inline CGPoint rwMult(CGPoint a, float b)
+{
+    return CGPointMake(a.x * b, a.y * b);
+}
+
+static inline float rwLength(CGPoint a)
+{
+    return sqrtf(a.x * a.x + a.y * a.y);
+}
+
+// Makes a vector have a length of 1
+static inline CGPoint rwNormalize(CGPoint a)
+{
+    float length = rwLength(a);
+    return CGPointMake(a.x / length, a.y / length);
+}
+
 //for scaling sprites
 - (void)scaleSpriteNode:(SKSpriteNode *)sprite scaleRatio:(float)scale
 {
     sprite.xScale = scale;
     sprite.yScale = scale;
 }
+
+//updater to the accelerometer to chage the aimer
+-(void)processUserMotionForUpdate:(NSTimeInterval)currentTime
+{
+    CMAccelerometerData* data = self.motionManager.accelerometerData;
+    if (fabs(data.acceleration.y) > 0.1)
+    {
+        [self.aim.physicsBody applyForce:CGVectorMake(1500.0 * data.acceleration.y, 0)];
+    }
+    if (fabs(data.acceleration.x) > 0.1)
+    {
+        [self.aim.physicsBody applyForce:CGVectorMake(0, -1500.0 * data.acceleration.x)];
+    }
+}
+
 
 -(id)initWithSize:(CGSize)size
 {
@@ -55,14 +112,13 @@ static const uint32_t aimCategory        =  0x1 << 3;
         self.motionManager = [[CMMotionManager alloc] init];
         [self.motionManager startAccelerometerUpdates];
         self.table = CGRectMake(tableCornerX, tableCornerY, tableWidth, tableHeight);
+        self.chaosCount = 0;
         
         //Set up the world physics
         self.physicsWorld.gravity = CGVectorMake(0,0);
         self.physicsBody = [SKPhysicsBody bodyWithEdgeLoopFromRect:self.table];
         self.physicsBody.collisionBitMask = aimCategory;
         self.physicsWorld.contactDelegate = self;
-
-        self.table = CGRectMake(tableCornerX, tableCornerY, tableWidth, tableHeight);
         
         //background
         SKSpriteNode *background =[SKSpriteNode spriteNodeWithImageNamed:@"play_area.png"];
@@ -76,17 +132,32 @@ static const uint32_t aimCategory        =  0x1 << 3;
         [self scaleSpriteNode:self.player scaleRatio:0.4];
         [self addChild:self.player];
         
+
+        //chaos bar/aimer/timer/cat/
+        [self initializeAimer];
+        self.aim.hidden = YES;
+        [self initializeCat];
+        self.cat.hidden = YES;
+        [self initializeSecondCat];
+        self.cat2.hidden = YES;
+        [self addItem];
+        self.item.hidden = YES;
+        [self initializeChaosBar];
+        self.chaosBarCharger.hidden = YES;
+        self.chaosBarBackground.hidden = YES;
+        [self initializeDogBar];
+        self.shootingBarBackground.hidden = YES;
+        self.shootingBarBackgroundWhenClicked.hidden = YES;
+        self.shootingBarCharger. hidden = YES;
+        
         self.frameNumber = 0;
         [self initializeTutorialLabels];
         [self increment:self.frameNumber];
-        //chaos bar/aimer/timer/cat/
-        //[self initializeBars];
-        //[self initializeAimer];
-        //[self initializeCat];
-        
     }
     return self;
 }
+
+
 
 -(void)initializeChaosBar
 {
@@ -150,12 +221,87 @@ static const uint32_t aimCategory        =  0x1 << 3;
 - (void)initializeCat
 {
     
-    self.cat = [SKSpriteNode spriteNodeWithImageNamed:@"cat_0.png"];
+    NSMutableArray *walkFramesLeft = [NSMutableArray array];
+    SKTextureAtlas *catAnimatedAtlasLeft = [SKTextureAtlas atlasNamed:@"catImagesLeft"];
+    for (int i=1; i <= catAnimatedAtlasLeft.textureNames.count; i++) {
+        NSString *textureName = [NSString stringWithFormat:@"cat_left%d", i];
+        SKTexture *temp = [catAnimatedAtlasLeft textureNamed:textureName];
+        [walkFramesLeft addObject:temp];
+    }
+    self.catWalkingFramesLeft = walkFramesLeft;
     
+    NSMutableArray *walkFramesRight = [NSMutableArray array];
+    SKTextureAtlas *catAnimatedAtlasRight = [SKTextureAtlas atlasNamed:@"catImagesRight"];
+    for (int i=1; i <= catAnimatedAtlasRight.textureNames.count; i++) {
+        NSString *textureName = [NSString stringWithFormat:@"cat_right%d", i];
+        SKTexture *temp = [catAnimatedAtlasRight textureNamed:textureName];
+        [walkFramesRight addObject:temp];
+    }
+    self.catWalkingFramesRight = walkFramesRight;
+    
+    NSMutableArray *catFramesFlipLeft = [NSMutableArray array];
+    SKTextureAtlas *catAnimatedAtlasFlipLeft = [SKTextureAtlas atlasNamed:@"catImagesFlipLeft"];
+    NSString *textureName = [NSString stringWithFormat:@"cat_left_flip"];
+    SKTexture *temp = [catAnimatedAtlasFlipLeft textureNamed:textureName];
+    [catFramesFlipLeft addObject:temp];
+    self.catFlippingFramesLeft = catFramesFlipLeft;
+    
+    NSMutableArray *catFramesFlipRight = [NSMutableArray array];
+    SKTextureAtlas *catAnimatedAtlasFlipRight = [SKTextureAtlas atlasNamed:@"catImagesFlipRight"];
+    textureName = [NSString stringWithFormat:@"cat_right_flip"];
+    temp = [catAnimatedAtlasFlipRight textureNamed:textureName];
+    [catFramesFlipRight addObject:temp];
+    self.catFlippingFramesRight = catFramesFlipRight;
+    
+    NSMutableArray *walkFramesHitLeft = [NSMutableArray array];
+    SKTextureAtlas *catAnimatedAtlasHitLeft = [SKTextureAtlas atlasNamed:@"catImagesHitLeft"];
+    textureName = [NSString stringWithFormat:@"cat_left_hit"];
+    temp = [catAnimatedAtlasHitLeft textureNamed:textureName];
+    [walkFramesHitLeft addObject:temp];
+    self.catHitFramesLeft = walkFramesHitLeft;
+    
+    NSMutableArray *walkFramesHitRight = [NSMutableArray array];
+    SKTextureAtlas *catAnimatedAtlasHitRight = [SKTextureAtlas atlasNamed:@"catImagesHitRight"];
+    textureName = [NSString stringWithFormat:@"cat_right_hit"];
+    temp = [catAnimatedAtlasHitRight textureNamed:textureName];
+    [walkFramesHitRight addObject:temp];
+    self.catHitFramesRight = walkFramesHitRight;
+    
+    NSMutableArray *sitFrames = [NSMutableArray array];
+    SKTextureAtlas *catAnimatedAtlasSit = [SKTextureAtlas atlasNamed:@"catImagesSit"];
+    textureName = [NSString stringWithFormat:@"cat_0"];
+    temp = [catAnimatedAtlasSit textureNamed:textureName];
+    [sitFrames addObject:temp];
+    self.catHitFramesRight = sitFrames;
+    
+    self.cat = [SKSpriteNode spriteNodeWithImageNamed:@"cat_0.png"];
     self.cat.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetMidY(self.table));
     [self scaleSpriteNode:self.cat scaleRatio:0.25];
     
+    //cat phsysics
+    self.cat.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:self.cat.size];
+    self.cat.physicsBody.dynamic = YES;
+    self.cat.physicsBody.categoryBitMask = catCategory;
+    self.cat.physicsBody.contactTestBitMask = projectileCategory;
+    self.cat.physicsBody.collisionBitMask = !aimCategory;
+    
     [self addChild:self.cat];
+}
+
+- (void)initializeSecondCat
+{
+    self.cat2 = [SKSpriteNode spriteNodeWithImageNamed:@"cat_0.png"];
+    self.cat2.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetMidY(self.table));
+    [self scaleSpriteNode:self.cat2 scaleRatio:0.25];
+    
+    //cat phsysics
+    self.cat2.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:self.cat.size];
+    self.cat2.physicsBody.dynamic = YES;
+    self.cat2.physicsBody.categoryBitMask = catCategory;
+    self.cat2.physicsBody.contactTestBitMask = projectileCategory;
+    self.cat2.physicsBody.collisionBitMask = !aimCategory;
+    
+    [self addChild:self.cat2];
 }
 
 -(void)increment:(NSInteger)frameNumber{
@@ -166,22 +312,29 @@ static const uint32_t aimCategory        =  0x1 << 3;
         self.tutorialLabel.text = [NSString stringWithFormat:@"This is you"];
     }else if(self.frameNumber==1) {
         self.tutorialLabel.text = [NSString stringWithFormat:@"This is your cat (he's a jerk)"];
-        [self initializeCat];
+        self.cat.hidden = NO;
     }else if(self.frameNumber==2) {
         self.tutorialLabel.text = [NSString stringWithFormat:@"He likes to knock stuff off of your desk (what a jerk!)"];
-        [self addItem];
+        self.item.hidden = NO;
+        self.sendCatToMiddle = NO;
+        [self moveCat];
         //cat move to and flip item
     }else if(self.frameNumber==3) {
         self.tutorialLabel.text = [NSString stringWithFormat:@"Every time he knocks something off of your desk,"];
         self.tutorialLabel2.text = [NSString stringWithFormat:@"your life slowly devolves into chaos,"];
         self.tutorialLabel3.text = [NSString stringWithFormat:@"convieniently tracked by this bar"];
-        [self initializeChaosBar];
+        self.cat = [SKSpriteNode spriteNodeWithImageNamed:@"cat_0.png"];
+        self.chaosBarBackground.hidden = NO;
+        self.chaosBarCharger.hidden = NO;
     }else if(self.frameNumber==4) {
-            self.tutorialLabel.text = [NSString stringWithFormat:@"Thankfully you have your patented"];
+        self.tutorialLabel.text = [NSString stringWithFormat:@"Thankfully you have your patented"];
         self.tutorialLabel2.text = [NSString stringWithFormat:@"Discipline-Omatic-Gun(TM)"];
         self.tutorialLabel3.text = [NSString stringWithFormat:@""];
-        [self initializeAimer];
-        [self initializeDogBar];
+        self.aim.position=CGPointMake(CGRectGetMidX(self.table),CGRectGetHeight(self.table));
+        self.shootingBarBackground.hidden = NO;
+        self.aim.hidden = NO;
+        self.shootingBarBackgroundWhenClicked.hidden = NO;
+        self.shootingBarCharger. hidden = NO;
     } else if(self.frameNumber==5) {
         self.tutorialLabel.text = [NSString stringWithFormat:@"Tilt your iPhone to aim your DOG and click to shoot"];
         self.tutorialLabel2.text = [NSString stringWithFormat:@""];
@@ -190,7 +343,7 @@ static const uint32_t aimCategory        =  0x1 << 3;
         self.tutorialLabel.text = [NSString stringWithFormat:@"The more you charge your DOG"];
         self.tutorialLabel2.text = [NSString stringWithFormat:@"the better you will feel about disciplining your cat"];
         self.tutorialLabel3.text = [NSString stringWithFormat:@"(less chaos on hit)"];
-
+        
     } else if(self.frameNumber==7) {
         self.tutorialLabel.text = [NSString stringWithFormat:@"Cats dont like DOGs though so good luck"];
         self.tutorialLabel2.text = [NSString stringWithFormat:@""];
@@ -199,7 +352,7 @@ static const uint32_t aimCategory        =  0x1 << 3;
         SKScene * game = [[Countdown alloc] initWithSize:self.size];
         [self.view presentScene:game transition:[SKTransition fadeWithDuration:0]];
     }
-
+    
     //[self.tutorialLabel runAction:[SKAction sequence:@[unfadetutorial, fadetutorial]]];
     self.frameNumber++;
 }
@@ -209,23 +362,28 @@ static const uint32_t aimCategory        =  0x1 << 3;
     // Create item to place on table
     
     NSString *itemImageURL = [self randomItem];
-    SKSpriteNode * item = [SKSpriteNode spriteNodeWithImageNamed:itemImageURL];
-    [self scaleSpriteNode:item scaleRatio:0.3];
+    self.item = [SKSpriteNode spriteNodeWithImageNamed:itemImageURL];
+    [self scaleSpriteNode:self.item scaleRatio:0.3];
     
     // Determine where to spawn the item on the table
-    int itemYPostion = 90 + tableCornerY + item.size.height/2;
-    int itemXPosition = 10 + tableCornerX + item.size.width/2;
-    item.position = CGPointMake(itemXPosition,itemYPostion);
+    int itemYPostion = tableHeight/2 + tableCornerY + self.item.size.height/2;
+    int itemXPosition = 10 + tableCornerX + self.item.size.width/2;
+    
+    if(self.sendCatToMiddle) {
+        itemYPostion = tableHeight/2 + tableCornerY - self.item.size.height;
+        itemXPosition = tableWidth/2 + tableCornerX + self.item.size.width/2;
+    }
+    self.item.position = CGPointMake(itemXPosition,itemYPostion);
     
     //set up physics of item
-    item.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:item.size];
-    item.physicsBody.dynamic = YES;
-    item.physicsBody.categoryBitMask = itemCategory;
-    item.physicsBody.contactTestBitMask = catCategory;
-    item.physicsBody.collisionBitMask = !aimCategory;
-    item.physicsBody.usesPreciseCollisionDetection = YES;
+    self.item.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:self.item.size];
+    self.item.physicsBody.dynamic = YES;
+    self.item.physicsBody.categoryBitMask = itemCategory;
+    self.item.physicsBody.contactTestBitMask = catCategory;
+    self.item.physicsBody.collisionBitMask = !aimCategory;
+    self.item.physicsBody.usesPreciseCollisionDetection = YES;
     
-    [self addChild:item];
+    [self addChild:self.item];
     
 }
 
@@ -306,14 +464,293 @@ static const uint32_t aimCategory        =  0x1 << 3;
     //UITouch *touch = [touches anyObject];
     //CGPoint location = [touch locationInNode:self];
     //SKNode *node = [self nodeAtPoint:location];
-
+    
     //pressed skip button
     //if ([node.name isEqualToString:@"menuButton"]) {
     //    SKScene * menu = [[Menu alloc] initWithSize:self.size];
     //    [self.view presentScene:menu transition:[SKTransition fadeWithDuration:.5]];
-    [self increment:self.frameNumber];
+    if(self.frameNumber < 5)
+    {
+        [self increment:self.frameNumber];
+    }
     //}
 }
+
+-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    if(self.frameNumber > 5) {
+    // Choose one of the touches to work with
+    UITouch * touch = [touches anyObject];
+    CGPoint locationCheck = [touch locationInNode:self];
+    NSLog(@"%f  %f",locationCheck.x, locationCheck.y);
+    
+    self.shootingBool = NO;
+    self.shotPower = 10*(1-(self.shootingBarCharger.size.height/self.dogBarHeight));
+    SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight) duration:0];
+    [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
+    SKAction * fadeClickedBarAway = [SKAction fadeOutWithDuration:0];
+    [self.shootingBarBackgroundWhenClicked runAction:fadeClickedBarAway];
+    SKAction * showUnclickedBar = [SKAction fadeInWithDuration:0];
+    [self.shootingBarBackground runAction:showUnclickedBar];
+    
+    if(!self.shotsFired) {
+        self.shotsFired = YES;
+        SKSpriteNode * projectile = [SKSpriteNode spriteNodeWithImageNamed:@"puppy.png"];
+        [self scaleSpriteNode:projectile scaleRatio:0.2];
+        
+        //music for shot
+        NSInteger random = arc4random_uniform(2);
+        switch(random) {
+            case 0:[self runAction:[SKAction playSoundFileNamed:@"woof2.mp3" waitForCompletion:NO]];
+                break;
+            default:[self runAction:[SKAction playSoundFileNamed:@"bark2.mp3" waitForCompletion:NO]];
+                break;
+        }
+        
+        //projectile physics
+        projectile.position = CGPointMake(tableCornerX+tableWidth/2, tableCornerY+tableHeight);
+        projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
+        projectile.physicsBody.dynamic = YES;
+        projectile.physicsBody.categoryBitMask = projectileCategory;
+        projectile.physicsBody.contactTestBitMask = itemCategory;
+        projectile.physicsBody.collisionBitMask = !aimCategory;
+        projectile.physicsBody.usesPreciseCollisionDetection = YES;
+        CGPoint normal = rwSub(self.aim.position, projectile.position);
+        float slope = normal.y/normal.x;
+        float possibleX = (-10-projectile.position.y)/slope + projectile.position.x;
+        float possibleY = slope*(-10-projectile.position.x) + projectile.position.y;
+        float possibleY2 = slope*(575-projectile.position.x) + projectile.position.y;
+        
+        
+        CGPoint projectileDestinationMaybe;
+        if(0 < possibleX && possibleX < 568) {
+            projectileDestinationMaybe=CGPointMake(possibleX, -10);
+        } else if (possibleY > possibleY2) {
+            projectileDestinationMaybe=CGPointMake(575, possibleY2);
+        } else {
+            projectileDestinationMaybe=CGPointMake(-10, possibleY);
+        }
+        CGFloat rotationRadians = atan2f(normal.y, normal.x) + 3.14/2;
+        
+        
+        // Determine offset of location to projectile
+        CGPoint offset = rwSub(self.aim.position, projectile.position);
+        
+        // Bail out if shooting up
+        if (offset.y >= 0) return;
+        
+        [self addChild:projectile];
+        
+        //get the destination and duration for the animation
+        //CGPoint projectileDestination = [self assetDestination:&offset assetPosition:projectile.position];
+        //float animationDuration = [self getAnimationDuration:@"projectile"];
+        
+        // Create the actions
+        SKAction * rotateProjectile = [SKAction rotateToAngle:rotationRadians duration:0];
+        SKAction * actionMove = [SKAction moveTo:projectileDestinationMaybe duration:0.5];
+        SKAction * actionMoveDone = [SKAction removeFromParent];
+        [projectile runAction:[SKAction sequence:@[rotateProjectile, actionMove, actionMoveDone]] completion:^{
+            //set cat to go new random direction
+            self.shotsFired = NO;
+        }];
+        
+    }
+    }
+}
+
+//move that cat!
+-(void)moveCat {
+    int catXDestination = 0;
+    int catYDestination = 0;
+    if(self.sendCatToMiddle) {
+        catYDestination = (tableHeight/2) + tableCornerY; //center
+        catXDestination = (tableWidth);
+        
+    } else {
+        catXDestination = tableCornerX*2; //left wall
+        catYDestination = (tableHeight/2) + tableCornerY;
+    }
+    SKAction * actionMove = [SKAction moveTo:CGPointMake(catXDestination, catYDestination) duration:(startSpeed/119)];
+    SKAction * animate;
+    //SKAction * actaf = [SKAction anim]
+    CGPoint location = self.cat.position;
+    if (location.x <= catXDestination) {
+        //walk right
+        animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesRight
+                                                          timePerFrame:0.25] count:15];
+    } else {
+        //walk left
+        animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesLeft
+                                                          timePerFrame:0.25] count:6];
+        // animate = [SKAction animateWithTextures:self.catWalkingFramesLeft
+        //timePerFrame:0.2];
+        //animate.duration = 3;
+        
+    }
+    [self.cat runAction:[SKAction group:@[animate, actionMove]] completion:^{
+        self.cat.hidden = YES;
+        self.cat.physicsBody = nil;
+        self.cat2.hidden = NO;
+    }];
+}
+
+
+-(float)getAnimationDuration:(NSString*)asset
+{
+    if ([asset isEqual:@"projectile"]) {
+        return self.size.width / 180;
+    } else if ([asset isEqualToString:@"item"]) {
+        return self.size.width / 480;
+    } else {
+        NSLog(@"invalid asset!");
+        exit(0);
+    }
+}
+
+-(void)projectile:(SKSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat
+{
+    NSLog(@"Hit");
+    [projectile removeFromParent];
+//    self.shotsFired = NO;
+//    
+//    [self runAction:[SKAction playSoundFileNamed:@"meow2.mp3" waitForCompletion:NO]];
+//    
+//    if(self.chaosCount > 0)
+//        self.chaosCount=MAX(0,self.chaosCount - self.shotPower);
+//    
+//    [self updateChaosBar];
+//    NSLog(@"%f",self.chaosCount);
+    
+    //on hit, cat turns red for a short period second
+    SKAction *pulseRed = [SKAction sequence:@[
+                                              [SKAction colorizeWithColor:[SKColor redColor] colorBlendFactor:1.0 duration:0.05],
+                                              [SKAction waitForDuration:0.05],
+                                              [SKAction colorizeWithColorBlendFactor:0.0 duration:0.05]]];
+    
+    
+    SKAction * hitAnimation;
+    if(projectile.position.x >= cat.position.x) {
+        hitAnimation = [SKAction animateWithTextures:self.catHitFramesRight timePerFrame:0.5];
+    } else {
+        hitAnimation = [SKAction animateWithTextures:self.catHitFramesLeft timePerFrame:0.5];
+    }
+    SKAction * normalCat = [SKAction colorizeWithColorBlendFactor:0.0 duration:0.25];
+    [self.cat runAction:[SKAction group:@[pulseRed, hitAnimation]]];
+    [self.cat runAction:[SKAction sequence:@[normalCat]] completion:^{
+        //set cat to go new random direction
+        //[self updateCat];
+    }];
+}
+
+-(void)sendCatBack {
+    
+}
+
+-(CGPoint)assetDestination:(CGPoint *)initialDirection assetPosition:(CGPoint)assetPosition
+{
+    // Get the direction of where to shoot the item
+    CGPoint direction = rwNormalize(*initialDirection);
+    // Make it shoot far enough to be guaranteed off screen
+    CGPoint shootAmount = rwMult(direction, self.frame.size.width*2);
+    return rwAdd(shootAmount, assetPosition);
+}
+
+-(void)item:(SKSpriteNode *)item didCollideWithCat:(SKSpriteNode *)cat
+{
+    NSLog(@"Item Hit by cat");
+    self.chaosCount = self.chaosCount + 11;
+    [self updateChaosBar];
+    NSLog(@"%f",self.chaosCount);
+    //[self checkIfGameOver];
+    
+    // Determine offset of item to the cat
+    CGPoint offset = rwSub(item.position, cat.position);
+    
+    CGPoint itemDestination = [self assetDestination:&offset assetPosition:item.position];
+    
+    float animationDuration = [self getAnimationDuration:@"item"];
+    SKAction * actionMove = [SKAction moveTo:itemDestination duration:animationDuration];
+    SKAction * actionMoveDone = [SKAction removeFromParent];
+    [item runAction:[SKAction sequence:@[actionMove, actionMoveDone]]];
+    
+    
+    SKAction * flipAnimation;
+    if(item.position.x >= cat.position.x) {
+        flipAnimation = [SKAction animateWithTextures:self.catFlippingFramesRight timePerFrame:0.3];
+    } else {
+        flipAnimation = [SKAction animateWithTextures:self.catFlippingFramesLeft timePerFrame:0.3];
+    }
+    //SKAction * actionMoveCat = [SKAction waitForDuration:0.5];
+    
+    [self.cat runAction:[SKAction group:@[flipAnimation]] completion:^{
+        self.sendCatToMiddle = YES;
+        [self moveCat];
+    }];
+}
+
+-(void)item:(SKSpriteNode *)item didCollideWithProjectile:(SKSpriteNode *)projectile
+{
+    NSLog(@"Item Hit by projectile");
+    self.chaosCount = self.chaosCount + 3;
+    [self updateChaosBar];
+    //NSLog(@"%f",self.chaosCount);
+    [projectile removeFromParent];
+    //self.shotsFired = NO;
+    
+    // Determine offset of item to the cat
+    CGPoint offsetItem = rwSub(item.position, projectile.position);
+    CGPoint offsetProjectile = rwSub(projectile.position, item.position);
+    
+    
+    CGPoint itemDestination = [self assetDestination:&offsetItem assetPosition:item.position];
+    CGPoint projectileDestination = [self assetDestination:&offsetProjectile assetPosition:projectile.position];
+    float animationDuration = [self getAnimationDuration:@"item"];
+    
+    SKAction * actionMoveItem = [SKAction moveTo:itemDestination duration:animationDuration];
+    SKAction * actionMoveProjectile = [SKAction moveTo:projectileDestination duration:animationDuration];
+    SKAction * actionMoveDone = [SKAction removeFromParent];
+    [item runAction:[SKAction sequence:@[actionMoveItem, actionMoveDone]]];
+    [projectile runAction:[SKAction sequence:@[actionMoveProjectile, actionMoveDone]]];
+    
+    //add another item
+    [self addItem];
+}
+
+-(void)didBeginContact:(SKPhysicsContact *)contact
+{
+    SKPhysicsBody *firstBody, *secondBody;
+    
+    if (contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask)
+    {
+        firstBody = contact.bodyA;
+        secondBody = contact.bodyB;
+    }
+    else
+    {
+        firstBody = contact.bodyB;
+        secondBody = contact.bodyA;
+    }
+    
+    
+    if ((firstBody.categoryBitMask == projectileCategory) &&
+        (secondBody.categoryBitMask == catCategory))
+    {
+        [self projectile:(SKSpriteNode *) firstBody.node didCollideWithCat:(SKSpriteNode *) secondBody.node];
+    } else if (((firstBody.categoryBitMask == itemCategory) &&
+                (secondBody.categoryBitMask == catCategory))) {
+        [self item:(SKSpriteNode *) firstBody.node didCollideWithCat:(SKSpriteNode *) secondBody.node];
+    } else if (((firstBody.categoryBitMask == itemCategory) &&
+                (secondBody.categoryBitMask == projectileCategory))) {
+        [self item:(SKSpriteNode *) firstBody.node didCollideWithProjectile:(SKSpriteNode *) secondBody.node];
+    }
+}
+
+-(void)updateChaosBar
+{
+    SKAction * scaleEmptyChaosBar = [SKAction resizeToWidth:(self.chaosBarWidth*(101-self.chaosCount)/100) duration:0];
+    [self.chaosBarCharger runAction:[SKAction sequence:@[scaleEmptyChaosBar]]];
+}
+
 
 @end
 
@@ -334,20 +771,20 @@ static const uint32_t aimCategory        =  0x1 << 3;
 //
 //-(id)initWithSize:(CGSize)size{
 //    if (self = [super initWithSize:size]) {
-//        
+//
 //        //background
 //        self.background =[SKSpriteNode spriteNodeWithImageNamed:@"tutorial.png"];
 //        self.background.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
 //        [self scaleSpriteNode:self.background scaleRatio:0.5];
 //        [self addChild:self.background];
-//        
+//
 //        /*//return to menu button
 //        self.menu = [SKSpriteNode spriteNodeWithImageNamed:@"return_menu.png"];
 //        [self scaleSpriteNode:self.menu scaleRatio:0.5];
 //        self.menu.position = CGPointMake(70, 280);
 //        self.menu.name = @"menuButton";//how the node is identified later
 //        [self addChild:self.menu];*/
-//        
+//
 //        //for the background music
 //        NSError *error;
 //        NSURL * backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"Menu" withExtension:@"mp3"];
@@ -355,7 +792,7 @@ static const uint32_t aimCategory        =  0x1 << 3;
 //        self.backgroundMusicPlayer.numberOfLoops = -1;
 //        [self.backgroundMusicPlayer prepareToPlay];
 //        [self.backgroundMusicPlayer play];
-//        
+//
 //    }
 //    return self;
 //}
@@ -365,7 +802,7 @@ static const uint32_t aimCategory        =  0x1 << 3;
 //    //UITouch *touch = [touches anyObject];
 //    //CGPoint location = [touch locationInNode:self];
 //    //SKNode *node = [self nodeAtPoint:location];
-//    
+//
 //    //pressed menu button
 //    //if ([node.name isEqualToString:@"menuButton"]) {
 //        [self.backgroundMusicPlayer stop];

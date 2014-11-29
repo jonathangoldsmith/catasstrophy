@@ -15,6 +15,7 @@
 		61BFAEA01A10151000AEEB79 /* catImagesFlipLeft.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE9A1A10151000AEEB79 /* catImagesFlipLeft.atlas */; };
 		61BFAEA11A10151000AEEB79 /* catImagesFlipRight.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE9B1A10151000AEEB79 /* catImagesFlipRight.atlas */; };
 		61BFAEA21A10151000AEEB79 /* catImagesLeft.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE9C1A10151000AEEB79 /* catImagesLeft.atlas */; };
+		61BFAEA81A1745D600AEEB79 /* catImagesSit.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAEA71A1745D600AEEB79 /* catImagesSit.atlas */; };
 		652E7CB118BD31840079827F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652E7CB018BD31840079827F /* Foundation.framework */; };
 		652E7CB318BD31840079827F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652E7CB218BD31840079827F /* CoreGraphics.framework */; };
 		652E7CB518BD31840079827F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652E7CB418BD31840079827F /* UIKit.framework */; };
@@ -73,6 +74,7 @@
 		61BFAE9A1A10151000AEEB79 /* catImagesFlipLeft.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesFlipLeft.atlas; path = "../../Downloads/game 3/art/cat/catImagesFlipLeft.atlas"; sourceTree = "<group>"; };
 		61BFAE9B1A10151000AEEB79 /* catImagesFlipRight.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesFlipRight.atlas; path = "../../Downloads/game 3/art/cat/catImagesFlipRight.atlas"; sourceTree = "<group>"; };
 		61BFAE9C1A10151000AEEB79 /* catImagesLeft.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesLeft.atlas; path = "../../Downloads/game 3/art/cat/catImagesLeft.atlas"; sourceTree = "<group>"; };
+		61BFAEA71A1745D600AEEB79 /* catImagesSit.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesSit.atlas; path = ../../Downloads/catImagesSit.atlas; sourceTree = "<group>"; };
 		652E7CAD18BD31840079827F /* catasstrophy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = catasstrophy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		652E7CB018BD31840079827F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		652E7CB218BD31840079827F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -216,6 +218,7 @@
 				65C2F64918E26B23006C5352 /* Tutorial.m */,
 				652E7CC718BD31840079827F /* ViewController.h */,
 				652E7CC818BD31840079827F /* ViewController.m */,
+				61BFAEA71A1745D600AEEB79 /* catImagesSit.atlas */,
 				61BFAE971A10151000AEEB79 /* catImagesHitLeft.atlas */,
 				61BFAE981A10151000AEEB79 /* catImagesHitRight.atlas */,
 				61BFAE991A10151000AEEB79 /* catImagesRight.atlas */,
@@ -359,6 +362,7 @@
 				652E7CBD18BD31840079827F /* InfoPlist.strings in Resources */,
 				657E7E3D18E603DC00D1AD3F /* bark2.mp3 in Resources */,
 				657E7E3C18E603DC00D1AD3F /* woof2.mp3 in Resources */,
+				61BFAEA81A1745D600AEEB79 /* catImagesSit.atlas in Resources */,
 				61BFAE9D1A10151000AEEB79 /* catImagesHitLeft.atlas in Resources */,
 				6151EB171A0190A1009EC821 /* ArtAssets.xcassets in Resources */,
 				65C2F6E018E3DCB9006C5352 /* Menu aud file 1.mp3 in Resources */,
