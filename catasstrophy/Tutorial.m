@@ -135,7 +135,7 @@ static inline CGPoint rwNormalize(CGPoint a)
         [self scaleSpriteNode:self.player scaleRatio:0.4];
         [self addChild:self.player];
         
-
+        
         //chaos bar/aimer/timer/cat/
         [self initializeAimer];
         self.aim.hidden = YES;
@@ -324,7 +324,7 @@ static inline CGPoint rwNormalize(CGPoint a)
         self.tutorialLabel.text = [NSString stringWithFormat:@"Every time he knocks something off of your desk,"];
         self.tutorialLabel2.text = [NSString stringWithFormat:@"your life slowly devolves into chaos,"];
         self.tutorialLabel3.text = [NSString stringWithFormat:@"convieniently tracked by this bar"];
-       // self.cat = [SKSpriteNode spriteNodeWithImageNamed:@"cat_0.png"];
+        // self.cat = [SKSpriteNode spriteNodeWithImageNamed:@"cat_0.png"];
         self.sendCatToMiddle = NO;
         [self moveCat];
         //cat move to and flip item
@@ -475,7 +475,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     //    SKScene * menu = [[Menu alloc] initWithSize:self.size];
     //    [self.view presentScene:menu transition:[SKTransition fadeWithDuration:.5]];
     //}
-
+    
     if(self.frameNumber < 4)
     {
         [self increment:self.frameNumber];
@@ -492,81 +492,81 @@ static inline CGPoint rwNormalize(CGPoint a)
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     if(self.frameNumber > 5) {
-    // Choose one of the touches to work with
-    UITouch * touch = [touches anyObject];
-    CGPoint locationCheck = [touch locationInNode:self];
-    NSLog(@"%f  %f",locationCheck.x, locationCheck.y);
-    
-    self.shootingBool = NO;
-    self.shotPower = 10*(1-(self.shootingBarCharger.size.height/self.dogBarHeight));
-    SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight) duration:0];
-    [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
-    SKAction * fadeClickedBarAway = [SKAction fadeOutWithDuration:0];
-    [self.shootingBarBackgroundWhenClicked runAction:fadeClickedBarAway];
-    SKAction * showUnclickedBar = [SKAction fadeInWithDuration:0];
-    [self.shootingBarBackground runAction:showUnclickedBar];
-    
-    if(!self.shotsFired) {
-        self.shotsFired = YES;
-        SKSpriteNode * projectile = [SKSpriteNode spriteNodeWithImageNamed:@"puppy.png"];
-        [self scaleSpriteNode:projectile scaleRatio:0.2];
+        // Choose one of the touches to work with
+        UITouch * touch = [touches anyObject];
+        CGPoint locationCheck = [touch locationInNode:self];
+        NSLog(@"%f  %f",locationCheck.x, locationCheck.y);
         
-        //music for shot
-        NSInteger random = arc4random_uniform(2);
-        switch(random) {
-            case 0:[self runAction:[SKAction playSoundFileNamed:@"woof2.mp3" waitForCompletion:NO]];
-                break;
-            default:[self runAction:[SKAction playSoundFileNamed:@"bark2.mp3" waitForCompletion:NO]];
-                break;
+        self.shootingBool = NO;
+        self.shotPower = 10*(1-(self.shootingBarCharger.size.height/self.dogBarHeight));
+        SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight) duration:0];
+        [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
+        SKAction * fadeClickedBarAway = [SKAction fadeOutWithDuration:0];
+        [self.shootingBarBackgroundWhenClicked runAction:fadeClickedBarAway];
+        SKAction * showUnclickedBar = [SKAction fadeInWithDuration:0];
+        [self.shootingBarBackground runAction:showUnclickedBar];
+        
+        if(!self.shotsFired) {
+            self.shotsFired = YES;
+            SKSpriteNode * projectile = [SKSpriteNode spriteNodeWithImageNamed:@"puppy.png"];
+            [self scaleSpriteNode:projectile scaleRatio:0.2];
+            
+            //music for shot
+            NSInteger random = arc4random_uniform(2);
+            switch(random) {
+                case 0:[self runAction:[SKAction playSoundFileNamed:@"woof2.mp3" waitForCompletion:NO]];
+                    break;
+                default:[self runAction:[SKAction playSoundFileNamed:@"bark2.mp3" waitForCompletion:NO]];
+                    break;
+            }
+            
+            //projectile physics
+            projectile.position = CGPointMake((tableCornerX+tableWidth/2)*self.size.width/568, (tableCornerY+tableHeight)*self.size.height/320);        projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
+            projectile.physicsBody.dynamic = YES;
+            projectile.physicsBody.categoryBitMask = projectileCategory;
+            projectile.physicsBody.contactTestBitMask = itemCategory;
+            projectile.physicsBody.collisionBitMask = !aimCategory;
+            projectile.physicsBody.usesPreciseCollisionDetection = YES;
+            CGPoint normal = rwSub(self.aim.position, projectile.position);
+            float slope = normal.y/normal.x;
+            float possibleX = (-10-projectile.position.y)/slope + projectile.position.x;
+            float possibleY = slope*(-10-projectile.position.x) + projectile.position.y;
+            float possibleY2 = slope*(575*self.size.height/320-projectile.position.x) + projectile.position.y;
+            
+            
+            CGPoint projectileDestinationMaybe;
+            if(0 < possibleX && possibleX < 568*self.size.width/568) {
+                projectileDestinationMaybe=CGPointMake(possibleX, -10);
+            } else if (possibleY > possibleY2) {
+                projectileDestinationMaybe=CGPointMake(575*self.size.width/568, possibleY2);
+            } else {
+                projectileDestinationMaybe=CGPointMake(-10, possibleY);
+            }
+            CGFloat rotationRadians = atan2f(normal.y, normal.x) + 3.14/2;
+            
+            
+            // Determine offset of location to projectile
+            CGPoint offset = rwSub(self.aim.position, projectile.position);
+            
+            // Bail out if shooting up
+            if (offset.y >= 0) return;
+            
+            [self addChild:projectile];
+            
+            //get the destination and duration for the animation
+            //CGPoint projectileDestination = [self assetDestination:&offset assetPosition:projectile.position];
+            //float animationDuration = [self getAnimationDuration:@"projectile"];
+            
+            // Create the actions
+            SKAction * rotateProjectile = [SKAction rotateToAngle:rotationRadians duration:0];
+            SKAction * actionMove = [SKAction moveTo:projectileDestinationMaybe duration:0.5];
+            SKAction * actionMoveDone = [SKAction removeFromParent];
+            [projectile runAction:[SKAction sequence:@[rotateProjectile, actionMove, actionMoveDone]] completion:^{
+                //set cat to go new random direction
+                self.shotsFired = NO;
+            }];
+            
         }
-        
-        //projectile physics
-projectile.position = CGPointMake((tableCornerX+tableWidth/2)*self.size.width/568, (tableCornerY+tableHeight)*self.size.height/320);        projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
-        projectile.physicsBody.dynamic = YES;
-        projectile.physicsBody.categoryBitMask = projectileCategory;
-        projectile.physicsBody.contactTestBitMask = itemCategory;
-        projectile.physicsBody.collisionBitMask = !aimCategory;
-        projectile.physicsBody.usesPreciseCollisionDetection = YES;
-        CGPoint normal = rwSub(self.aim.position, projectile.position);
-        float slope = normal.y/normal.x;
-        float possibleX = (-10-projectile.position.y)/slope + projectile.position.x;
-        float possibleY = slope*(-10-projectile.position.x) + projectile.position.y;
-        float possibleY2 = slope*(575*self.size.height/320-projectile.position.x) + projectile.position.y;
-        
-        
-        CGPoint projectileDestinationMaybe;
-        if(0 < possibleX && possibleX < 568*self.size.width/568) {
-            projectileDestinationMaybe=CGPointMake(possibleX, -10);
-        } else if (possibleY > possibleY2) {
-            projectileDestinationMaybe=CGPointMake(575*self.size.width/568, possibleY2);
-        } else {
-            projectileDestinationMaybe=CGPointMake(-10, possibleY);
-        }
-        CGFloat rotationRadians = atan2f(normal.y, normal.x) + 3.14/2;
-        
-        
-        // Determine offset of location to projectile
-        CGPoint offset = rwSub(self.aim.position, projectile.position);
-        
-        // Bail out if shooting up
-        if (offset.y >= 0) return;
-        
-        [self addChild:projectile];
-        
-        //get the destination and duration for the animation
-        //CGPoint projectileDestination = [self assetDestination:&offset assetPosition:projectile.position];
-        //float animationDuration = [self getAnimationDuration:@"projectile"];
-        
-        // Create the actions
-        SKAction * rotateProjectile = [SKAction rotateToAngle:rotationRadians duration:0];
-        SKAction * actionMove = [SKAction moveTo:projectileDestinationMaybe duration:0.5];
-        SKAction * actionMoveDone = [SKAction removeFromParent];
-        [projectile runAction:[SKAction sequence:@[rotateProjectile, actionMove, actionMoveDone]] completion:^{
-            //set cat to go new random direction
-            self.shotsFired = NO;
-        }];
-        
-    }
     }
 }
 
@@ -604,7 +604,7 @@ projectile.position = CGPointMake((tableCornerX+tableWidth/2)*self.size.width/56
         self.cat.physicsBody = nil;
         self.cat2.hidden = NO;
         [self increment:self.frameNumber];
-
+        
     }];
 }
 
@@ -624,9 +624,9 @@ projectile.position = CGPointMake((tableCornerX+tableWidth/2)*self.size.width/56
 -(void)projectile:(SKSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat
 {
     if(self.frameNumber == 6) {
-    [self increment:self.frameNumber];
+        [self increment:self.frameNumber];
     }
-
+    
     NSLog(@"Hit");
     [projectile removeFromParent];
     self.shotsFired = NO;
@@ -639,7 +639,7 @@ projectile.position = CGPointMake((tableCornerX+tableWidth/2)*self.size.width/56
     } else {
         if(self.frameNumber > 6)
             [self increment:self.frameNumber];
-
+        
     }
     [self updateChaosBar];
     NSLog(@"%f",self.chaosCount);
@@ -780,13 +780,6 @@ projectile.position = CGPointMake((tableCornerX+tableWidth/2)*self.size.width/56
     [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
 }
 
--(void)updateWithTimeSinceLastUpdate:(CFTimeInterval)timeSinceLast
-{
-    
-    //self.lastSpawnTimeInterval += timeSinceLast;
-    self.totalTimeInterval += timeSinceLast;
-}
-
 -(void)update:(NSTimeInterval)currentTime
 {
     
@@ -802,11 +795,7 @@ projectile.position = CGPointMake((tableCornerX+tableWidth/2)*self.size.width/56
         self.lastUpdateTimeInterval = currentTime;
     }
     
-    //change updateSpeed and set the timer based on the speed
-    //self.updateSpeed=startSpeed;
-    //startSpeed-self.updateSpeed;
-    
-    [self updateWithTimeSinceLastUpdate:timeSinceLast];
+    self.totalTimeInterval += timeSinceLast;
     
     if (self.shootingBool) {
         [self updateDogBar];
@@ -817,62 +806,3 @@ projectile.position = CGPointMake((tableCornerX+tableWidth/2)*self.size.width/56
 }
 
 @end
-
-//@interface Tutorial()
-//@property (nonatomic) SKSpriteNode * background;
-//@property (nonatomic) SKSpriteNode * menu;
-//@property (nonatomic) AVAudioPlayer * backgroundMusicPlayer;
-//
-//@end
-//
-//@implementation Tutorial
-//
-//- (void)scaleSpriteNode:(SKSpriteNode *)sprite scaleRatio:(float)scale
-//{
-//    sprite.xScale = scale;
-//    sprite.yScale = scale;
-//}
-//
-//-(id)initWithSize:(CGSize)size{
-//    if (self = [super initWithSize:size]) {
-//
-//        //background
-//        self.background =[SKSpriteNode spriteNodeWithImageNamed:@"tutorial.png"];
-//        self.background.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
-//        [self scaleSpriteNode:self.background scaleRatio:0.5];
-//        [self addChild:self.background];
-//
-//        /*//return to menu button
-//        self.menu = [SKSpriteNode spriteNodeWithImageNamed:@"return_menu.png"];
-//        [self scaleSpriteNode:self.menu scaleRatio:0.5];
-//        self.menu.position = CGPointMake(70, 280);
-//        self.menu.name = @"menuButton";//how the node is identified later
-//        [self addChild:self.menu];*/
-//
-//        //for the background music
-//        NSError *error;
-//        NSURL * backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"Menu" withExtension:@"mp3"];
-//        self.backgroundMusicPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:backgroundMusicURL error:&error];
-//        self.backgroundMusicPlayer.numberOfLoops = -1;
-//        [self.backgroundMusicPlayer prepareToPlay];
-//        [self.backgroundMusicPlayer play];
-//
-//    }
-//    return self;
-//}
-//
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-//{
-//    //UITouch *touch = [touches anyObject];
-//    //CGPoint location = [touch locationInNode:self];
-//    //SKNode *node = [self nodeAtPoint:location];
-//
-//    //pressed menu button
-//    //if ([node.name isEqualToString:@"menuButton"]) {
-//        [self.backgroundMusicPlayer stop];
-//        SKScene * menu = [[Menu alloc] initWithSize:self.size];
-//        [self.view presentScene:menu transition:[SKTransition fadeWithDuration:.5]];
-//    //}
-//}
-//
-//@end

@@ -54,6 +54,9 @@
 @synthesize updateSpeed;
 
 //various physics functions
+
+#pragma mathAndPhysics
+
 static const uint32_t itemCategory        =  0x1 << 0;
 static const uint32_t projectileCategory     =  0x1 << 1;
 static const uint32_t catCategory        =  0x1 << 2;
@@ -92,6 +95,8 @@ static inline CGPoint rwNormalize(CGPoint a)
     sprite.xScale = scale*self.size.width/568;
     sprite.yScale = scale*self.size.height/320;
 }
+
+#pragma inits
 
 -(id)initWithSize:(CGSize)size
 {
@@ -165,20 +170,6 @@ static inline CGPoint rwNormalize(CGPoint a)
     return self;
 }
 
-//updater to the accelerometer to chage the aimer
--(void)processUserMotionForUpdate:(NSTimeInterval)currentTime
-{
-    CMAccelerometerData* data = self.motionManager.accelerometerData;
-    if (fabs(data.acceleration.y) > 0.1)
-    {
-        [self.aim.physicsBody applyForce:CGVectorMake(1500.0 * data.acceleration.y, 0)];
-    }
-    if (fabs(data.acceleration.x) > 0.1)
-    {
-        [self.aim.physicsBody applyForce:CGVectorMake(0, -1500.0 * data.acceleration.x)];
-    }
-}
-
 -(void)initializeBars
 {
     self.chaosBarBackground=[SKSpriteNode spriteNodeWithImageNamed:@"chaos_filled.png"];
@@ -227,7 +218,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     self.aim.physicsBody.collisionBitMask = aimCategory;
     self.aim.physicsBody.affectedByGravity = NO;
     self.aim.physicsBody.mass = 1.0;
-
+    
     [self addChild:self.aim];
 }
 
@@ -297,7 +288,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     
     //Current wall for the cat to head towards
     self.currentWall = 0;
-
+    
     //cat phsysics
     self.cat.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:self.cat.size];
     self.cat.physicsBody.dynamic = YES;
@@ -308,68 +299,8 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self addChild:self.cat];
 }
 
-/*-(void)countdown
-{
-    self.countdownLabel = [SKLabelNode labelNodeWithFontNamed:@"GillSans-Bold"];
-    self.countdownLabel.fontSize = 50;
-    self.countdownLabel.fontColor = [SKColor blueColor];
-    self.countdownLabel.text = [NSString stringWithFormat:@""];
-    self.countdownLabel.position = CGPointMake(CGRectGetMidX(self.table), CGRectGetMidY(self.table));
-    [self addChild:self.countdownLabel];
-    
-    SKAction * fadeCountdown = [SKAction fadeOutWithDuration:1];
-    [self.countdownLabel runAction:[SKAction sequence:@[fadeCountdown]]];
-    self.countdownLabel.text = [NSString stringWithFormat:@"Go!"];
-     
-}*/
 
--(void)updateCat
-{
-    //determine wall to send cat towards that isnt current wall
-    NSInteger r = self.currentWall;
-    while(self.currentWall == r)
-    {
-        r = arc4random_uniform(4);
-    }
-    self.currentWall = r;
-    
-    int catXDestination, catYDestination;
-    //Determine the new location to send cat based on new wall
-    switch(self.currentWall) {
-            case 0: catYDestination = tableHeight*self.size.height/320-tableCornerY*self.size.height/320; //top wall
-                    catXDestination = (arc4random() % tableWidth*self.size.width/568) + tableCornerX*self.size.width/568;
-                    break;
-            case 1: catXDestination = tableCornerX*2*self.size.width/568; //left wall
-                    catYDestination = (arc4random() % tableHeight*self.size.height/320) + tableCornerY*self.size.height/320;
-                    break;
-            case 2: catYDestination = tableCornerY*4*self.size.height/320; //bottom wall
-                    catXDestination = (arc4random() % tableWidth*self.size.width/568) + tableCornerX*self.size.width/568;
-                    break;
-            case 3: catXDestination = tableWidth*self.size.width/568-tableCornerX*self.size.width/568; //right wall
-                    catYDestination = (arc4random() % tableHeight*self.size.height/320) + tableCornerY*self.size.height/320;
-                    break;
-            default: catXDestination = self.cat.position.x;
-                    catYDestination = self.cat.position.y;
-                    break;
-    }
-    
-    SKAction * actionMove = [SKAction moveTo:CGPointMake(catXDestination, catYDestination) duration:(self.updateSpeed/100)];
-    SKAction * animate;
-    CGPoint location = self.cat.position;
-    if (location.x <= catXDestination) {
-        //walk right
-        animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesRight
-                                                           timePerFrame:0.2] count:updateSpeed/10];
-    } else {
-        //walk left
-        animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesLeft
-                                                                    timePerFrame:0.2] count:updateSpeed/10];;
-    }
-    
-    [self.cat runAction:[SKAction group:@[animate, actionMove]]];
-    
-    
-}
+#pragma itemStuff
 
 -(void)addItem
 {
@@ -442,6 +373,8 @@ static inline CGPoint rwNormalize(CGPoint a)
             break;
     }
 }
+
+#pragma touches
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -520,7 +453,7 @@ static inline CGPoint rwNormalize(CGPoint a)
             //set cat to go new random direction
             self.shotsFired = NO;
         }];
-
+        
     }
     
 }
@@ -534,6 +467,8 @@ static inline CGPoint rwNormalize(CGPoint a)
     SKAction * showClickedBar = [SKAction fadeInWithDuration:0];
     [self.shootingBarBackgroundWhenClicked runAction:showClickedBar];
 }
+
+#pragma animation helpers
 
 -(CGPoint)assetDestination:(CGPoint *)initialDirection assetPosition:(CGPoint)assetPosition
 {
@@ -556,6 +491,8 @@ static inline CGPoint rwNormalize(CGPoint a)
     }
 }
 
+#pragma Collision handlers
+
 -(void)projectile:(SKSpriteNode *)projectile didCollideWithCat:(SKSpriteNode *)cat
 {
     NSLog(@"Hit");
@@ -575,7 +512,7 @@ static inline CGPoint rwNormalize(CGPoint a)
                                               [SKAction colorizeWithColor:[SKColor redColor] colorBlendFactor:1.0 duration:0.05],
                                               [SKAction waitForDuration:0.05],
                                               [SKAction colorizeWithColorBlendFactor:0.0 duration:0.05]]];
-
+    
     
     SKAction * hitAnimation;
     if(projectile.position.x >= cat.position.x) {
@@ -613,10 +550,10 @@ static inline CGPoint rwNormalize(CGPoint a)
     if(item.position.x >= cat.position.x) {
         flipAnimation = [SKAction animateWithTextures:self.catFlippingFramesRight timePerFrame:0.3];
     } else {
-      flipAnimation = [SKAction animateWithTextures:self.catFlippingFramesLeft timePerFrame:0.3];
+        flipAnimation = [SKAction animateWithTextures:self.catFlippingFramesLeft timePerFrame:0.3];
     }
     //SKAction * actionMoveCat = [SKAction waitForDuration:0.5];
-
+    
     [self.cat runAction:[SKAction group:@[flipAnimation]] completion:^{
         //set cat to go new random direction
         [self updateCat];
@@ -641,7 +578,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     CGPoint itemDestination = [self assetDestination:&offsetItem assetPosition:item.position];
     CGPoint projectileDestination = [self assetDestination:&offsetProjectile assetPosition:projectile.position];
     float animationDuration = [self getAnimationDuration:@"item"];
-
+    
     SKAction * actionMoveItem = [SKAction moveTo:itemDestination duration:animationDuration];
     SKAction * actionMoveProjectile = [SKAction moveTo:projectileDestination duration:animationDuration];
     SKAction * actionMoveDone = [SKAction removeFromParent];
@@ -650,30 +587,6 @@ static inline CGPoint rwNormalize(CGPoint a)
     
     //add another item
     [self addItem];
-}
-
--(void)updateChaosBar
-{
-    SKAction * scaleEmptyChaosBar = [SKAction resizeToWidth:(self.chaosBarWidth*(101-self.chaosCount)/100) duration:0];
-    [self.chaosBarCharger runAction:[SKAction sequence:@[scaleEmptyChaosBar]]];
-}
-
--(void)updateDogBar
-{
-    SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight*(maxShotTime-MIN(self.totalTimeInterval- self.beginningShotTime, 1))) duration:0];
-    [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
-}
-
--(void)checkIfGameOver
-{
-    if (self.chaosCount >= 100) {
-        [self.backgroundMusicPlayerSlow stop];
-        [self.backgroundMusicPlayerMedium stop];
-        [self.backgroundMusicPlayerFast stop];
-        SKTransition *reveal = [SKTransition fadeWithDuration:1];
-        SKScene * gameOverScene = [[GameOverScreen alloc] initWithSize:self.size score:self.score];
-        [self.view presentScene:gameOverScene transition: reveal];
-    }
 }
 
 -(void)didBeginContact:(SKPhysicsContact *)contact
@@ -702,6 +615,96 @@ static inline CGPoint rwNormalize(CGPoint a)
     } else if (((firstBody.categoryBitMask == itemCategory) &&
                 (secondBody.categoryBitMask == projectileCategory))) {
         [self item:(SKSpriteNode *) firstBody.node didCollideWithProjectile:(SKSpriteNode *) secondBody.node];
+    }
+}
+
+
+#pragma updates
+
+//updater to the accelerometer to chage the aimer
+-(void)processUserMotionForUpdate:(NSTimeInterval)currentTime
+{
+    CMAccelerometerData* data = self.motionManager.accelerometerData;
+    if (fabs(data.acceleration.y) > 0.1)
+    {
+        [self.aim.physicsBody applyForce:CGVectorMake(1500.0 * data.acceleration.y, 0)];
+    }
+    if (fabs(data.acceleration.x) > 0.1)
+    {
+        [self.aim.physicsBody applyForce:CGVectorMake(0, -1500.0 * data.acceleration.x)];
+    }
+}
+
+
+-(void)updateCat
+{
+    //determine wall to send cat towards that isnt current wall
+    NSInteger r = self.currentWall;
+    while(self.currentWall == r)
+    {
+        r = arc4random_uniform(4);
+    }
+    self.currentWall = r;
+    
+    int catXDestination, catYDestination;
+    //Determine the new location to send cat based on new wall
+    switch(self.currentWall) {
+        case 0: catYDestination = tableHeight*self.size.height/320-tableCornerY*self.size.height/320; //top wall
+            catXDestination = (arc4random() % tableWidth*self.size.width/568) + tableCornerX*self.size.width/568;
+            break;
+        case 1: catXDestination = tableCornerX*2*self.size.width/568; //left wall
+            catYDestination = (arc4random() % tableHeight*self.size.height/320) + tableCornerY*self.size.height/320;
+            break;
+        case 2: catYDestination = tableCornerY*4*self.size.height/320; //bottom wall
+            catXDestination = (arc4random() % tableWidth*self.size.width/568) + tableCornerX*self.size.width/568;
+            break;
+        case 3: catXDestination = tableWidth*self.size.width/568-tableCornerX*self.size.width/568; //right wall
+            catYDestination = (arc4random() % tableHeight*self.size.height/320) + tableCornerY*self.size.height/320;
+            break;
+        default: catXDestination = self.cat.position.x;
+            catYDestination = self.cat.position.y;
+            break;
+    }
+    
+    SKAction * actionMove = [SKAction moveTo:CGPointMake(catXDestination, catYDestination) duration:(self.updateSpeed/100)];
+    SKAction * animate;
+    CGPoint location = self.cat.position;
+    if (location.x <= catXDestination) {
+        //walk right
+        animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesRight
+                                                          timePerFrame:0.2] count:updateSpeed/10];
+    } else {
+        //walk left
+        animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesLeft
+                                                          timePerFrame:0.2] count:updateSpeed/10];;
+    }
+    
+    [self.cat runAction:[SKAction group:@[animate, actionMove]]];
+    
+    
+}
+
+-(void)updateChaosBar
+{
+    SKAction * scaleEmptyChaosBar = [SKAction resizeToWidth:(self.chaosBarWidth*(101-self.chaosCount)/100) duration:0];
+    [self.chaosBarCharger runAction:[SKAction sequence:@[scaleEmptyChaosBar]]];
+}
+
+-(void)updateDogBar
+{
+    SKAction * scaleEmptyDogBar = [SKAction resizeToHeight:(self.dogBarHeight*(maxShotTime-MIN(self.totalTimeInterval- self.beginningShotTime, 1))) duration:0];
+    [self.shootingBarCharger runAction:[SKAction sequence:@[scaleEmptyDogBar]]];
+}
+
+-(void)checkIfGameOver
+{
+    if (self.chaosCount >= 100) {
+        [self.backgroundMusicPlayerSlow stop];
+        [self.backgroundMusicPlayerMedium stop];
+        [self.backgroundMusicPlayerFast stop];
+        SKTransition *reveal = [SKTransition fadeWithDuration:1];
+        SKScene * gameOverScene = [[GameOverScreen alloc] initWithSize:self.size score:self.score];
+        [self.view presentScene:gameOverScene transition: reveal];
     }
 }
 
@@ -739,48 +742,48 @@ static inline CGPoint rwNormalize(CGPoint a)
     self.score = self.totalTimeInterval;
     //startSpeed-self.updateSpeed;
     self.timerLabel.text = [NSString stringWithFormat:@"Time: %ld", (long)self.score];
-
+    
     [self updateWithTimeSinceLastUpdate:timeSinceLast];
     
     if (self.shootingBool) {
         [self updateDogBar];
     }
     
-    self.backgroundMusicPlayerFast.rate = 0.5 + self.chaosCount/1000;
+    self.backgroundMusicPlayerSlow.rate = 1.0 + self.chaosCount/100;
     
     /*if(self.chaosCount < 40) {
-        //self.backgroundMusicPlayerSlow.rate = 1.0;
-        [self.backgroundMusicPlayerMedium stop];
-        [self.backgroundMusicPlayerFast stop];
-        [self.backgroundMusicPlayerSlow play];
-    } else if(self.chaosCount < 75) {
-        //self.backgroundMusicPlayerSlow.rate = 1.5;
-        [self.backgroundMusicPlayerSlow stop];
-        [self.backgroundMusicPlayerFast stop];
-        [self.backgroundMusicPlayerMedium play];
-    } else if(self.chaosCount <100) {
-        //self.backgroundMusicPlayerSlow.rate = 2.0;
-        [self.backgroundMusicPlayerSlow stop];
-        [self.backgroundMusicPlayerMedium stop];
-        [self.backgroundMusicPlayerFast play];
-    } else {
-        [self.backgroundMusicPlayerSlow stop];
-        [self.backgroundMusicPlayerMedium stop];
-        [self.backgroundMusicPlayerFast stop];
-    }
-    
-    if(self.chaosCount < 50) {
-        //self.backgroundMusicPlayerSlow.rate = 1.0;
-        [self.backgroundMusicPlayerFast stop];
-        [self.backgroundMusicPlayerSlow play];
-    } else if(self.chaosCount <100) {
-        //self.backgroundMusicPlayerSlow.rate = 2.0;
-        [self.backgroundMusicPlayerSlow stop];
-        [self.backgroundMusicPlayerFast play];
-    } else {
-        [self.backgroundMusicPlayerSlow stop];
-        [self.backgroundMusicPlayerFast stop];
-    }*/
+     //self.backgroundMusicPlayerSlow.rate = 1.0;
+     [self.backgroundMusicPlayerMedium stop];
+     [self.backgroundMusicPlayerFast stop];
+     [self.backgroundMusicPlayerSlow play];
+     } else if(self.chaosCount < 75) {
+     //self.backgroundMusicPlayerSlow.rate = 1.5;
+     [self.backgroundMusicPlayerSlow stop];
+     [self.backgroundMusicPlayerFast stop];
+     [self.backgroundMusicPlayerMedium play];
+     } else if(self.chaosCount <100) {
+     //self.backgroundMusicPlayerSlow.rate = 2.0;
+     [self.backgroundMusicPlayerSlow stop];
+     [self.backgroundMusicPlayerMedium stop];
+     [self.backgroundMusicPlayerFast play];
+     } else {
+     [self.backgroundMusicPlayerSlow stop];
+     [self.backgroundMusicPlayerMedium stop];
+     [self.backgroundMusicPlayerFast stop];
+     }
+     
+     if(self.chaosCount < 50) {
+     //self.backgroundMusicPlayerSlow.rate = 1.0;
+     [self.backgroundMusicPlayerFast stop];
+     [self.backgroundMusicPlayerSlow play];
+     } else if(self.chaosCount <100) {
+     //self.backgroundMusicPlayerSlow.rate = 2.0;
+     [self.backgroundMusicPlayerSlow stop];
+     [self.backgroundMusicPlayerFast play];
+     } else {
+     [self.backgroundMusicPlayerSlow stop];
+     [self.backgroundMusicPlayerFast stop];
+     }*/
 }
 
 @end
