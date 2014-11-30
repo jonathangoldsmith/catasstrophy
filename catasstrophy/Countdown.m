@@ -30,8 +30,8 @@
 //for scaling sprites
 - (void)scaleSpriteNode:(SKSpriteNode *)sprite scaleRatio:(float)scale
 {
-    sprite.xScale = scale;
-    sprite.yScale = scale;
+    sprite.xScale = scale*self.size.width/568;
+    sprite.yScale = scale*self.size.height/320;
 }
 
 -(id)initWithSize:(CGSize)size
@@ -40,7 +40,7 @@
     {
         NSLog(@"Size: %@", NSStringFromCGSize(size));
         
-        self.table = CGRectMake(tableCornerX, tableCornerY, tableWidth, tableHeight);
+        self.table = CGRectMake(tableCornerX*self.size.width/568, tableCornerY*self.size.height/320, tableWidth*self.size.width/568, tableHeight*self.size.height/320);
         
         //background
         SKSpriteNode *background =[SKSpriteNode spriteNodeWithImageNamed:@"play_area.png"];
@@ -70,32 +70,32 @@
 {
     self.chaosBarBackground=[SKSpriteNode spriteNodeWithImageNamed:@"chaos_filled.png"];
     [self scaleSpriteNode:self.chaosBarBackground scaleRatio:0.5];
-    self.chaosBarBackground.position=CGPointMake(tableWidth - 40, tableHeight + self.chaosBarBackground.size.height/2);
+    self.chaosBarBackground.position=CGPointMake(tableWidth*self.size.width/568 - 40*self.size.width/568, tableHeight*self.size.height/320 + self.chaosBarBackground.size.height/2);
     [self addChild:self.chaosBarBackground];
     
     self.chaosBarCharger=[SKSpriteNode spriteNodeWithImageNamed:@"chaos_inner.png"];
     [self scaleSpriteNode:self.chaosBarCharger scaleRatio:0.5];
     self.chaosBarCharger.anchorPoint = CGPointMake(1,0.5);
-    self.chaosBarCharger.position=CGPointMake(546,284);
+    self.chaosBarCharger.position=CGPointMake(546*self.size.width/568,284*self.size.height/320);
     self.chaosBarWidth = self.chaosBarCharger.size.width;
     [self addChild:self.chaosBarCharger];
     
     self.shootingBarBackgroundWhenClicked=[SKSpriteNode spriteNodeWithImageNamed:@"dogbar_clicked.png"];
     [self scaleSpriteNode:self.shootingBarBackgroundWhenClicked scaleRatio:0.5];
-    self.shootingBarBackgroundWhenClicked.position=CGPointMake(tableWidth + self.shootingBarBackgroundWhenClicked.size.width/1.5, tableHeight/2 + 5);
+    self.shootingBarBackgroundWhenClicked.position=CGPointMake(tableWidth*self.size.width/568 + self.shootingBarBackgroundWhenClicked.size.width/1.5, tableHeight/2*self.size.height/320 + 5*self.size.height/320);
     [self addChild:self.shootingBarBackgroundWhenClicked];
     SKAction * fadeOutBarInitially = [SKAction fadeOutWithDuration:0];
     [self.shootingBarBackgroundWhenClicked runAction:[SKAction sequence:@[fadeOutBarInitially]]];
     
     self.shootingBarBackground=[SKSpriteNode spriteNodeWithImageNamed:@"dogbar.png"];
     [self scaleSpriteNode:self.shootingBarBackground scaleRatio:0.5];
-    self.shootingBarBackground.position=CGPointMake(tableWidth + self.shootingBarBackground.size.width/1.5, tableHeight/2 + 5);
+    self.shootingBarBackground.position=CGPointMake(tableWidth*self.size.width/568 + self.shootingBarBackground.size.width/1.5, tableHeight/2*self.size.height/320 + 5*self.size.height/320);
     [self addChild:self.shootingBarBackground];
     
     self.shootingBarCharger=[SKSpriteNode spriteNodeWithImageNamed:@"dogbar_inner.png"];
     [self scaleSpriteNode:self.shootingBarCharger scaleRatio:0.5];
     self.shootingBarCharger.anchorPoint = CGPointMake(0.5,1);
-    self.shootingBarCharger.position=CGPointMake(512.4,259);
+    self.shootingBarCharger.position=CGPointMake(512.4*self.size.width/568,259*self.size.height/320);
     self.dogBarHeight = self.shootingBarCharger.size.height;
     [self addChild:self.shootingBarCharger];
     

@@ -28,8 +28,8 @@
 //for scaling sprites
 - (void)scaleSpriteNode:(SKSpriteNode *)sprite scaleRatio:(float)scale
 {
-    sprite.xScale = scale;
-    sprite.yScale = scale;
+    sprite.xScale = scale*self.size.width/568;
+    sprite.yScale = scale*self.size.height/320;
 }
 
 
@@ -56,7 +56,7 @@
         self.scoreText.fontSize = 30;
         self.scoreText.fontColor = Rgb2UIColor(255, 150, 50);
         self.scoreText.text = [NSString stringWithFormat:@"%ld", (long)score];
-        self.scoreText.position = CGPointMake(self.scoreText.frame.size.width*3.5, self.scoreText.frame.size.height*2);
+        self.scoreText.position = CGPointMake(self.scoreText.frame.size.width*3.5*self.size.width/568, self.scoreText.frame.size.height*2*self.size.height/320);
         [self addChild:self.scoreText];
         
         //high score
@@ -72,7 +72,7 @@
         self.highScoreLabel.fontSize = 30;
         self.highScoreLabel.fontColor = Rgb2UIColor(255, 150, 50);
         self.highScoreLabel.text = [NSString stringWithFormat:@"%d", highScore];
-        self.highScoreLabel.position = CGPointMake(480, self.highScoreLabel.frame.size.height*2);
+        self.highScoreLabel.position = CGPointMake(480*self.size.width/568, self.highScoreLabel.frame.size.height*2*self.size.height/320);
         [self addChild:self.highScoreLabel];
         
         //replay button

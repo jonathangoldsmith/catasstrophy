@@ -89,8 +89,8 @@ static inline CGPoint rwNormalize(CGPoint a)
 //for scaling sprites
 - (void)scaleSpriteNode:(SKSpriteNode *)sprite scaleRatio:(float)scale
 {
-    sprite.xScale = scale;
-    sprite.yScale = scale;
+    sprite.xScale = scale*self.size.width/568;
+    sprite.yScale = scale*self.size.height/320;
 }
 
 -(id)initWithSize:(CGSize)size
@@ -101,7 +101,7 @@ static inline CGPoint rwNormalize(CGPoint a)
         
         self.motionManager = [[CMMotionManager alloc] init];
         [self.motionManager startAccelerometerUpdates];
-        self.table = CGRectMake(tableCornerX, tableCornerY, tableWidth, tableHeight);
+        self.table = CGRectMake(tableCornerX*self.size.width/568, tableCornerY*self.size.height/320, tableWidth*self.size.width/568, tableHeight*self.size.height/320);
         self.updateSpeed = startSpeed;
         self.chaosCount = 0; //Set choas to 0, when it hits 100, game over
         
@@ -183,32 +183,32 @@ static inline CGPoint rwNormalize(CGPoint a)
 {
     self.chaosBarBackground=[SKSpriteNode spriteNodeWithImageNamed:@"chaos_filled.png"];
     [self scaleSpriteNode:self.chaosBarBackground scaleRatio:0.5];
-    self.chaosBarBackground.position=CGPointMake(tableWidth - 40, tableHeight + self.chaosBarBackground.size.height/2);
+    self.chaosBarBackground.position=CGPointMake(tableWidth*self.size.width/568 - 40*self.size.width/568, tableHeight*self.size.height/320 + self.chaosBarBackground.size.height/2*self.size.height/320);
     [self addChild:self.chaosBarBackground];
     
     self.chaosBarCharger=[SKSpriteNode spriteNodeWithImageNamed:@"chaos_inner.png"];
     [self scaleSpriteNode:self.chaosBarCharger scaleRatio:0.5];
     self.chaosBarCharger.anchorPoint = CGPointMake(1,0.5);
-    self.chaosBarCharger.position=CGPointMake(546,284);
+    self.chaosBarCharger.position=CGPointMake(546*self.size.width/568,284*self.size.height/320);
     self.chaosBarWidth = self.chaosBarCharger.size.width;
     [self addChild:self.chaosBarCharger];
     
     self.shootingBarBackgroundWhenClicked=[SKSpriteNode spriteNodeWithImageNamed:@"dogbar_clicked.png"];
     [self scaleSpriteNode:self.shootingBarBackgroundWhenClicked scaleRatio:0.5];
-    self.shootingBarBackgroundWhenClicked.position=CGPointMake(tableWidth + self.shootingBarBackgroundWhenClicked.size.width/1.5, tableHeight/2 + 5);
+    self.shootingBarBackgroundWhenClicked.position=CGPointMake(tableWidth*self.size.width/568 + self.shootingBarBackgroundWhenClicked.size.width/1.5, tableHeight/2*self.size.height/320 + 5*self.size.height/320);
     [self addChild:self.shootingBarBackgroundWhenClicked];
     SKAction * fadeOutBarInitially = [SKAction fadeOutWithDuration:0];
     [self.shootingBarBackgroundWhenClicked runAction:[SKAction sequence:@[fadeOutBarInitially]]];
     
     self.shootingBarBackground=[SKSpriteNode spriteNodeWithImageNamed:@"dogbar.png"];
     [self scaleSpriteNode:self.shootingBarBackground scaleRatio:0.5];
-    self.shootingBarBackground.position=CGPointMake(tableWidth + self.shootingBarBackground.size.width/1.5, tableHeight/2 + 5);
+    self.shootingBarBackground.position=CGPointMake(tableWidth*self.size.width/568 + self.shootingBarBackground.size.width/1.5, tableHeight/2*self.size.height/320 + 5*self.size.height/320);
     [self addChild:self.shootingBarBackground];
     
     self.shootingBarCharger=[SKSpriteNode spriteNodeWithImageNamed:@"dogbar_inner.png"];
     [self scaleSpriteNode:self.shootingBarCharger scaleRatio:0.5];
     self.shootingBarCharger.anchorPoint = CGPointMake(0.5,1);
-    self.shootingBarCharger.position=CGPointMake(512.4,259);
+    self.shootingBarCharger.position=CGPointMake(512.4*self.size.width/568,259*self.size.height/320);
     self.dogBarHeight = self.shootingBarCharger.size.height;
     [self addChild:self.shootingBarCharger];
     
@@ -336,17 +336,17 @@ static inline CGPoint rwNormalize(CGPoint a)
     int catXDestination, catYDestination;
     //Determine the new location to send cat based on new wall
     switch(self.currentWall) {
-            case 0: catYDestination = tableHeight-tableCornerY; //top wall
-                    catXDestination = (arc4random() % tableWidth) + tableCornerX;
+            case 0: catYDestination = tableHeight*self.size.height/320-tableCornerY*self.size.height/320; //top wall
+                    catXDestination = (arc4random() % tableWidth*self.size.width/568) + tableCornerX*self.size.width/568;
                     break;
-            case 1: catXDestination = tableCornerX*2; //left wall
-                    catYDestination = (arc4random() % tableHeight) + tableCornerY;
+            case 1: catXDestination = tableCornerX*2*self.size.width/568; //left wall
+                    catYDestination = (arc4random() % tableHeight*self.size.height/320) + tableCornerY*self.size.height/320;
                     break;
-            case 2: catYDestination = tableCornerY*4; //bottom wall
-                    catXDestination = (arc4random() % tableWidth) + tableCornerX;
+            case 2: catYDestination = tableCornerY*4*self.size.height/320; //bottom wall
+                    catXDestination = (arc4random() % tableWidth*self.size.width/568) + tableCornerX*self.size.width/568;
                     break;
-            case 3: catXDestination = tableWidth-tableCornerX; //right wall
-                    catYDestination = (arc4random() % tableHeight) + tableCornerY;
+            case 3: catXDestination = tableWidth*self.size.width/568-tableCornerX*self.size.width/568; //right wall
+                    catYDestination = (arc4random() % tableHeight*self.size.height/320) + tableCornerY*self.size.height/320;
                     break;
             default: catXDestination = self.cat.position.x;
                     catYDestination = self.cat.position.y;
@@ -382,7 +382,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     // Determine where to spawn the item on the table
     int itemYPostion = (arc4random() %(tableHeight - 4*tableCornerY)) + tableCornerY + item.size.height/2;
     int itemXPosition = (arc4random() %(tableWidth - 3*tableCornerX)) + tableCornerX + item.size.width/2;
-    item.position = CGPointMake(itemXPosition,itemYPostion);
+    item.position = CGPointMake(itemXPosition*self.size.width/568,itemYPostion*self.size.height/320);
     
     //set up physics of item
     item.physicsBody = [SKPhysicsBody bodyWithRectangleOfSize:item.size];
@@ -475,7 +475,7 @@ static inline CGPoint rwNormalize(CGPoint a)
         }
         
         //projectile physics
-        projectile.position = CGPointMake(tableCornerX+tableWidth/2, tableCornerY+tableHeight);
+        projectile.position = CGPointMake((tableCornerX+tableWidth/2)*self.size.width/568, (tableCornerY+tableHeight)*self.size.height/320);
         projectile.physicsBody = [SKPhysicsBody bodyWithCircleOfRadius:projectile.size.width/2];
         projectile.physicsBody.dynamic = YES;
         projectile.physicsBody.categoryBitMask = projectileCategory;
@@ -486,14 +486,14 @@ static inline CGPoint rwNormalize(CGPoint a)
         float slope = normal.y/normal.x;
         float possibleX = (-10-projectile.position.y)/slope + projectile.position.x;
         float possibleY = slope*(-10-projectile.position.x) + projectile.position.y;
-        float possibleY2 = slope*(575-projectile.position.x) + projectile.position.y;
+        float possibleY2 = slope*(575*self.size.height/320-projectile.position.x) + projectile.position.y;
         
         
         CGPoint projectileDestinationMaybe;
-        if(0 < possibleX && possibleX < 568) {
+        if(0 < possibleX && possibleX < 568*self.size.width/568) {
             projectileDestinationMaybe=CGPointMake(possibleX, -10);
         } else if (possibleY > possibleY2) {
-            projectileDestinationMaybe=CGPointMake(575, possibleY2);
+            projectileDestinationMaybe=CGPointMake(575*self.size.width/568, possibleY2);
         } else {
             projectileDestinationMaybe=CGPointMake(-10, possibleY);
         }

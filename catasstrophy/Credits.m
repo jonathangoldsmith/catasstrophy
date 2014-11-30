@@ -20,8 +20,8 @@
 
 - (void)scaleSpriteNode:(SKSpriteNode *)sprite scaleRatio:(float)scale
 {
-    sprite.xScale = scale;
-    sprite.yScale = scale;
+    sprite.xScale = scale*self.size.width/568;
+    sprite.yScale = scale*self.size.height/320;
 }
 
 -(id)initWithSize:(CGSize)size{
