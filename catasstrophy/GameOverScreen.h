@@ -12,7 +12,6 @@
 @interface GameOverScreen : SKScene{
 @public
     NSUInteger highScore;
-    BOOL played;
 }
 
 -(id)initWithSize:(CGSize)size score:(NSInteger)score;

@@ -576,7 +576,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     int catYDestination = 0;
     if(self.sendCatToMiddle) {
         catYDestination = (tableHeight/2) + tableCornerY; //center
-        catXDestination = (tableWidth);
+        catXDestination = self.table.size.width;
         
     } else {
         catXDestination = tableCornerX*2; //left wall
@@ -589,7 +589,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     if (location.x <= catXDestination) {
         //walk right
         animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesRight
-                                                          timePerFrame:0.25] count:15];
+                                                          timePerFrame:0.25] count:10];
     } else {
         //walk left
         animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesLeft

@@ -8,6 +8,8 @@
 
 #import "Logo.h"
 #import "Menu.h"
+#import "Movie.h"
+
 
 @interface Logo()
 @property (nonatomic) SKSpriteNode * background;
@@ -27,27 +29,29 @@
         //background
         self.background =[SKSpriteNode spriteNodeWithImageNamed:@"nest_logo.png"];
         self.background.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
-        //SKAction * rotate = [SKAction rotateByAngle:3*3.14/2 duration:0];
-        //self.background = SKSceneScaleModeResizeFill;
         [self scaleSpriteNode:self.background scaleRatio:0.5];
         self.background.name = @"logo";
-        //[self.background runAction:rotate];
         [self addChild:self.background];
+        [self LoadData];
     }
     return self;
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    UITouch *touch = [touches anyObject];
-    CGPoint location = [touch locationInNode:self];
-    SKNode *node = [self nodeAtPoint:location];
-    
-    //the only button on the screen is clicked
-    if ([node.name isEqualToString:@"logo"]) {
+    if(highScore > 0) {
         SKScene * menu = [[Menu alloc] initWithSize:self.size];
         [self.view presentScene:menu transition:[SKTransition fadeWithDuration:.5]];
+    } else {
+        SKScene * movie = [[Movie alloc] initWithSize:self.size];
+        [self.view presentScene:movie transition:[SKTransition fadeWithDuration:.5]];
     }
 }
+-(IBAction)LoadData
+{
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    highScore = [defaults integerForKey:@"highScore"];
+}
+
 
 @end

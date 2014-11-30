@@ -61,7 +61,6 @@
         
         //high score
         highScore = 0;
-        played = false;
         [self LoadData];
         if(score>highScore){
             highScore = score;
@@ -96,9 +95,6 @@
         [self addChild:self.menu];
 
         //saves whether or not the game has been played for intro movie
-        if(!played){
-            
-        }
     }
     return self;
 }
@@ -127,7 +123,6 @@
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     [defaults setInteger:highScore forKey:@"highScore"];
-    [defaults setBool:false forKey:@"played"];
     [defaults synchronize];
     
 }
@@ -137,9 +132,7 @@
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     highScore = [defaults integerForKey:@"highScore"];
     self.highScoreLabel.text = [NSString stringWithFormat:@"%d", highScore];
-    
-    played = [defaults boolForKey:@"played"];
-}
+    }
 
 @end
 

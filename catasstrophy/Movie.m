@@ -8,6 +8,7 @@
 
 #import "Movie.h"
 #import "Menu.h"
+#import "Tutorial.h"
 
 @interface Movie ()
 @property (nonatomic, strong) MPMoviePlayerController *moviePlayer;
@@ -23,22 +24,22 @@
         
         //background
         /*self.background =[SKSpriteNode spriteNodeWithImageNamed:@"nest_640x1136.png"];
-        self.background.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
-        SKAction * rotate = [SKAction rotateByAngle:3*3.14/2 duration:0];
-        [self scaleSpriteNode:self.background scaleRatio:0.5];
-        self.background.name = @"logo";
-        [self.background runAction:rotate];
-        [self addChild:self.background];*/
+         self.background.position = CGPointMake(CGRectGetMidX(self.frame),CGRectGetMidY(self.frame));
+         SKAction * rotate = [SKAction rotateByAngle:3*3.14/2 duration:0];
+         [self scaleSpriteNode:self.background scaleRatio:0.5];
+         self.background.name = @"logo";
+         [self.background runAction:rotate];
+         [self addChild:self.background];*/
         
         /*SKVideoNode *vid1 = [SKVideoNode videoNodeWithVideoFileNamed:@"game_intro.mov"];
-        vid1.position = CGPointMake(160, 180);
-        [self addChild:vid1];
-        [vid1 play];
-        */
+         vid1.position = CGPointMake(160, 180);
+         [self addChild:vid1];
+         [vid1 play];
+         */
         NSBundle *bundle = [NSBundle mainBundle];
         NSString *moviePath = [bundle pathForResource:@"game_intro" ofType:@"mov"];
         NSURL *movieURL = [NSURL fileURLWithPath:moviePath];
-        
+        [self LoadData];
         MPMoviePlayerController *controller = [[MPMoviePlayerController alloc]initWithContentURL:movieURL];
         self.moviePlayer = controller;
         self.moviePlayer.controlStyle = MPMovieControlStyleFullscreen;
@@ -52,21 +53,21 @@
                                                    object:self.moviePlayer];
         [self.moviePlayer prepareToPlay];
         [self.moviePlayer play];
-    /*
-        NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"game_intro" ofType:@"mov"];
-        NSURL *introVideoURL = [NSURL fileURLWithPath:resourcePath];
-        self.playerItem = [AVPlayerItem playerItemWithURL:introVideoURL];
-        self.player = [[AVPlayer alloc] initWithPlayerItem:self.playerItem];
-        
-        SKVideoNode *introVideo = [SKVideoNode videoNodeWithAVPlayer:self.player];
-        [introVideo setSize:CGSizeMake(self.size.width, self.size.height)];
-        [introVideo setPosition:self.view.center];
-        [self addChild:introVideo];
-        [introVideo play];
-   */
+        /*
+         NSString *resourcePath = [[NSBundle mainBundle] pathForResource:@"game_intro" ofType:@"mov"];
+         NSURL *introVideoURL = [NSURL fileURLWithPath:resourcePath];
+         self.playerItem = [AVPlayerItem playerItemWithURL:introVideoURL];
+         self.player = [[AVPlayer alloc] initWithPlayerItem:self.playerItem];
+         
+         SKVideoNode *introVideo = [SKVideoNode videoNodeWithAVPlayer:self.player];
+         [introVideo setSize:CGSizeMake(self.size.width, self.size.height)];
+         [introVideo setPosition:self.view.center];
+         [self addChild:introVideo];
+         [introVideo play];
+         */
         
     }
-
+    
     return self;
 }
 
@@ -77,22 +78,31 @@
     [self.moviePlayer stop];
     [self.moviePlayer.view removeFromSuperview];
     self.moviePlayer = nil;
-    SKScene * menu = [[Menu alloc] initWithSize:self.size];
-    [self.view presentScene:menu transition:[SKTransition fadeWithDuration:.5]];
+    if(highScore > 0) {
+        SKScene * menu = [[Menu alloc] initWithSize:self.size];
+        [self.view presentScene:menu transition:[SKTransition fadeWithDuration:.5]];
+    } else {
+        SKScene * tutorial = [[Tutorial alloc] initWithSize:self.size];
+        [self.view presentScene:tutorial transition:[SKTransition fadeWithDuration:.5]];
+    }
     
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    //UITouch *touch = [touches anyObject];
-    //CGPoint location = [touch locationInNode:self];
-    //SKNode *node = [self nodeAtPoint:location];
-    
-    //the only button on the screen is clicked
-
+    if(highScore > 0) {
         SKScene * menu = [[Menu alloc] initWithSize:self.size];
         [self.view presentScene:menu transition:[SKTransition fadeWithDuration:.5]];
+    } else {
+        SKScene * tutorial = [[Tutorial alloc] initWithSize:self.size];
+        [self.view presentScene:tutorial transition:[SKTransition fadeWithDuration:.5]];
+    }
+}
 
+-(IBAction)LoadData
+{
+    NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
+    highScore = [defaults integerForKey:@"highScore"];
 }
 
 @end
