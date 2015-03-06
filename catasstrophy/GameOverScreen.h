@@ -8,15 +8,19 @@
 
 #import <SpriteKit/SpriteKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import <GameKit/GameKit.h>
+#import <UIKit/UIKit.h>
 
-@interface GameOverScreen : SKScene{
+@interface GameOverScreen : SKScene  {
 @public
     NSUInteger highScore;
-}
+} 
 
 -(id)initWithSize:(CGSize)size score:(NSInteger)score;
 
 -(IBAction)SaveData;
 -(IBAction)LoadData;
+-(void)authenticateLocalPlayer;
+
 
 @end

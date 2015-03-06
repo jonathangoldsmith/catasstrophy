@@ -43,7 +43,7 @@
         MPMoviePlayerController *controller = [[MPMoviePlayerController alloc]initWithContentURL:movieURL];
         self.moviePlayer = controller;
         self.moviePlayer.controlStyle = MPMovieControlStyleFullscreen;
-        self.moviePlayer.view.transform = CGAffineTransformConcat(self.moviePlayer.view.transform, CGAffineTransformMakeRotation(3*M_PI_2));
+        //self.moviePlayer.view.transform = CGAffineTransformConcat(self.moviePlayer.view.transform,CGAffineTransformMakeRotation(3*M_PI_2));
         UIWindow *backgroundWindow = [[UIApplication sharedApplication] keyWindow];
         [self.moviePlayer.view setFrame:backgroundWindow.frame];
         [backgroundWindow addSubview:self.moviePlayer.view];

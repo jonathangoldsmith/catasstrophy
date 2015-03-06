@@ -166,13 +166,13 @@ static inline CGPoint rwNormalize(CGPoint a)
 {
     self.chaosBarBackground=[SKSpriteNode spriteNodeWithImageNamed:@"chaos_filled.png"];
     [self scaleSpriteNode:self.chaosBarBackground scaleRatio:0.5];
-    self.chaosBarBackground.position=CGPointMake(tableWidth*self.size.width/568 - 40*self.size.width/568, tableHeight*self.size.height/320 + self.chaosBarBackground.size.height/2*self.size.height/320);
+    self.chaosBarBackground.position=CGPointMake(tableWidth*self.size.width/568 - 40*self.size.width/568, tableHeight*self.size.height/320 + self.chaosBarBackground.size.height/2*self.size.height/320+5*self.size.width/568);
     [self addChild:self.chaosBarBackground];
     
     self.chaosBarCharger=[SKSpriteNode spriteNodeWithImageNamed:@"chaos_inner.png"];
     [self scaleSpriteNode:self.chaosBarCharger scaleRatio:0.5];
     self.chaosBarCharger.anchorPoint = CGPointMake(1,0.5);
-    self.chaosBarCharger.position=CGPointMake(546*self.size.width/568,284*self.size.height/320);
+    self.chaosBarCharger.position=CGPointMake(546*self.size.width/568,289*self.size.height/320);
     self.chaosBarWidth = self.chaosBarCharger.size.width;
     [self addChild:self.chaosBarCharger];
     
@@ -212,7 +212,7 @@ static inline CGPoint rwNormalize(CGPoint a)
 
 -(void)initializeTimer
 {
-    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"GillSans-Bold"];
+    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
     self.timerLabel.fontSize = 15;
     self.timerLabel.fontColor = [SKColor redColor];
     self.timerLabel.text = [NSString stringWithFormat:@"Time: %i", 0];
@@ -317,7 +317,9 @@ static inline CGPoint rwNormalize(CGPoint a)
         self.tutorialLabel.text = [NSString stringWithFormat:@"This is your cat (he's a jerk)"];
         self.cat.hidden = NO;
     }else if(self.frameNumber==2) {
-        self.tutorialLabel.text = [NSString stringWithFormat:@"He likes to knock stuff off of your desk (what a jerk!)"];
+        self.tutorialLabel.text = [NSString stringWithFormat:@"He likes to knock stuff off of your desk "];
+        self.tutorialLabel2.text = [NSString stringWithFormat:@"(what a jerk!)"];
+
         self.item.hidden = NO;
         
     }else if(self.frameNumber==3) {
@@ -340,8 +342,8 @@ static inline CGPoint rwNormalize(CGPoint a)
         self.shootingBarBackgroundWhenClicked.hidden = NO;
         self.shootingBarCharger. hidden = NO;
     } else if(self.frameNumber==5) {
-        self.tutorialLabel.text = [NSString stringWithFormat:@"Tilt your iPhone to aim your DOG and click to shoot"];
-        self.tutorialLabel2.text = [NSString stringWithFormat:@""];
+        self.tutorialLabel.text = [NSString stringWithFormat:@"Tilt your iPhone to aim your DOG"];
+        self.tutorialLabel2.text = [NSString stringWithFormat:@"and click to shoot"];
         //aimer physics
     } else if(self.frameNumber==6) {
         self.tutorialLabel.text = [NSString stringWithFormat:@"The more you charge your DOG"];
@@ -442,23 +444,23 @@ static inline CGPoint rwNormalize(CGPoint a)
 -(void)initializeTutorialLabels
 {
     CGFloat fontSize = 15*self.size.width/568;
-    self.tutorialLabel = [SKLabelNode labelNodeWithFontNamed:@"GillSans-Bold"];
+    self.tutorialLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
     self.tutorialLabel.fontSize = fontSize;
-    self.tutorialLabel.fontColor = [SKColor blueColor];
+    self.tutorialLabel.fontColor = [SKColor whiteColor];
     self.tutorialLabel.text = [NSString stringWithFormat:@""];
     self.tutorialLabel.position = CGPointMake(CGRectGetMidX(self.table), CGRectGetMidY(self.table)+70*self.size.height/320);
     [self addChild:self.tutorialLabel];
     
-    self.tutorialLabel2 = [SKLabelNode labelNodeWithFontNamed:@"GillSans-Bold"];
+    self.tutorialLabel2 = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
     self.tutorialLabel2.fontSize = fontSize;
-    self.tutorialLabel2.fontColor = [SKColor blueColor];
+    self.tutorialLabel2.fontColor = [SKColor whiteColor];
     self.tutorialLabel2.text = [NSString stringWithFormat:@""];
     self.tutorialLabel2.position = CGPointMake(CGRectGetMidX(self.table), CGRectGetMidY(self.table)+50*self.size.height/320);
     [self addChild:self.tutorialLabel2];
     
-    self.tutorialLabel3 = [SKLabelNode labelNodeWithFontNamed:@"GillSans-Bold"];
+    self.tutorialLabel3 = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
     self.tutorialLabel3.fontSize = fontSize;
-    self.tutorialLabel3.fontColor = [SKColor blueColor];
+    self.tutorialLabel3.fontColor = [SKColor whiteColor];
     self.tutorialLabel3.text = [NSString stringWithFormat:@""];
     self.tutorialLabel3.position = CGPointMake(CGRectGetMidX(self.table), CGRectGetMidY(self.table)+30*self.size.height/320);
     [self addChild:self.tutorialLabel3];
@@ -479,6 +481,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     if(self.frameNumber < 4)
     {
         [self increment:self.frameNumber];
+        
     } else if (self.frameNumber > 5) {
         self.shootingBool = YES;
         self.beginningShotTime=self.totalTimeInterval;

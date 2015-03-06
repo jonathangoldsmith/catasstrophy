@@ -13,7 +13,7 @@
 #import "Countdown.h"
 #define Rgb2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
-@interface GameOverScreen()
+@interface GameOverScreen() <GKGameCenterControllerDelegate>
 
 @property (nonatomic) SKSpriteNode * background;
 @property (nonatomic) SKLabelNode * scoreText;
@@ -22,6 +22,13 @@
 @property (nonatomic) SKSpriteNode * menu;
 @property (nonatomic) SKSpriteNode * replayClicked;
 @property (nonatomic) AVAudioPlayer * backgroundMusicPlayer;
+
+// A flag indicating whether the Game Center features can be used after a user has been authenticated.
+@property (nonatomic) BOOL gameCenterEnabled;
+
+// This property stores the default leaderboard's identifier.
+@property (nonatomic, strong) NSString *leaderboardIdentifier;
+
 @end
 @implementation GameOverScreen
 
@@ -52,7 +59,7 @@
         [self.backgroundMusicPlayer play];
         
         //score
-        self.scoreText = [SKLabelNode labelNodeWithFontNamed:@"GillSans-Bold"];
+        self.scoreText = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
         self.scoreText.fontSize = 30;
         self.scoreText.fontColor = Rgb2UIColor(255, 150, 50);
         self.scoreText.text = [NSString stringWithFormat:@"%ld", (long)score];
@@ -67,11 +74,13 @@
             [self SaveData];
         }
         
-        self.highScoreLabel = [SKLabelNode labelNodeWithFontNamed:@"GillSans-Bold"];
+        self.highScoreLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
         self.highScoreLabel.fontSize = 30;
         self.highScoreLabel.fontColor = Rgb2UIColor(255, 150, 50);
         self.highScoreLabel.text = [NSString stringWithFormat:@"%d", highScore];
         self.highScoreLabel.position = CGPointMake(480*self.size.width/568, self.highScoreLabel.frame.size.height*2*self.size.height/320);
+        self.highScoreLabel.name = @"highScoreLabel";//how the node is identified later
+
         [self addChild:self.highScoreLabel];
         
         //replay button
@@ -94,10 +103,22 @@
         self.menu.name = @"menuButton";//how the node is identified later
         [self addChild:self.menu];
 
-        //saves whether or not the game has been played for intro movie
+        
+        [self authenticateLocalPlayer];
+        _leaderboardIdentifier = @"Scores";
+        GKScore *score = [[GKScore alloc] initWithLeaderboardIdentifier:_leaderboardIdentifier];
+        score.value = highScore;
+        
+        [GKScore reportScores:@[score] withCompletionHandler:^(NSError *error) {
+            if (error != nil) {
+                NSLog(@"%@", [error localizedDescription]);
+            }
+        }];
+
     }
     return self;
 }
+
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -105,7 +126,6 @@
     CGPoint location = [touch locationInNode:self];
     SKNode *node = [self nodeAtPoint:location];
     
-    //the only button on the screen is clicked
     if ([node.name isEqualToString:@"replayButton"]) {
         //[NSThread sleepForTimeInterval:1];
         [self.backgroundMusicPlayer stop];
@@ -117,6 +137,18 @@
         SKScene * menu = [[Menu alloc] initWithSize:self.size];
         [self.view presentScene:menu];
     }
+    else if ([node.name isEqualToString:@"highScoreLabel"]) {
+        [self.backgroundMusicPlayer stop];
+        GKGameCenterViewController *gameCenterController = [[GKGameCenterViewController alloc] init];
+        if (gameCenterController != nil)
+        {
+            gameCenterController.gameCenterDelegate = self;
+            gameCenterController.viewState = GKGameCenterViewControllerStateLeaderboards;
+            UIViewController *vc = self.view.window.rootViewController;
+            [vc presentViewController: gameCenterController animated: YES completion:nil];
+        }
+    }
+    
 }
 
 -(IBAction)SaveData
@@ -134,5 +166,40 @@
     self.highScoreLabel.text = [NSString stringWithFormat:@"%d", highScore];
     }
 
-@end
+-(void)authenticateLocalPlayer{
+    GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
+    
+    localPlayer.authenticateHandler = ^(UIViewController *viewController, NSError *error){
+        if (viewController != nil) {
+            UIViewController *vc = self.view.window.rootViewController;
+            [vc presentViewController:viewController animated:YES completion:nil];
+        }
+        else{
+            if ([GKLocalPlayer localPlayer].authenticated) {
+                _gameCenterEnabled = YES;
+                
+                // Get the default leaderboard identifier.
+                [[GKLocalPlayer localPlayer] loadDefaultLeaderboardIdentifierWithCompletionHandler:^(NSString *leaderboardIdentifier, NSError *error) {
+                    
+                    if (error != nil) {
+                        NSLog(@"%@", [error localizedDescription]);
+                    }
+                    else{
+                        _leaderboardIdentifier = leaderboardIdentifier;
+                    }
+                }];
+            }
+            
+            else{
+                _gameCenterEnabled = NO;
+            }
+        }
+    };
+}
+
+
+- (void)gameCenterViewControllerDidFinish:(GKGameCenterViewController*)gameCenterViewController {
+    UIViewController *vc = self.view.window.rootViewController;
+    [vc dismissViewControllerAnimated:YES completion:nil];
+}@end
 

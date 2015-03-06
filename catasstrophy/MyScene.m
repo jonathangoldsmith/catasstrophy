@@ -174,13 +174,13 @@ static inline CGPoint rwNormalize(CGPoint a)
 {
     self.chaosBarBackground=[SKSpriteNode spriteNodeWithImageNamed:@"chaos_filled.png"];
     [self scaleSpriteNode:self.chaosBarBackground scaleRatio:0.5];
-    self.chaosBarBackground.position=CGPointMake(tableWidth*self.size.width/568 - 40*self.size.width/568, tableHeight*self.size.height/320 + self.chaosBarBackground.size.height/2*self.size.height/320);
+    self.chaosBarBackground.position=CGPointMake(tableWidth*self.size.width/568 - 40*self.size.width/568, tableHeight*self.size.height/320 + self.chaosBarBackground.size.height/2*self.size.height/320+5*self.size.width/568);
     [self addChild:self.chaosBarBackground];
     
     self.chaosBarCharger=[SKSpriteNode spriteNodeWithImageNamed:@"chaos_inner.png"];
     [self scaleSpriteNode:self.chaosBarCharger scaleRatio:0.5];
     self.chaosBarCharger.anchorPoint = CGPointMake(1,0.5);
-    self.chaosBarCharger.position=CGPointMake(546*self.size.width/568,284*self.size.height/320);
+    self.chaosBarCharger.position=CGPointMake(546*self.size.width/568,289*self.size.height/320);
     self.chaosBarWidth = self.chaosBarCharger.size.width;
     [self addChild:self.chaosBarCharger];
     
@@ -224,7 +224,7 @@ static inline CGPoint rwNormalize(CGPoint a)
 
 -(void)initializeTimer
 {
-    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"GillSans-Bold"];
+    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
     self.timerLabel.fontSize = 15;
     self.timerLabel.fontColor = [SKColor redColor];
     self.timerLabel.text = [NSString stringWithFormat:@"Time: %i", 0];
