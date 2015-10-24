@@ -423,14 +423,14 @@ static inline CGPoint rwNormalize(CGPoint a)
         
         
         CGPoint projectileDestinationMaybe;
-        if(0 < possibleX && possibleX < 568*self.size.width/568) {
+        if (0 < possibleX && possibleX < 568 * self.size.width / 568) {
             projectileDestinationMaybe=CGPointMake(possibleX, -10);
         } else if (possibleY > possibleY2) {
-            projectileDestinationMaybe=CGPointMake(575*self.size.width/568, possibleY2);
+            projectileDestinationMaybe=CGPointMake(575 * self.size.width / 568, possibleY2);
         } else {
             projectileDestinationMaybe=CGPointMake(-10, possibleY);
         }
-        CGFloat rotationRadians = atan2f(normal.y, normal.x) + 3.14/2;
+        CGFloat rotationRadians = atan2f(normal.y, normal.x) + 3.14 / 2;
         
         
         // Determine offset of location to projectile
@@ -447,7 +447,7 @@ static inline CGPoint rwNormalize(CGPoint a)
         
         // Create the actions
         SKAction * rotateProjectile = [SKAction rotateToAngle:rotationRadians duration:0];
-        SKAction * actionMove = [SKAction moveTo:projectileDestinationMaybe duration:0.5];
+        SKAction * actionMove = [SKAction moveTo:projectileDestinationMaybe duration:MAX(0.2,(10.1 - self.shotPower) / 10)];
         SKAction * actionMoveDone = [SKAction removeFromParent];
         [projectile runAction:[SKAction sequence:@[rotateProjectile, actionMove, actionMoveDone]] completion:^{
             //set cat to go new random direction
@@ -502,7 +502,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self runAction:[SKAction playSoundFileNamed:@"meow2.mp3" waitForCompletion:NO]];
     
     if(self.chaosCount > 0)
-        self.chaosCount=MAX(0,self.chaosCount - self.shotPower);
+        self.chaosCount = MAX(0,self.chaosCount - 5);
     
     [self updateChaosBar];
     NSLog(@"%f",self.chaosCount);
@@ -621,7 +621,7 @@ static inline CGPoint rwNormalize(CGPoint a)
 
 #pragma updates
 
-//updater to the accelerometer to chage the aimer
+//updater to the accelerometer to change the aimer
 -(void)processUserMotionForUpdate:(NSTimeInterval)currentTime
 {
     CMAccelerometerData* data = self.motionManager.accelerometerData;

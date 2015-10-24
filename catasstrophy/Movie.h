@@ -15,9 +15,9 @@
     int highScore;
 }
 
--(id)initWithSize:(CGSize)size;
+- (id)initWithSize:(CGSize)size;
 
--(IBAction)LoadData;
+- (void)loadData;
 
 
 @end

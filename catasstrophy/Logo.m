@@ -32,7 +32,7 @@
         [self scaleSpriteNode:self.background scaleRatio:0.5];
         self.background.name = @"logo";
         [self addChild:self.background];
-        [self LoadData];
+        [self loadData];
     }
     return self;
 }
@@ -47,7 +47,7 @@
         [self.view presentScene:movie transition:[SKTransition fadeWithDuration:.5]];
     }
 }
--(IBAction)LoadData
+- (void)loadData
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     highScore = [defaults integerForKey:@"highScore"];

@@ -39,7 +39,7 @@
         NSBundle *bundle = [NSBundle mainBundle];
         NSString *moviePath = [bundle pathForResource:@"game_intro" ofType:@"mov"];
         NSURL *movieURL = [NSURL fileURLWithPath:moviePath];
-        [self LoadData];
+        [self loadData];
         MPMoviePlayerController *controller = [[MPMoviePlayerController alloc]initWithContentURL:movieURL];
         self.moviePlayer = controller;
         self.moviePlayer.controlStyle = MPMovieControlStyleFullscreen;
@@ -99,7 +99,7 @@
     }
 }
 
--(IBAction)LoadData
+- (void)loadData
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     highScore = [defaults integerForKey:@"highScore"];
