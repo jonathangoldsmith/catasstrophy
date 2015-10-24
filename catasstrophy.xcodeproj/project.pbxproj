@@ -9,13 +9,6 @@
 /* Begin PBXBuildFile section */
 		6151EB171A0190A1009EC821 /* ArtAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6151EB161A0190A1009EC821 /* ArtAssets.xcassets */; };
 		6151EB191A07FCF6009EC821 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6151EB181A07FCF6009EC821 /* GameKit.framework */; };
-		61BFAE9D1A10151000AEEB79 /* catImagesHitLeft.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE971A10151000AEEB79 /* catImagesHitLeft.atlas */; };
-		61BFAE9E1A10151000AEEB79 /* catImagesHitRight.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE981A10151000AEEB79 /* catImagesHitRight.atlas */; };
-		61BFAE9F1A10151000AEEB79 /* catImagesRight.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE991A10151000AEEB79 /* catImagesRight.atlas */; };
-		61BFAEA01A10151000AEEB79 /* catImagesFlipLeft.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE9A1A10151000AEEB79 /* catImagesFlipLeft.atlas */; };
-		61BFAEA11A10151000AEEB79 /* catImagesFlipRight.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE9B1A10151000AEEB79 /* catImagesFlipRight.atlas */; };
-		61BFAEA21A10151000AEEB79 /* catImagesLeft.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAE9C1A10151000AEEB79 /* catImagesLeft.atlas */; };
-		61BFAEA81A1745D600AEEB79 /* catImagesSit.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 61BFAEA71A1745D600AEEB79 /* catImagesSit.atlas */; };
 		652E7CB118BD31840079827F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652E7CB018BD31840079827F /* Foundation.framework */; };
 		652E7CB318BD31840079827F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652E7CB218BD31840079827F /* CoreGraphics.framework */; };
 		652E7CB518BD31840079827F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 652E7CB418BD31840079827F /* UIKit.framework */; };
@@ -46,13 +39,18 @@
 		65C2F6D518E34C50006C5352 /* Movie.m in Sources */ = {isa = PBXBuildFile; fileRef = 65C2F6D418E34C50006C5352 /* Movie.m */; };
 		65C2F6D718E376AC006C5352 /* game_intro.mov in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F6D618E376AC006C5352 /* game_intro.mov */; };
 		65C2F6D918E3824D006C5352 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65C2F6D818E3824D006C5352 /* AVFoundation.framework */; };
-		65C2F6E018E3DCB9006C5352 /* Menu aud file 1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F6DA18E3DCB9006C5352 /* Menu aud file 1.mp3 */; };
-		65C2F6E118E3DCB9006C5352 /* Gameplay slow.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F6DB18E3DCB9006C5352 /* Gameplay slow.mp3 */; };
-		65C2F6E218E3DCB9006C5352 /* Gameplay medium.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F6DC18E3DCB9006C5352 /* Gameplay medium.mp3 */; };
-		65C2F6E318E3DCB9006C5352 /* Gameplay Fast.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F6DD18E3DCB9006C5352 /* Gameplay Fast.mp3 */; };
-		65C2F6E418E3DCB9006C5352 /* Game Over Symphony.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 65C2F6DE18E3DCB9006C5352 /* Game Over Symphony.mp3 */; };
 		65C2F6EA18E3E586006C5352 /* Countdown.m in Sources */ = {isa = PBXBuildFile; fileRef = 65C2F6E918E3E586006C5352 /* Countdown.m */; };
 		65C2F7A718E52567006C5352 /* Credits.m in Sources */ = {isa = PBXBuildFile; fileRef = 65C2F7A618E52567006C5352 /* Credits.m */; };
+		D00F712B1BDB27B400840D1B /* Gameplay slow.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D00F712A1BDB27B400840D1B /* Gameplay slow.mp3 */; settings = {ASSET_TAGS = (); }; };
+		D00F712D1BDB27C000840D1B /* Menu aud file 1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D00F712C1BDB27C000840D1B /* Menu aud file 1.mp3 */; settings = {ASSET_TAGS = (); }; };
+		D00F712F1BDB27C600840D1B /* Game Over Symphony.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D00F712E1BDB27C600840D1B /* Game Over Symphony.mp3 */; settings = {ASSET_TAGS = (); }; };
+		D00F71371BDB29A200840D1B /* catImagesFlipRight.atlas in Resources */ = {isa = PBXBuildFile; fileRef = D00F71301BDB29A200840D1B /* catImagesFlipRight.atlas */; settings = {ASSET_TAGS = (); }; };
+		D00F71381BDB29A200840D1B /* catImagesFlipLeft.atlas in Resources */ = {isa = PBXBuildFile; fileRef = D00F71311BDB29A200840D1B /* catImagesFlipLeft.atlas */; settings = {ASSET_TAGS = (); }; };
+		D00F71391BDB29A200840D1B /* catImagesLeft.atlas in Resources */ = {isa = PBXBuildFile; fileRef = D00F71321BDB29A200840D1B /* catImagesLeft.atlas */; settings = {ASSET_TAGS = (); }; };
+		D00F713A1BDB29A200840D1B /* catImagesRight.atlas in Resources */ = {isa = PBXBuildFile; fileRef = D00F71331BDB29A200840D1B /* catImagesRight.atlas */; settings = {ASSET_TAGS = (); }; };
+		D00F713B1BDB29A200840D1B /* catImagesHitRight.atlas in Resources */ = {isa = PBXBuildFile; fileRef = D00F71341BDB29A200840D1B /* catImagesHitRight.atlas */; settings = {ASSET_TAGS = (); }; };
+		D00F713C1BDB29A200840D1B /* catImagesHitLeft.atlas in Resources */ = {isa = PBXBuildFile; fileRef = D00F71351BDB29A200840D1B /* catImagesHitLeft.atlas */; settings = {ASSET_TAGS = (); }; };
+		D00F713D1BDB29A200840D1B /* catImagesSit.atlas in Resources */ = {isa = PBXBuildFile; fileRef = D00F71361BDB29A200840D1B /* catImagesSit.atlas */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,13 +66,6 @@
 /* Begin PBXFileReference section */
 		6151EB161A0190A1009EC821 /* ArtAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ArtAssets.xcassets; sourceTree = "<group>"; };
 		6151EB181A07FCF6009EC821 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
-		61BFAE971A10151000AEEB79 /* catImagesHitLeft.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesHitLeft.atlas; path = "../../Downloads/game 3/art/cat/catImagesHitLeft.atlas"; sourceTree = "<group>"; };
-		61BFAE981A10151000AEEB79 /* catImagesHitRight.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesHitRight.atlas; path = "../../Downloads/game 3/art/cat/catImagesHitRight.atlas"; sourceTree = "<group>"; };
-		61BFAE991A10151000AEEB79 /* catImagesRight.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesRight.atlas; path = "../../Downloads/game 3/art/cat/catImagesRight.atlas"; sourceTree = "<group>"; };
-		61BFAE9A1A10151000AEEB79 /* catImagesFlipLeft.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesFlipLeft.atlas; path = "../../Downloads/game 3/art/cat/catImagesFlipLeft.atlas"; sourceTree = "<group>"; };
-		61BFAE9B1A10151000AEEB79 /* catImagesFlipRight.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesFlipRight.atlas; path = "../../Downloads/game 3/art/cat/catImagesFlipRight.atlas"; sourceTree = "<group>"; };
-		61BFAE9C1A10151000AEEB79 /* catImagesLeft.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesLeft.atlas; path = "../../Downloads/game 3/art/cat/catImagesLeft.atlas"; sourceTree = "<group>"; };
-		61BFAEA71A1745D600AEEB79 /* catImagesSit.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; name = catImagesSit.atlas; path = ../../Downloads/catImagesSit.atlas; sourceTree = "<group>"; };
 		652E7CAD18BD31840079827F /* catasstrophy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = catasstrophy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		652E7CB018BD31840079827F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		652E7CB218BD31840079827F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -117,15 +108,20 @@
 		65C2F6D418E34C50006C5352 /* Movie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Movie.m; sourceTree = "<group>"; };
 		65C2F6D618E376AC006C5352 /* game_intro.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = game_intro.mov; sourceTree = "<group>"; };
 		65C2F6D818E3824D006C5352 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		65C2F6DA18E3DCB9006C5352 /* Menu aud file 1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "Menu aud file 1.mp3"; path = "../../Downloads/game 2/music/Menu aud file 1.mp3"; sourceTree = "<group>"; };
-		65C2F6DB18E3DCB9006C5352 /* Gameplay slow.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "Gameplay slow.mp3"; path = "../../Downloads/game/music/Gameplay slow.mp3"; sourceTree = "<group>"; };
-		65C2F6DC18E3DCB9006C5352 /* Gameplay medium.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "Gameplay medium.mp3"; path = "../../Downloads/game/music/Gameplay medium.mp3"; sourceTree = "<group>"; };
-		65C2F6DD18E3DCB9006C5352 /* Gameplay Fast.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "Gameplay Fast.mp3"; path = "../../Downloads/game/music/Gameplay Fast.mp3"; sourceTree = "<group>"; };
-		65C2F6DE18E3DCB9006C5352 /* Game Over Symphony.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "Game Over Symphony.mp3"; path = "../../Downloads/game 2/music/Game Over Symphony.mp3"; sourceTree = "<group>"; };
 		65C2F6E818E3E586006C5352 /* Countdown.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Countdown.h; sourceTree = "<group>"; };
 		65C2F6E918E3E586006C5352 /* Countdown.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Countdown.m; sourceTree = "<group>"; };
 		65C2F7A518E52567006C5352 /* Credits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Credits.h; sourceTree = "<group>"; };
 		65C2F7A618E52567006C5352 /* Credits.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Credits.m; sourceTree = "<group>"; };
+		D00F712A1BDB27B400840D1B /* Gameplay slow.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Gameplay slow.mp3"; sourceTree = "<group>"; };
+		D00F712C1BDB27C000840D1B /* Menu aud file 1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Menu aud file 1.mp3"; sourceTree = "<group>"; };
+		D00F712E1BDB27C600840D1B /* Game Over Symphony.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Game Over Symphony.mp3"; sourceTree = "<group>"; };
+		D00F71301BDB29A200840D1B /* catImagesFlipRight.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = catImagesFlipRight.atlas; sourceTree = "<group>"; };
+		D00F71311BDB29A200840D1B /* catImagesFlipLeft.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = catImagesFlipLeft.atlas; sourceTree = "<group>"; };
+		D00F71321BDB29A200840D1B /* catImagesLeft.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = catImagesLeft.atlas; sourceTree = "<group>"; };
+		D00F71331BDB29A200840D1B /* catImagesRight.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = catImagesRight.atlas; sourceTree = "<group>"; };
+		D00F71341BDB29A200840D1B /* catImagesHitRight.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = catImagesHitRight.atlas; sourceTree = "<group>"; };
+		D00F71351BDB29A200840D1B /* catImagesHitLeft.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = catImagesHitLeft.atlas; sourceTree = "<group>"; };
+		D00F71361BDB29A200840D1B /* catImagesSit.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = catImagesSit.atlas; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,13 +214,13 @@
 				65C2F64918E26B23006C5352 /* Tutorial.m */,
 				652E7CC718BD31840079827F /* ViewController.h */,
 				652E7CC818BD31840079827F /* ViewController.m */,
-				61BFAEA71A1745D600AEEB79 /* catImagesSit.atlas */,
-				61BFAE971A10151000AEEB79 /* catImagesHitLeft.atlas */,
-				61BFAE981A10151000AEEB79 /* catImagesHitRight.atlas */,
-				61BFAE991A10151000AEEB79 /* catImagesRight.atlas */,
-				61BFAE9A1A10151000AEEB79 /* catImagesFlipLeft.atlas */,
-				61BFAE9B1A10151000AEEB79 /* catImagesFlipRight.atlas */,
-				61BFAE9C1A10151000AEEB79 /* catImagesLeft.atlas */,
+				D00F71301BDB29A200840D1B /* catImagesFlipRight.atlas */,
+				D00F71311BDB29A200840D1B /* catImagesFlipLeft.atlas */,
+				D00F71321BDB29A200840D1B /* catImagesLeft.atlas */,
+				D00F71331BDB29A200840D1B /* catImagesRight.atlas */,
+				D00F71341BDB29A200840D1B /* catImagesHitRight.atlas */,
+				D00F71351BDB29A200840D1B /* catImagesHitLeft.atlas */,
+				D00F71361BDB29A200840D1B /* catImagesSit.atlas */,
 				652E7CCF18BD31840079827F /* Images.xcassets */,
 				6151EB161A0190A1009EC821 /* ArtAssets.xcassets */,
 				65C2F6E618E3DD35006C5352 /* music */,
@@ -270,11 +266,9 @@
 				657E7E3B18E603DC00D1AD3F /* bark2.mp3 */,
 				657E7E3E18E6045200D1AD3F /* meow2.mp3 */,
 				65C2F6D618E376AC006C5352 /* game_intro.mov */,
-				65C2F6DA18E3DCB9006C5352 /* Menu aud file 1.mp3 */,
-				65C2F6DB18E3DCB9006C5352 /* Gameplay slow.mp3 */,
-				65C2F6DC18E3DCB9006C5352 /* Gameplay medium.mp3 */,
-				65C2F6DD18E3DCB9006C5352 /* Gameplay Fast.mp3 */,
-				65C2F6DE18E3DCB9006C5352 /* Game Over Symphony.mp3 */,
+				D00F712C1BDB27C000840D1B /* Menu aud file 1.mp3 */,
+				D00F712A1BDB27B400840D1B /* Gameplay slow.mp3 */,
+				D00F712E1BDB27C600840D1B /* Game Over Symphony.mp3 */,
 			);
 			name = music;
 			sourceTree = "<group>";
@@ -323,7 +317,7 @@
 		652E7CA518BD31840079827F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = nest;
 				TargetAttributes = {
 					652E7CAC18BD31840079827F = {
@@ -358,26 +352,24 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D00F712B1BDB27B400840D1B /* Gameplay slow.mp3 in Resources */,
+				D00F71381BDB29A200840D1B /* catImagesFlipLeft.atlas in Resources */,
 				65C2F6D718E376AC006C5352 /* game_intro.mov in Resources */,
+				D00F71371BDB29A200840D1B /* catImagesFlipRight.atlas in Resources */,
 				657E7E3F18E6045200D1AD3F /* meow2.mp3 in Resources */,
-				61BFAEA21A10151000AEEB79 /* catImagesLeft.atlas in Resources */,
-				61BFAEA11A10151000AEEB79 /* catImagesFlipRight.atlas in Resources */,
 				652E7CBD18BD31840079827F /* InfoPlist.strings in Resources */,
 				657E7E3D18E603DC00D1AD3F /* bark2.mp3 in Resources */,
+				D00F713A1BDB29A200840D1B /* catImagesRight.atlas in Resources */,
+				D00F71391BDB29A200840D1B /* catImagesLeft.atlas in Resources */,
 				657E7E3C18E603DC00D1AD3F /* woof2.mp3 in Resources */,
-				61BFAEA81A1745D600AEEB79 /* catImagesSit.atlas in Resources */,
-				61BFAE9D1A10151000AEEB79 /* catImagesHitLeft.atlas in Resources */,
 				6151EB171A0190A1009EC821 /* ArtAssets.xcassets in Resources */,
-				65C2F6E018E3DCB9006C5352 /* Menu aud file 1.mp3 in Resources */,
-				65C2F6E118E3DCB9006C5352 /* Gameplay slow.mp3 in Resources */,
-				65C2F6E418E3DCB9006C5352 /* Game Over Symphony.mp3 in Resources */,
+				D00F713B1BDB29A200840D1B /* catImagesHitRight.atlas in Resources */,
 				652E7CD018BD31840079827F /* Images.xcassets in Resources */,
-				61BFAE9E1A10151000AEEB79 /* catImagesHitRight.atlas in Resources */,
-				65C2F6E318E3DCB9006C5352 /* Gameplay Fast.mp3 in Resources */,
-				61BFAEA01A10151000AEEB79 /* catImagesFlipLeft.atlas in Resources */,
-				61BFAE9F1A10151000AEEB79 /* catImagesRight.atlas in Resources */,
+				D00F713D1BDB29A200840D1B /* catImagesSit.atlas in Resources */,
+				D00F713C1BDB29A200840D1B /* catImagesHitLeft.atlas in Resources */,
+				D00F712D1BDB27C000840D1B /* Menu aud file 1.mp3 in Resources */,
+				D00F712F1BDB27C600840D1B /* Game Over Symphony.mp3 in Resources */,
 				652E7CC618BD31840079827F /* Main.storyboard in Resources */,
-				65C2F6E218E3DCB9006C5352 /* Gameplay medium.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -476,6 +468,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -539,6 +532,7 @@
 				GCC_PREFIX_HEADER = "catasstrophy/catasstrophy-Prefix.pch";
 				INFOPLIST_FILE = "catasstrophy/catasstrophy-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "nest.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SPRITEKIT_TEXTURE_ATLAS_OUTPUT = YES;
@@ -557,6 +551,7 @@
 				GCC_PREFIX_HEADER = "catasstrophy/catasstrophy-Prefix.pch";
 				INFOPLIST_FILE = "catasstrophy/catasstrophy-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				PRODUCT_BUNDLE_IDENTIFIER = "nest.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SPRITEKIT_TEXTURE_ATLAS_OUTPUT = YES;
@@ -580,6 +575,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "catasstrophyTests/catasstrophyTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "nest.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
@@ -598,6 +594,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "catasstrophy/catasstrophy-Prefix.pch";
 				INFOPLIST_FILE = "catasstrophyTests/catasstrophyTests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "nest.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
