@@ -77,7 +77,7 @@
         self.highScoreLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
         self.highScoreLabel.fontSize = 30;
         self.highScoreLabel.fontColor = Rgb2UIColor(255, 150, 50);
-        self.highScoreLabel.text = [NSString stringWithFormat:@"%d", highScore];
+        self.highScoreLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)highScore];
         self.highScoreLabel.position = CGPointMake(480*self.size.width/568, self.highScoreLabel.frame.size.height*2*self.size.height/320);
         self.highScoreLabel.name = @"highScoreLabel";//how the node is identified later
 
@@ -163,7 +163,7 @@
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
     highScore = [defaults integerForKey:@"highScore"];
-    self.highScoreLabel.text = [NSString stringWithFormat:@"%d", highScore];
+    self.highScoreLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)highScore];
     }
 
 -(void)authenticateLocalPlayer{
