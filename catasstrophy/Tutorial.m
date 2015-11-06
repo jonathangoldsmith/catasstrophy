@@ -173,7 +173,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self scaleSpriteNode:self.chaosBarCharger scaleRatio:0.5];
     self.chaosBarCharger.anchorPoint = CGPointMake(1,0.5);
     self.chaosBarCharger.position=CGPointMake(546*self.size.width/568,289*self.size.height/320);
-    self.chaosBarWidth = self.chaosBarCharger.size.width;
+    self.chaosBarWidth = self.chaosBarCharger.size.width * 2;
     [self addChild:self.chaosBarCharger];
     
 }
@@ -196,7 +196,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self scaleSpriteNode:self.shootingBarCharger scaleRatio:0.5];
     self.shootingBarCharger.anchorPoint = CGPointMake(0.5,1);
     self.shootingBarCharger.position=CGPointMake(512.4*self.size.width/568,259*self.size.height/320);
-    self.dogBarHeight = self.shootingBarCharger.size.height;
+    self.dogBarHeight = self.shootingBarCharger.size.height * 2;
     [self addChild:self.shootingBarCharger];
     
 }
@@ -347,8 +347,8 @@ static inline CGPoint rwNormalize(CGPoint a)
         //aimer physics
     } else if(self.frameNumber==6) {
         self.tutorialLabel.text = [NSString stringWithFormat:@"The more you charge your DOG"];
-        self.tutorialLabel2.text = [NSString stringWithFormat:@"the better you will feel about disciplining your cat"];
-        self.tutorialLabel3.text = [NSString stringWithFormat:@"(less chaos on hit)"];
+        self.tutorialLabel2.text = [NSString stringWithFormat:@"the fast it fires!"];
+        self.tutorialLabel3.text = [NSString stringWithFormat:@""];
         
     } else if(self.frameNumber==7) {
         self.tutorialLabel.text = [NSString stringWithFormat:@"Cats dont like DOGs though so good luck"];
@@ -585,18 +585,18 @@ static inline CGPoint rwNormalize(CGPoint a)
         catXDestination = tableCornerX*2; //left wall
         catYDestination = (tableHeight/2) + tableCornerY;
     }
-    SKAction * actionMove = [SKAction moveTo:CGPointMake(catXDestination*self.size.width/568, catYDestination*self.size.height/320) duration:(startSpeed/119)];
+    SKAction * actionMove = [SKAction moveTo:CGPointMake(catXDestination*self.size.width/568, catYDestination*self.size.height/320) duration:2*(startSpeed/119)];
     SKAction * animate;
     //SKAction * actaf = [SKAction anim]
     CGPoint location = self.cat.position;
     if (location.x <= catXDestination) {
         //walk right
         animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesRight
-                                                          timePerFrame:0.25] count:10];
+                                                          timePerFrame:0.25] count:20];
     } else {
         //walk left
         animate = [SKAction repeatAction:[SKAction animateWithTextures:self.catWalkingFramesLeft
-                                                          timePerFrame:0.25] count:6];
+                                                          timePerFrame:0.25] count:12];
         // animate = [SKAction animateWithTextures:self.catWalkingFramesLeft
         //timePerFrame:0.2];
         //animate.duration = 3;
