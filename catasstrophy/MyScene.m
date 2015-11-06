@@ -181,7 +181,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self scaleSpriteNode:self.chaosBarCharger scaleRatio:0.5];
     self.chaosBarCharger.anchorPoint = CGPointMake(1,0.5);
     self.chaosBarCharger.position=CGPointMake(546*self.size.width/568,289*self.size.height/320);
-    self.chaosBarWidth = self.chaosBarCharger.size.width;
+    self.chaosBarWidth = self.chaosBarCharger.size.width * 2;
     [self addChild:self.chaosBarCharger];
     
     self.shootingBarBackgroundWhenClicked=[SKSpriteNode spriteNodeWithImageNamed:@"dogbar_clicked.png"];
@@ -200,7 +200,7 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self scaleSpriteNode:self.shootingBarCharger scaleRatio:0.5];
     self.shootingBarCharger.anchorPoint = CGPointMake(0.5,1);
     self.shootingBarCharger.position=CGPointMake(512.4*self.size.width/568,259*self.size.height/320);
-    self.dogBarHeight = self.shootingBarCharger.size.height;
+    self.dogBarHeight = self.shootingBarCharger.size.height * 2;
     [self addChild:self.shootingBarCharger];
     
 }
@@ -447,7 +447,7 @@ static inline CGPoint rwNormalize(CGPoint a)
         
         // Create the actions
         SKAction * rotateProjectile = [SKAction rotateToAngle:rotationRadians duration:0];
-        SKAction * actionMove = [SKAction moveTo:projectileDestinationMaybe duration:MAX(0.2,(10.1 - self.shotPower) / 10)];
+        SKAction * actionMove = [SKAction moveTo:projectileDestinationMaybe duration:MAX(0.2,(10.1 - self.shotPower)*1.8 / 10)];
         SKAction * actionMoveDone = [SKAction removeFromParent];
         [projectile runAction:[SKAction sequence:@[rotateProjectile, actionMove, actionMoveDone]] completion:^{
             //set cat to go new random direction
@@ -461,10 +461,10 @@ static inline CGPoint rwNormalize(CGPoint a)
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     self.shootingBool = YES;
-    self.beginningShotTime=self.totalTimeInterval;
-    SKAction * fadeUnclickedBarAway = [SKAction fadeOutWithDuration:0];
+    self.beginningShotTime = self.totalTimeInterval;
+    SKAction *fadeUnclickedBarAway = [SKAction fadeOutWithDuration:0];
     [self.shootingBarBackground runAction:fadeUnclickedBarAway];
-    SKAction * showClickedBar = [SKAction fadeInWithDuration:0];
+    SKAction *showClickedBar = [SKAction fadeInWithDuration:0];
     [self.shootingBarBackgroundWhenClicked runAction:showClickedBar];
 }
 
