@@ -48,6 +48,7 @@
 @property (nonatomic) NSTimeInterval lastUpdateTimeInterval;
 
 @end
+
 @implementation Tutorial
 
 
@@ -210,16 +211,16 @@ static inline CGPoint rwNormalize(CGPoint a)
     [self addChild:self.aim];
 }
 
--(void)initializeTimer
-{
-    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
-    self.timerLabel.fontSize = 15;
-    self.timerLabel.fontColor = [SKColor redColor];
-    self.timerLabel.text = [NSString stringWithFormat:@"Time: %i", 0];
-    self.timerLabel.position = CGPointMake(self.timerLabel.frame.size.width, self.table.size.height + self.timerLabel.frame.size.height*2);
-    
-    [self addChild:self.timerLabel];
-}
+//-(void)initializeTimer
+//{
+//    self.timerLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
+//    self.timerLabel.fontSize = 15;
+//    self.timerLabel.fontColor = [SKColor redColor];
+//    self.timerLabel.text = [NSString stringWithFormat:@"Time: %i", 0];
+//    self.timerLabel.position = CGPointMake(self.timerLabel.frame.size.width, self.table.size.height + self.timerLabel.frame.size.height*2);
+//    
+//    [self addChild:self.timerLabel];
+//}
 
 - (void)initializeCat
 {
@@ -480,20 +481,28 @@ static inline CGPoint rwNormalize(CGPoint a)
     
     if(self.frameNumber < 4)
     {
-        [self increment:self.frameNumber];
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [self increment:self.frameNumber];
+        });
         
     } else if (self.frameNumber > 5) {
-        self.shootingBool = YES;
-        self.beginningShotTime=self.totalTimeInterval;
-        SKAction * fadeUnclickedBarAway = [SKAction fadeOutWithDuration:0];
-        [self.shootingBarBackground runAction:fadeUnclickedBarAway];
-        SKAction * showClickedBar = [SKAction fadeInWithDuration:0];
-        [self.shootingBarBackgroundWhenClicked runAction:showClickedBar];
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC));
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            self.shootingBool = YES;
+            self.beginningShotTime=self.totalTimeInterval;
+            SKAction * fadeUnclickedBarAway = [SKAction fadeOutWithDuration:0];
+            [self.shootingBarBackground runAction:fadeUnclickedBarAway];
+            SKAction * showClickedBar = [SKAction fadeInWithDuration:0];
+            [self.shootingBarBackgroundWhenClicked runAction:showClickedBar];
+            });
     }
 }
 
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
     if(self.frameNumber > 5) {
         // Choose one of the touches to work with
         UITouch * touch = [touches anyObject];
@@ -571,6 +580,7 @@ static inline CGPoint rwNormalize(CGPoint a)
             
         }
     }
+    });
 }
 
 //move that cat!
