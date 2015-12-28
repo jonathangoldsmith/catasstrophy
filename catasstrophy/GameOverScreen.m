@@ -21,10 +21,9 @@
 @property (nonatomic) SKSpriteNode * replay;
 @property (nonatomic) SKSpriteNode * menu;
 @property (nonatomic) SKSpriteNode * replayClicked;
+@property (nonatomic) SKSpriteNode * leaderboard;
 @property (nonatomic) AVAudioPlayer * backgroundMusicPlayer;
-
-// A flag indicating whether the Game Center features can be used after a user has been authenticated.
-@property (nonatomic) BOOL gameCenterEnabled;
+@property (nonatomic) NSInteger highScore;
 
 // This property stores the default leaderboard's identifier.
 @property (nonatomic, strong) NSString *leaderboardIdentifier;
@@ -67,34 +66,28 @@
         [self addChild:self.scoreText];
         
         //high score
-        highScore = 0;
+        self.highScore = 0;
         [self LoadData];
-        if(score>highScore){
-            highScore = score;
+        if(score>self.highScore){
+            self.highScore = score;
             [self SaveData];
         }
         
         self.highScoreLabel = [SKLabelNode labelNodeWithFontNamed:@"Chalkduster"];
         self.highScoreLabel.fontSize = 30;
         self.highScoreLabel.fontColor = Rgb2UIColor(255, 150, 50);
-        self.highScoreLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)highScore];
+        self.highScoreLabel.text = [NSString stringWithFormat:@"%lu", self.highScore];
         self.highScoreLabel.position = CGPointMake(480*self.size.width/568, self.highScoreLabel.frame.size.height*2*self.size.height/320);
         self.highScoreLabel.name = @"highScoreLabel";//how the node is identified later
 
         [self addChild:self.highScoreLabel];
         
         //replay button
-        
         self.replay = [SKSpriteNode spriteNodeWithImageNamed:@"gg_cat.png"];
         [self scaleSpriteNode:self.replay scaleRatio:0.5];
         self.replay.position = CGPointMake(self.background.size.width/2, self.background.size.height/2);
         self.replay.name = @"replayButton";//how the node is identified later
         [self addChild:self.replay];
-        
-        //self.replayClicked = [SKSpriteNode spriteNodeWithImageNamed:@"gg_cat2.png"];
-        //[self scaleSpriteNode:self.replayClicked scaleRatio:0.6];
-        //self.replayClicked.position = CGPointMake(self.background.size.width/2, self.background.size.height/2);
-        //[self addChild:self.replayClicked];
         
         //return to menu button
         self.menu = [SKSpriteNode spriteNodeWithImageNamed:@"return_menu.png"];
@@ -104,16 +97,14 @@
         [self addChild:self.menu];
 
         
+        //leaderboard
+        self.leaderboard = [SKSpriteNode spriteNodeWithImageNamed:@"leaderboard.png"];
+        [self scaleSpriteNode:self.leaderboard scaleRatio:0.5];
+        self.leaderboard.position = CGPointMake(self.background.size.width - 50, self.background.size.height/2 - 20);
+        self.leaderboard.name = @"leaderboard";//how the node is identified later
+        [self addChild:self.leaderboard];
+
         [self authenticateLocalPlayer];
-        _leaderboardIdentifier = @"Scores";
-        GKScore *score = [[GKScore alloc] initWithLeaderboardIdentifier:_leaderboardIdentifier];
-        score.value = highScore;
-        
-        [GKScore reportScores:@[score] withCompletionHandler:^(NSError *error) {
-            if (error != nil) {
-                NSLog(@"%@", [error localizedDescription]);
-            }
-        }];
 
     }
     return self;
@@ -137,8 +128,19 @@
         SKScene * menu = [[Menu alloc] initWithSize:self.size];
         [self.view presentScene:menu];
     }
-    else if ([node.name isEqualToString:@"highScoreLabel"]) {
+    else if ([node.name isEqualToString:@"leaderboard"]) {
         [self.backgroundMusicPlayer stop];
+        
+        _leaderboardIdentifier = @"Scores";
+        GKScore *score = [[GKScore alloc] initWithLeaderboardIdentifier:_leaderboardIdentifier];
+        score.value = self.highScore;
+        
+        [GKScore reportScores:@[score] withCompletionHandler:^(NSError *error) {
+            if (error != nil) {
+                NSLog(@"%@", [error localizedDescription]);
+            }
+        }];
+        
         GKGameCenterViewController *gameCenterController = [[GKGameCenterViewController alloc] init];
         if (gameCenterController != nil)
         {
@@ -154,7 +156,7 @@
 -(IBAction)SaveData
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setInteger:highScore forKey:@"highScore"];
+    [defaults setInteger:self.highScore forKey:@"highScore"];
     [defaults synchronize];
     
 }
@@ -162,9 +164,9 @@
 -(IBAction)LoadData
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-    highScore = [defaults integerForKey:@"highScore"];
-    self.highScoreLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)highScore];
-    }
+    self.highScore = [defaults integerForKey:@"highScore"];
+    self.highScoreLabel.text = [NSString stringWithFormat:@"%lu", self.highScore];
+}
 
 -(void)authenticateLocalPlayer{
     GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
@@ -176,8 +178,6 @@
         }
         else{
             if ([GKLocalPlayer localPlayer].authenticated) {
-                _gameCenterEnabled = YES;
-                
                 // Get the default leaderboard identifier.
                 [[GKLocalPlayer localPlayer] loadDefaultLeaderboardIdentifierWithCompletionHandler:^(NSString *leaderboardIdentifier, NSError *error) {
                     
@@ -185,21 +185,24 @@
                         NSLog(@"%@", [error localizedDescription]);
                     }
                     else{
-                        _leaderboardIdentifier = leaderboardIdentifier;
+                        GKScore *score = [[GKScore alloc] initWithLeaderboardIdentifier:leaderboardIdentifier];
+                        score.value = self.highScore;
+                        
+                        [GKScore reportScores:@[score] withCompletionHandler:^(NSError *error) {
+                            if (error != nil) {
+                                NSLog(@"%@", [error localizedDescription]);
+                            }
+                        }];
                     }
                 }];
-            }
-            
-            else{
-                _gameCenterEnabled = NO;
             }
         }
     };
 }
 
-
 - (void)gameCenterViewControllerDidFinish:(GKGameCenterViewController*)gameCenterViewController {
     UIViewController *vc = self.view.window.rootViewController;
     [vc dismissViewControllerAnimated:YES completion:nil];
-}@end
+}
 
+@end

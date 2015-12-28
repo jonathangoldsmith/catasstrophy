@@ -11,10 +11,7 @@
 #import <GameKit/GameKit.h>
 #import <UIKit/UIKit.h>
 
-@interface GameOverScreen : SKScene  {
-@public
-    NSUInteger highScore;
-} 
+@interface GameOverScreen : SKScene
 
 -(id)initWithSize:(CGSize)size score:(NSInteger)score;
 

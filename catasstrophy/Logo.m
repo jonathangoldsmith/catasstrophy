@@ -12,7 +12,8 @@
 
 
 @interface Logo()
-@property (nonatomic) SKSpriteNode * background;
+@property (nonatomic) SKSpriteNode *background;
+@property (nonatomic) NSInteger highScore;
 @end
 
 @implementation Logo
@@ -39,7 +40,7 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    if(highScore > 0) {
+    if(self.highScore > 0) {
         SKScene * menu = [[Menu alloc] initWithSize:self.size];
         [self.view presentScene:menu transition:[SKTransition fadeWithDuration:.5]];
     } else {
@@ -50,7 +51,7 @@
 - (void)loadData
 {
     NSUserDefaults * defaults = [NSUserDefaults standardUserDefaults];
-    highScore = [defaults integerForKey:@"highScore"];
+    self.highScore = [defaults integerForKey:@"highScore"];
 }
 
 

@@ -8,11 +8,7 @@
 
 #import <SpriteKit/SpriteKit.h>
 
-@interface Logo : SKScene{
-@public
-    int highScore;
-    
-}
+@interface Logo : SKScene
 
 - (id)initWithSize:(CGSize)size;
 

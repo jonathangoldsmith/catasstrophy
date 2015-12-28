@@ -14,13 +14,19 @@
 #import "Countdown.h"
 #import "Credits.h"
 
-@interface Menu()
+@interface Menu() <GKGameCenterControllerDelegate>
 @property (nonatomic) SKSpriteNode * background;
 @property (nonatomic) SKSpriteNode * play;
 @property (nonatomic) SKSpriteNode * movie;
 @property (nonatomic) SKSpriteNode * how;
 @property (nonatomic) SKSpriteNode * credits;
+@property (nonatomic) SKSpriteNode * leaderboard;
 @property (nonatomic) AVAudioPlayer * backgroundMusicPlayer;
+
+@property (nonatomic) NSInteger highScore;
+
+// This property stores the default leaderboard's identifier.
+@property (nonatomic, strong) NSString *leaderboardIdentifier;
 @end
 
 @implementation Menu
@@ -68,6 +74,13 @@
         self.credits.name = @"creditsButton";//how the node is identified later
         [self addChild:self.credits];
         
+        //leaderboard
+        self.leaderboard = [SKSpriteNode spriteNodeWithImageNamed:@"leaderboard.png"];
+        [self scaleSpriteNode:self.leaderboard scaleRatio:0.5];
+        self.leaderboard.position = CGPointMake(50*self.size.width/568, self.background.size.height/4+40*self.size.height/320);
+        self.leaderboard.name = @"leaderboard";//how the node is identified later
+        [self addChild:self.leaderboard];
+        
         //for the background music
          NSError *error;
          NSURL * backgroundMusicURL = [[NSBundle mainBundle] URLForResource:@"Menu" withExtension:@"mp3"];
@@ -111,6 +124,79 @@
         SKScene * credits = [[Credits alloc] initWithSize:self.size];
         [self.view presentScene:credits transition:[SKTransition fadeWithDuration:.5]];
     }
+    else if ([node.name isEqualToString:@"leaderboard"]) {
+        
+        [self.backgroundMusicPlayer stop];
+
+        [self authenticateLocalPlayer];
+    }
+}
+
+-(void)authenticateLocalPlayer{
+    
+    GKGameCenterViewController *gameCenterController = [[GKGameCenterViewController alloc] init];
+    if (gameCenterController != nil)
+    {
+        gameCenterController.gameCenterDelegate = self;
+        gameCenterController.viewState = GKGameCenterViewControllerStateLeaderboards;
+        UIViewController *vc = self.view.window.rootViewController;
+        [vc presentViewController: gameCenterController animated: YES completion:nil];
+    }
+    
+    GKLocalPlayer *localPlayer = [GKLocalPlayer localPlayer];
+    
+    localPlayer.authenticateHandler = ^(UIViewController *viewController, NSError *error){
+        if (viewController != nil) {
+            UIViewController *vc = self.view.window.rootViewController;
+            [vc presentViewController:viewController animated:YES completion:nil];
+        }
+        else{
+            if ([GKLocalPlayer localPlayer].authenticated) {
+                // Get the default leaderboard identifier.
+                [[GKLocalPlayer localPlayer] loadDefaultLeaderboardIdentifierWithCompletionHandler:^(NSString *leaderboardIdentifier, NSError *error) {
+                    
+                    if (error != nil) {
+                        NSLog(@"%@", [error localizedDescription]);
+                    } else {
+                        GKScore *score = [[GKScore alloc] initWithLeaderboardIdentifier:leaderboardIdentifier];
+                        score.value = self.highScore;
+                        
+                        [GKScore reportScores:@[score] withCompletionHandler:^(NSError *error) {
+                            if (error != nil) {
+                                NSLog(@"%@", [error localizedDescription]);
+                            } else {
+                                GKGameCenterViewController *gameCenterController = [[GKGameCenterViewController alloc] init];
+                                if (gameCenterController != nil)
+                                {
+                                    gameCenterController.gameCenterDelegate = self;
+                                    gameCenterController.viewState = GKGameCenterViewControllerStateLeaderboards;
+                                    UIViewController *vc = self.view.window.rootViewController;
+                                    [vc presentViewController: gameCenterController animated: YES completion:nil];
+                                }
+
+                            }
+                        }];
+                    }
+                }];
+            }
+        }
+    };
+}
+
+- (void)gameCenterViewControllerDidFinish:(GKGameCenterViewController*)gameCenterViewController {
+    UIViewController *vc = self.view.window.rootViewController;
+    [vc dismissViewControllerAnimated:YES completion:nil];
+}
+
+
+- (void)dealloc {
+    self.background = nil;
+    self.play = nil;
+    self.how = nil;
+    self.movie= nil;
+    self.credits = nil;
+    self.leaderboard = nil;
+    self.backgroundMusicPlayer = nil;
 }
 
 @end
