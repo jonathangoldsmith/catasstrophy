@@ -10,14 +10,10 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import <AVFoundation/AVFoundation.h>
 
-@interface Movie : SKScene {
-    @public
-    int highScore;
-}
+@interface Movie : SKScene
 
 - (id)initWithSize:(CGSize)size;
 
 - (void)loadData;
-
 
 @end
